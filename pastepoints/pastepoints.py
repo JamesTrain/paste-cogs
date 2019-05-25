@@ -9,7 +9,7 @@ from redbot.core import Config, checks, commands
 BaseCog = getattr(commands, "Cog", object)
 
 
-class PasteVote(BaseCog):
+class PastePoints(BaseCog):
     """Collect Yer Paste Points here"""
 
     def __init__(self, bot):
