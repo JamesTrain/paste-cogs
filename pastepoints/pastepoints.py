@@ -8,7 +8,6 @@ from redbot.core import Config, checks, commands
 # Credit to https://github.com/flapjax/FlapJack-Cogs and 
 BaseCog = getattr(commands, "Cog", object)
 
-
 class PastePoints(BaseCog):
     """Collect Yer Paste Points here"""
 
