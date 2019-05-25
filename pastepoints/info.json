@@ -1,0 +1,10 @@
+{
+    "NAME" : "Pastepoints",
+    "AUTHOR" : "JamesTrain",
+    "SHORT" : "Awards Paste Points for the Pastiest Memes.",
+    "DESCRIPTION" : "Reacts to every post in a channel with the [upvote] and [downvote] emoji's. Keeps track of upvotes and displays a scoreboard.",
+    "INSTALL_MSG" : "Thanks for installing Pastepoints.",
+    "REQUIREMENTS" : ["cairosvg"],
+    "TAGS" : ["vote", "karma", "points"],
+    "DISABLED" : false
+}
