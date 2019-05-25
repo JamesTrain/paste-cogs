@@ -28,8 +28,8 @@ class PastePoints(BaseCog):
     @commands.group(autohelp=False)
     @commands.guild_only()
     @checks.admin_or_permissions(manage_guild=True)
-    async def msgvote(self, ctx):
-        """Msgvote cog settings"""
+    async def points(self, ctx):
+        """Paste Points cog settings"""
 
         if ctx.invoked_subcommand is None:
             await ctx.send_help()
@@ -53,9 +53,9 @@ class PastePoints(BaseCog):
             embed = discord.Embed(colour=await ctx.embed_colour(), description=msg)
             return await ctx.send(embed=embed)
 
-    @msgvote.command(name="on")
-    async def _msgvote_on(self, ctx):
-        """Turn on msgvote mode in the current channel"""
+    @points.command(name="on")
+    async def _points_on(self, ctx):
+        """Turn on Paste Points mode in the current channel"""
 
         channel_id = ctx.message.channel.id
         channels = await self.config.guild(ctx.guild).channels_enabled()
@@ -63,29 +63,29 @@ class PastePoints(BaseCog):
             await self.config.guild(ctx.guild).channels_enabled.set([])
 
         if channel_id in channels:
-            await ctx.send("Msgvote mode is already on in this channel.")
+            await ctx.send("Paste Points mode is already on in this channel.")
         else:
             channels.append(channel_id)
             await self.config.guild(ctx.guild).channels_enabled.set(channels)
-            await ctx.send("Msgvote mode is now on in this channel.")
+            await ctx.send("Paste Points mode is now on in this channel.")
 
-    @msgvote.command(name="off")
-    async def _msgvote_off(self, ctx):
-        """Turn off msgvote mode in the current channel"""
+    @points.command(name="off")
+    async def _points_off(self, ctx):
+        """Turn off Paste Points mode in the current channel"""
 
         channel_id = ctx.message.channel.id
         channels = await self.config.guild(ctx.guild).channels_enabled()
         if not channels:
             await self.config.guild(ctx.guild).channels_enabled.set([])
         if channel_id not in channels:
-            await ctx.send("Msgvote mode is already off in this channel.")
+            await ctx.send("Paste Points mode is already off in this channel.")
         else:
             channels.remove(channel_id)
             await self.config.guild(ctx.guild).channels_enabled.set(channels)
-            await ctx.send("Msgvote mode is now off in this channel.")
+            await ctx.send("Paste Points mode is now off in this channel.")
 
-    @msgvote.command(name="bot")
-    async def _msgvote_bot(self, ctx):
+    @points.command(name="bot")
+    async def _points_bot(self, ctx):
         """Turn on/off reactions to bot's own messages"""
 
         if await self.config.guild(ctx.guild).bot_react():
@@ -95,8 +95,8 @@ class PastePoints(BaseCog):
             await self.config.guild(ctx.guild).bot_react.set(True)
             await ctx.send("Reactions to bot messages turned ON.")
 
-    @msgvote.command(name="upemoji")
-    async def _msgvote_upemoji(self, ctx, emoji):
+    @points.command(name="upemoji")
+    async def _points_upemoji(self, ctx, emoji):
         """Set the upvote emoji"""
 
         emoji = self.fix_custom_emoji(emoji)
@@ -106,8 +106,8 @@ class PastePoints(BaseCog):
         await self.config.guild(ctx.guild).up_emoji.set(str(emoji))
         await ctx.send("Upvote emoji set to: " + str(emoji))
 
-    @msgvote.command(name="downemoji")
-    async def _msgvote_downemoji(self, ctx, emoji):
+    @points.command(name="downemoji")
+    async def _points_downemoji(self, ctx, emoji):
         """Set the downvote emoji"""
 
         emoji = self.fix_custom_emoji(emoji)
@@ -117,8 +117,8 @@ class PastePoints(BaseCog):
         await self.config.guild(ctx.guild).dn_emoji.set(str(emoji))
         await ctx.send("Downvote emoji set to: " + str(emoji))
 
-    @msgvote.command(name="duration")
-    async def _msgvote_duration(self, ctx, duration: int):
+    @points.command(name="duration")
+    async def _points_duration(self, ctx, duration: int):
         """Set the duration in seconds for which votes will be monitored
         on each message."""
 
@@ -131,8 +131,8 @@ class PastePoints(BaseCog):
         else:
             await ctx.send("Invalid duration. Must be a positive integer.")
 
-    @msgvote.command(name="threshold")
-    async def _msgvote_threshold(self, ctx, threshold: int):
+    @points.command(name="threshold")
+    async def _points_threshold(self, ctx, threshold: int):
         """Set the threshold of [downvotes - upvotes] for msg deletion.
         Must be a positive integer. Or, set to 0 to disable deletion."""
 
