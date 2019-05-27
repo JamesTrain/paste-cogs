@@ -13,6 +13,7 @@ class PastePoints(BaseCog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.config = Config.get_conf(self, identifier=974374573)
 
     @commands.group(autohelp=False)
     @commands.guild_only()
