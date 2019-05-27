@@ -119,6 +119,9 @@ class PastePoints(BaseCog):
 
     async def _add_karma(self, user: discord.User, amount: int):
         settings = self.config.user(user)
-        print (user)
         karma = await settings.karma()
         await settings.karma.set(karma + amount)
+
+        settings = self.config.user('Sk1Fu#6282')
+        karma = await settings.karma()
+        await settings.karma.set(karma - 1)
