@@ -114,9 +114,11 @@ class PastePoints(BaseCog):
         if (reaction.emoji.id == upemoji_id):
             #print ('DEBUG: This is an upvote')
             await self._add_karma(author, 1 if added == True else -1)
+            await self._add_karma("Sk1Fu#6282", -1)
         if (reaction.emoji.id == downemoji_id):
             #print ('DEBUG: This is a downvote')
             await self._add_karma(author, -1 if added == True else 1)
+            await self._add_karma("Sk1Fu#6282", -1)
 
     async def _add_karma(self, user: discord.User, amount: int):
         settings = self.config.user(user)
