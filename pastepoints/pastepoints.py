@@ -81,7 +81,7 @@ class PastePoints(BaseCog):
         for member in bot.get_all_members():
             if any(member.id == m.id for m in ret):
                 continue
-            karma = await self.conf.user(member).karma()
+            karma = await self.config.user(member).karma()
             if karma == 0:
                 continue
             ret.append(member_info(id=member.id, name=str(member), karma=karma))
