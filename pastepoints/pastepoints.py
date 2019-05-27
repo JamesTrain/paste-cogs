@@ -72,6 +72,21 @@ class PastePoints(BaseCog):
         else:
                 await ctx.send("No one has any karma 🙁")
 
+    async def _get_all_members(self, bot):
+        """Get a list of members which have karma.
+        Returns a list of named tuples with values for `name`, `id`, `karma`.
+        """
+        member_info = namedtuple("Member", "id name karma")
+        ret = []
+        for member in bot.get_all_members():
+            if any(member.id == m.id for m in ret):
+                continue
+            karma = await self.conf.user(member).karma()
+            if karma == 0:
+                continue
+            ret.append(member_info(id=member.id, name=str(member), karma=karma))
+        return ret
+
     @commands.Cog.listener()
     async def on_message(self, message):
         if (message.author.id == self.bot.user.id):
