@@ -72,9 +72,9 @@ class PastePoints(BaseCog):
         if author == user or isinstance(channel, discord.abc.PrivateChannel): #fix this
             return
         emoji = reaction.emoji
-        if (eomiji.id == upemoji_id):
+        if (emoji.id == upemoji_id):
             await self._add_karma(author, 1)
-        if (eomiji.id == downemoji_id):
+        if (emoji.id == downemoji_id):
             await self._add_karma(author, -1)
 
     async def _add_karma(self, user: discord.User, amount: int):
