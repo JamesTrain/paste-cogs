@@ -15,10 +15,7 @@ class PastePoints(commands.Cog):
         """This does stuff!"""
         # Your code will go here
         await ctx.send("This works")
-        await message.add_reaction(up_emoji)
+        await message.add_reaction(message, emoji="redCross:423541694600970243")
     
-    async def on_message(message):
-        # we do not want the bot to reply to itself
-        if message.author == bot.user:
-            return
+    async def on_message(self, message):
         await message.add_reaction(message, emoji="redCross:423541694600970243")
