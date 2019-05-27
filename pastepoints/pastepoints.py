@@ -11,7 +11,8 @@ BaseCog = getattr(commands, "Cog", object)
 class PastePoints(BaseCog):
     """Paste Points cog settings"""
 
-    @commands.guild_only()
-    @checks.admin_or_permissions(administrator=True)
-    async def points(self, ctx):
-        await ctx.send("This works")
+    @commands.command()
+    async def mycom(self, ctx):
+        """This does stuff!"""
+        # Your code will go here
+        await ctx.send("I can do stuff!")
