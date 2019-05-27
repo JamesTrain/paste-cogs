@@ -31,4 +31,4 @@ class PastePoints(BaseCog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        await message.add_reaction(emoji="<:bolbmoji:397064398830829569>")
+        await message.channel.send("message sent")
