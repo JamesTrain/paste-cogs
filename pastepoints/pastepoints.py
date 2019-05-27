@@ -11,7 +11,7 @@ class PastePoints(commands.Cog):
     """My custom cog"""
 
     @commands.command()
-    async def points(self, ctx):
+    async def points(self, ctx, message):
         """This does stuff!"""
         # Your code will go here
         await ctx.send("This works")
