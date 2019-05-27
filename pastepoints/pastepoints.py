@@ -39,6 +39,6 @@ class PastePoints(BaseCog):
             return
         if (message.channel.id == 331655111644545027):
             upemoji = self.bot.get_emoji(397064398830829569)
-          downemoji = self.bot.get_emoji(272737368916754432)
-          await message.add_reaction(upemoji)
-          await message.add_reaction(downemoji)
+            downemoji = self.bot.get_emoji(272737368916754432)
+            await message.add_reaction(upemoji)
+            await message.add_reaction(downemoji)
