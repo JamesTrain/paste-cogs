@@ -15,7 +15,3 @@ class PastePoints(BaseCog):
     @checks.admin_or_permissions(administrator=True)
     async def points(self, ctx):
         await ctx.send("This works")
-
-    @points.command()
-    async def _points_test(self, ctx):
-        await ctx.send("memes")
