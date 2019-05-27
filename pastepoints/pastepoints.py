@@ -29,4 +29,4 @@ class PastePoints(BaseCog):
         await ctx.send("This is the biggest meme x2")
 
     async def on_message(self, message):
-        await message.add_reaction(emoji=":clap:")
+        await message.add_reaction(emoji="<:bolbmoji:397064398830829569>")
