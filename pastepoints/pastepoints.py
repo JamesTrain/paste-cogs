@@ -40,7 +40,7 @@ class PastePoints(BaseCog):
         if (message.channel.id == 331655111644545027):
             await message.add_reaction('\u2705')
             await message.add_reaction('\u274C')
-        upemoji = bot.get_emoji(397064398830829569)
+        upemoji = self.bot.get_emoji(397064398830829569)
         #downemoji = '<:FeelsBadMan:272737368916754432>'
         await message.add_reaction(upemoji)
         #await message.add_reaction(downemoji)
