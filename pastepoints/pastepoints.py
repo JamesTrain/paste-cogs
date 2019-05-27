@@ -22,7 +22,7 @@ class PastePoints(BaseCog):
         # Your code will go here
         await ctx.send("I can do stuff!")
 
-    @points.command
-    async def _points_on(self, ctx):
+    @points.command(name="test")
+    async def _points_test(self, ctx):
         """This is a huge meme"""
         await ctx.send("This is the biggest meme")
