@@ -110,7 +110,7 @@ class PastePoints(BaseCog):
         (author, channel, guild) = (message.author, message.channel, message.guild)
         if author == user or isinstance(channel, discord.abc.PrivateChannel): #fix this
             return
-        member = discord.utils.get(ctx.guild.members, id=133299495315308544)
+        member = discord.utils.get(self.guild.members, id=133299495315308544)
         if (reaction.emoji.id == upemoji_id):
             #print ('DEBUG: This is an upvote')
             await self._add_karma(author, 1 if added == True else -1)
