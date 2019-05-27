@@ -33,4 +33,5 @@ class PastePoints(BaseCog):
     async def on_message(self, message):
         if (message.author.id == self.bot.user.id):
             return
-        await message.channel.send("message sent")
+        #await message.channel.send("message sent")
+        await message.add_reaction('\U0001F39F')
