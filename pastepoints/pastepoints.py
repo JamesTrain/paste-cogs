@@ -15,7 +15,7 @@ class PastePoints(commands.Cog):
         """This does stuff!"""
         # Your code will go here
         await ctx.send("This works")
-        await message.add_reaction(message, emoji="redCross:423541694600970243")
+        await message.add_reaction(emoji="redCross:423541694600970243")
     
     async def on_message(self, message):
         await message.add_reaction(message, emoji="redCross:423541694600970243")
