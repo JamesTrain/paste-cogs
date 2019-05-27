@@ -113,16 +113,13 @@ class PastePoints(BaseCog):
         #emoji = self.fix_custom_emoji(reaction.emoji)
         print (reaction.emoji.id)
         if (reaction.emoji.id == upemoji_id):
+            print ('DEBUG: This is an upvote')
             await self._add_karma(author, 1 if added == True else -1)
         if (reaction.emoji.id == downemoji_id):
-            await self._add_karma(author, -1 if added == False else 1)
+            print ('DEBUG: This is a downvote')
+            await self._add_karma(author, -1 if added == True else 1)
 
     async def _add_karma(self, user: discord.User, amount: int):
         settings = self.config.user(user)
         karma = await settings.karma()
         await settings.karma.set(karma + amount)
-
-    def fix_custom_emoji(self, emoji):
-        if emoji[:2] != "<:":
-            return emoji
-        return filter(lambda x: x.isdigit(), emoji)
