@@ -11,7 +11,6 @@ class PastePoints(commands.Cog):
     @commands.group(autohelp=False)
     @commands.guild_only()
     @checks.admin_or_permissions(manage_guild=True)
-    @commands.command()
     async def points(self, ctx, message):
         """This does stuff!"""
         # Your code will go here
