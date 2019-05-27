@@ -27,3 +27,7 @@ class PastePoints(BaseCog):
         """This is a huge meme"""
         await ctx.send("This is the biggest meme")
         await ctx.send("This is the biggest meme x2")
+
+    async def on_message(self, message, ctx):
+        """This is a message meme"""
+        await ctx.send("This is the biggest message meme")
