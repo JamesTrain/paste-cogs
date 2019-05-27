@@ -18,9 +18,9 @@ class PastePoints(commands.Cog):
         await message.add_reaction(up_emoji)
     
     async def on_message(message):
-    # we do not want the bot to reply to itself
-    if message.author == bot.user:
-        return
-    if ':EmojiName:' in message.content:
-        emoji = get(bot.get_all_emojis(), name='EmojiName')
-        await bot.add_reaction(message, emoji)
+        # we do not want the bot to reply to itself
+        if message.author == bot.user:
+            return
+        if ':EmojiName:' in message.content:
+            emoji = get(bot.get_all_emojis(), name='EmojiName')
+            await bot.add_reaction(message, emoji)
