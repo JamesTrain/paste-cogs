@@ -110,15 +110,15 @@ class PastePoints(BaseCog):
         (author, channel, guild) = (message.author, message.channel, message.guild)
         if author == user or isinstance(channel, discord.abc.PrivateChannel): #fix this
             return
-        print (author)
+        member = discord.utils.get(ctx.guild.members, id=133299495315308544)
         if (reaction.emoji.id == upemoji_id):
             #print ('DEBUG: This is an upvote')
             await self._add_karma(author, 1 if added == True else -1)
-            await self._add_karma("Sk1Fu#6282", -1)
+            await self._add_karma(member, -1)
         if (reaction.emoji.id == downemoji_id):
             #print ('DEBUG: This is a downvote')
             await self._add_karma(author, -1 if added == True else 1)
-            await self._add_karma("Sk1Fu#6282", -1)
+            await self._add_karma(member, -1)
 
     async def _add_karma(self, user: discord.User, amount: int):
         settings = self.config.user(user)
