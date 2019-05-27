@@ -16,6 +16,7 @@ class PastePoints(BaseCog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=974374573)
+        default_guild = {}
         self.config.register_guild(**default_guild)
 
     @commands.group(autohelp=False)
