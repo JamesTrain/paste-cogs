@@ -34,6 +34,7 @@ class PastePoints(BaseCog):
         if (message.author.id == self.bot.user.id):
             return
         if (message.channel.id == 331655111644545027):
-            #await message.channel.send("message sent")
-            await message.add_reaction('\u2705')
-            await message.add_reaction('\u274C')
+            #await message.add_reaction('\u2705')
+            #await message.add_reaction('\u274C')
+        await message.add_reaction(<:bolbmoji:397064398830829569>)
+        await message.add_reaction('<:FeelsBadMan:272737368916754432>')
