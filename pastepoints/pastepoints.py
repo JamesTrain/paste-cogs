@@ -11,6 +11,9 @@ BaseCog = getattr(commands, "Cog", object)
 class PastePoints(BaseCog):
     """Paste Points cog settings"""
 
+    def __init__(self, bot):
+        self.bot = bot
+
     @commands.command()
     async def points(self, ctx):
         """This does stuff!"""
