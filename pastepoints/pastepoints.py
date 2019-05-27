@@ -26,3 +26,4 @@ class PastePoints(BaseCog):
     async def _points_test(self, ctx):
         """This is a huge meme"""
         await ctx.send("This is the biggest meme")
+        await ctx.send("This is the biggest meme x2")
