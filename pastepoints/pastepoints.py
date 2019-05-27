@@ -110,8 +110,7 @@ class PastePoints(BaseCog):
         (author, channel, guild) = (message.author, message.channel, message.guild)
         if author == user or isinstance(channel, discord.abc.PrivateChannel): #fix this
             return
-        emoji = reaction.emoji
-        print (emoji)
+        emoji = self.fix_custom_emoji(reaction.emoji)
         if (emoji == upemoji_id):
             await self._add_karma(author, 1 if added == True else -1)
         if (emoji == downemoji_id):
@@ -121,3 +120,8 @@ class PastePoints(BaseCog):
         settings = self.config.user(user)
         karma = await settings.karma()
         await settings.karma.set(karma + amount)
+
+    def fix_custom_emoji(self, emoji):
+        if emoji[:2] != "<:":
+            return emoji
+        return filter(lambda x: x.isdigit(), emoji)
