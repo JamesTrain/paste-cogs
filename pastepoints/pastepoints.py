@@ -42,6 +42,36 @@ class PastePoints(BaseCog):
         await ctx.send("This is the biggest meme")
         await ctx.send("This is the biggest meme x2")
 
+    @commands.command()
+    async def karmaboard(self, ctx: commands.Context, top: int = 10):
+        """Prints out the karma leaderboard.
+        Defaults to top 10. Use negative numbers to reverse the leaderboard.
+        """
+        reverse = True
+        if top == 0:
+            top = 10
+        elif top < 0:
+            reverse = False
+            top = -top
+        members_sorted = sorted(
+            await self._get_all_members(ctx.bot), key=lambda x: x.karma, reverse=reverse
+        )
+        if len(members_sorted) < top:
+            top = len(members_sorted)
+        topten = members_sorted[:top]
+        highscore = ""
+        place = 1
+        for member in topten:
+            highscore += str(place).ljust(len(str(top)) + 1)
+            highscore += "{} | ".format(member.name).ljust(18 - len(str(member.karma)))
+            highscore += str(member.karma) + "\n"
+            place += 1
+        if highscore != "":
+            for page in pagify(highscore, shorten_by=12):
+                await ctx.send(box(page, lang="py"))
+        else:
+                await ctx.send("No one has any karma 🙁")
+
     @commands.Cog.listener()
     async def on_message(self, message):
         if (message.author.id == self.bot.user.id):
