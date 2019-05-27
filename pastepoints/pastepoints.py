@@ -14,6 +14,10 @@ from redbot.core.utils.chat_formatting import box, pagify
 
 BaseCog = getattr(commands, "Cog", object)
 
+upemoji_id = 397064398830829569
+downemoji_id = 272737368916754432
+channel_id = 331655111644545027
+
 class PastePoints(BaseCog):
     """Paste Points cog settings"""
 
@@ -42,9 +46,9 @@ class PastePoints(BaseCog):
     async def on_message(self, message):
         if (message.author.id == self.bot.user.id):
             return
-        if (message.channel.id == 331655111644545027):
-            upemoji = self.bot.get_emoji(397064398830829569)
-            downemoji = self.bot.get_emoji(272737368916754432)
+        if (message.channel.id == channel_id):
+            upemoji = self.bot.get_emoji(upemoji_id)
+            downemoji = self.bot.get_emoji(downemoji_id)
             await message.add_reaction(upemoji)
             await message.add_reaction(downemoji)
 
