@@ -33,6 +33,7 @@ class PastePoints(BaseCog):
     async def on_message(self, message):
         if (message.author.id == self.bot.user.id):
             return
-        #await message.channel.send("message sent")
-        await message.add_reaction('\u2705')
-        await message.add_reaction('\u274C')
+        if (message.channel.id == '331655111644545027'):
+            #await message.channel.send("message sent")
+            await message.add_reaction('\u2705')
+            await message.add_reaction('\u274C')
