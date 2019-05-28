@@ -83,9 +83,9 @@ class PastePoints(BaseCog):
 
     @commands.command()
     @checks.is_owner()
-    async def resetkarma(self, ctx: commands.Context, user: discord.Member):
+    async def resetpp(self, ctx: commands.Context, user: discord.Member):
         """Resets a user's karma."""
-        await self.config.user(user).karma.set(0)
+        await self.config.user(user).karma.set(-6942069)
         await ctx.send("{}'s karma has been reset to 0.".format(user.display_name))
 
     @commands.Cog.listener()
