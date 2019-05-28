@@ -126,6 +126,5 @@ class PastePoints(BaseCog):
         await settings.karma.set(karma + amount)
 
     async def _get_member(self, ctx, member_id: int):
-        """Can find a member in the server, needs to have USERID. Looking at docs later"""
         member = discord.utils.get(ctx.guild.members, id=member_id)
-            return member
+        return member
