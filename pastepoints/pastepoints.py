@@ -81,9 +81,9 @@ class PastePoints(BaseCog):
             ret.append(member_info(id=member.id, name=str(member), karma=karma))
         return ret
 
-    @commands.command(name="resetkarma")
+    @commands.command()
     @checks.is_owner()
-    async def reset_karma(self, ctx: commands.Context, user: discord.Member):
+    async def resetkarma(self, ctx: commands.Context, user: discord.Member):
         """Resets a user's karma."""
         log.debug("Resetting %s's karma", str(user))
         # noinspection PyTypeChecker
