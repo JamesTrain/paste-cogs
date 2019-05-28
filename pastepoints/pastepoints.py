@@ -37,7 +37,7 @@ class PastePoints(BaseCog):
         await ctx.send("I can do stuff!")
 
     @commands.command()
-    async def pastepoints(self, ctx: commands.Context, top: int = 10):
+    async def pp(self, ctx: commands.Context, top: int = 10):
         """Prints out the karma leaderboard.
         Defaults to top 10. Use negative numbers to reverse the leaderboard.
         """
