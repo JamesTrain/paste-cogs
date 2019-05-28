@@ -81,6 +81,15 @@ class PastePoints(BaseCog):
             ret.append(member_info(id=member.id, name=str(member), karma=karma))
         return ret
 
+    @commands.command(name="resetkarma")
+    @checks.is_owner()
+    async def reset_karma(self, ctx: commands.Context, user: discord.Member):
+        """Resets a user's karma."""
+        log.debug("Resetting %s's karma", str(user))
+        # noinspection PyTypeChecker
+        await self.conf.user(user).karma.set(0)
+        await ctx.send("{}'s karma has been reset to 0.".format(user.display_name))
+
     @commands.Cog.listener()
     async def on_message(self, message):
         if (message.author.id == self.bot.user.id):
