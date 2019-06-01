@@ -1,6 +1,9 @@
 {
-    "NAME" : "Events",
-    "AUTHOR" : "JamesTrain",
-    "SHORT" : "Event Planning Tool.",
-    "DESCRIPTION" : "Creates events that users can RSVP to and will get alerts before the event."
+    "author" : "JamesTrain",
+    "install_msg" : "Thanks for installing Event Manager.",
+    "name" : "Event Manager",
+    "disabled" : false,
+    "short" : "Creates events and lets users RSVP.",
+    "description" : "Create events and let users RSVP by reacting to the event. They will get alerted before the event.",
+    "tags" : ["event", "rsvp"]
 }
