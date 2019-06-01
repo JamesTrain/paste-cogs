@@ -30,3 +30,9 @@ class Events(BaseCog):
         embed.add_field(name="[p]events remove", value="Delete an event.", inline=False)
         embed.add_field(name="[p]events edit", value="Change an event.", inline=False)
         await ctx.send(embed=embed)
+
+    @events.command(name="add")
+    async def _events_list(self, ctx):
+        """Lists Events"""
+        await ctx.send("This is the biggest meme")
+        await ctx.send("This is the biggest meme x2")
