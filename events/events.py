@@ -23,12 +23,12 @@ BaseCog = getattr(commands, "Cog", object)
 class Events(BaseCog):
     """Event Manager Help Message"""
 
-    default_guild = {"events": []}
+    
     
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=974374574)
-        
+        default_guild = {"events": []}
         self.config.register_guild(**default_guild)
 
 
