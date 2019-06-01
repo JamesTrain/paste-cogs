@@ -28,7 +28,7 @@ class Events(BaseCog):
     def __init__(self, bot):
         self.bot = bot
         self.settings  = Config.get_conf(self, identifier=974374574)
-        default_guild = {"events": []}
+        default_guild = {"events": [], "next_available_id": 1}
         self.settings.register_guild(**default_guild)
 
 
@@ -65,7 +65,7 @@ class Events(BaseCog):
 
         event_id = await self.settings.guild(guild).next_available_id()
 
-        creation_time = ctx.message.created_at
+        creation_time = ctx.message.created_at.timestamp()
         print ("DEBUG: Creation_time: ", creation_time)
         await ctx.send("Enter a name for the event: ")
 
@@ -109,7 +109,7 @@ class Events(BaseCog):
         async with self.settings.guild(guild).events() as event_list:
             event_list.append(new_event)
             event_list.sort(key=lambda x: x["create_time"])
-            await ctx.send(embed=get_event_embed(guild, ctx.message.created_at, new_event))
+            await ctx.send(embed=get_event_embed(guild, ctx.message.created_at.timestamp(), new_event))
 
 
     @events.command(name="remove")
