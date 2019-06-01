@@ -39,7 +39,8 @@ def allowed_to_create():
 
 
 async def check_event_start(channel: discord.TextChannel, event: dict, config: Config):
-    cur_time = dt.utcnow()
+    cur_time = dt.now(America/Chicago.utc)
+    print (cur_time)
     guild = channel.guild
     if cur_time.timestamp() < event["event_start_time"] or event["has_started"]:
         return False, None
