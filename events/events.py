@@ -8,15 +8,13 @@ import discord
 from redbot.core import Config, checks, commands
 from redbot.core.utils.chat_formatting import box, pagify
 
-# Paste Points are the new Bitcoin
-
 BaseCog = getattr(commands, "Cog", object)
 
 upemoji_id = 397064398830829569
 downemoji_id = 272737368916754432
 channel_id = 331655111644545027
 
-class PastePoints(BaseCog):
+class Events(BaseCog):
     """Paste Points cog settings"""
 
     def __init__(self, bot):
