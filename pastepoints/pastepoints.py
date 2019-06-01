@@ -1,10 +1,8 @@
 import asyncio
 import io
 import aiohttp
-import logging
 
 from collections import namedtuple
-from datetime import datetime
 
 import discord
 from redbot.core import Config, checks, commands
@@ -33,7 +31,7 @@ class PastePoints(BaseCog):
     @checks.admin_or_permissions(manage_guild=True)
     async def points(self, ctx):
         """Paste Points Are Cool"""
-        # Your code will go here
+
         await ctx.send("I can do stuff!")
 
     @commands.command()
@@ -98,6 +96,7 @@ class PastePoints(BaseCog):
             downemoji = self.bot.get_emoji(downemoji_id)
             await message.add_reaction(upemoji)
             await message.add_reaction(downemoji)
+            await self._add_karma(author, 1)
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction: discord.Reaction, user: discord.User):
@@ -118,12 +117,9 @@ class PastePoints(BaseCog):
         (author, channel, guild) = (message.author, message.channel, message.guild)
         if author == user or isinstance(channel, discord.abc.PrivateChannel): #fix this
             return
-        print (reaction.emoji)
         if (reaction.emoji.id == upemoji_id):
-            print ('DEBUG: This is an upvote')
             await self._add_karma(author, 1 if added == True else -1)
         if (reaction.emoji.id == downemoji_id):
-            print ('DEBUG: This is a downvote')
             await self._add_karma(author, -1 if added == True else 1)
 
     async def _add_karma(self, user: discord.User, amount: int):
