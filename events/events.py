@@ -65,7 +65,7 @@ class Events(BaseCog):
 
         event_id = await self.settings.guild(guild).next_available_id()
 
-        creation_time = ctx.message.created_at.timestamp()
+        creation_time = ctx.message.created_at
         print ("DEBUG: Creation_time: ", creation_time)
         await ctx.send("Enter a name for the event: ")
 
