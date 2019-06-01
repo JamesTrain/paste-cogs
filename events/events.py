@@ -24,7 +24,9 @@ class Events(BaseCog):
     @checks.admin_or_permissions(manage_guild=True)
     async def events(self, ctx):
         """These Are Events"""
-        embed = discord.Embed(title="Event Planner", description="How to use the event planner", color=0x00ff00)
-        embed.add_field(name="Field1", value="hi", inline=False)
-        embed.add_field(name="Field2", value="hi2", inline=False)
+        embed = discord.Embed(title="Event Planner", description="How to use the event planner", color=0x09616D)
+        embed.add_field(name="[p]events list", value="Show a list of upcoming events.", inline=False)
+        embed.add_field(name="[p]events add", value="Add a new event.", inline=False)
+        embed.add_field(name="[p]events remove", value="Delete an event.", inline=False)
+        embed.add_field(name="[p]events edit", value="Change an event.", inline=False)
         await ctx.send(embed=embed)
