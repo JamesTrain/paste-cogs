@@ -27,9 +27,9 @@ class Events(BaseCog):
     
     def __init__(self, bot):
         self.bot = bot
-        self.config = Config.get_conf(self, identifier=974374574)
+        self.settings  = Config.get_conf(self, identifier=974374574)
         default_guild = {"events": []}
-        self.config.register_guild(**default_guild)
+        self.settings.register_guild(**default_guild)
 
 
     @commands.group(autohelp=False)
