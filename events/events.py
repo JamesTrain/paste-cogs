@@ -19,7 +19,7 @@ class Events(BaseCog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.config = Config.get_conf(self, identifier=974374573)
+        self.config = Config.get_conf(self, identifier=974374574)
         default_guild = {}
         self.config.register_guild(**default_guild)
         self.config.register_user(karma=0)
