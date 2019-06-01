@@ -108,7 +108,7 @@ class Events(BaseCog):
         async with self.settings.guild(guild).events() as event_list:
             event_list.append(new_event)
             event_list.sort(key=lambda x: x["create_time"])
-await ctx.send(embed=get_event_embed(guild, ctx.message.created_at, new_event))
+            await ctx.send(embed=get_event_embed(guild, ctx.message.created_at, new_event))
 
 
     @events.command(name="remove")
