@@ -66,7 +66,7 @@ class Events(BaseCog):
         event_id = await self.settings.guild(guild).next_available_id()
 
         creation_time = ctx.message.created_at.timestamp()
-        await ctx.send(_("Enter a name for the event: "))
+        await ctx.send("Enter a name for the event: ")
 
         def same_author_check(msg):
             return msg.author == author
