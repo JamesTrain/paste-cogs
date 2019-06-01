@@ -90,10 +90,10 @@ class PastePoints(BaseCog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
+        print (message.embeds)
         if (message.author.id == self.bot.user.id or message.attachments == []):
             return
         if (message.channel.id == channel_id):
-            print (message.embeds)
             upemoji = self.bot.get_emoji(upemoji_id)
             downemoji = self.bot.get_emoji(downemoji_id)
             await message.add_reaction(upemoji)
