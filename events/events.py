@@ -53,7 +53,7 @@ class Events(BaseCog):
 
 
     @events.command(name="add")
-    async def event_create(self, ctx: commands.Context):
+    async def _events_add(self, ctx: commands.Context):
         """
         Wizard-style event creation tool.
         The event will only be created if all information is provided properly.
