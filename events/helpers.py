@@ -39,8 +39,7 @@ def allowed_to_create():
 
 
 async def check_event_start(channel: discord.TextChannel, event: dict, config: Config):
-    cur_time = dt.now(America/Chicago.utc)
-    print (cur_time)
+    cur_time = dt.utcnow()
     guild = channel.guild
     if cur_time.timestamp() < event["event_start_time"] or event["has_started"]:
         return False, None
@@ -128,4 +127,6 @@ def parse_time(cur_time, msg: discord.Message):
                 return None  # issue with the user's input
         else:
             return None  # something went wrong in user's input
+    print ("DEBUG: cur_time: ", cur_time)
+    print ("DEBUG: timedelta: ", timedelta(weeks=w, days=d, hours=h, minutes=m, seconds=s).total_seconds())
     return cur_time + timedelta(weeks=w, days=d, hours=h, minutes=m, seconds=s).total_seconds()
