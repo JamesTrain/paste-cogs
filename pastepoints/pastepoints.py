@@ -15,7 +15,8 @@ BaseCog = getattr(commands, "Cog", object)
 
 upemoji_id = 397064398830829569
 downemoji_id = 272737368916754432
-channel_id = 331655111644545027
+#channel_id = 331655111644545027
+channel_id = 163714449503551488
 
 class PastePoints(BaseCog):
     """Paste Points cog settings"""
