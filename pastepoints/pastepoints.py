@@ -89,7 +89,7 @@ class PastePoints(BaseCog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        print (message.content)
+        print (re.search("http:\/\/|https:\/\/", message.content))
         if (message.author.id == self.bot.user.id or (message.attachments == [] and message.embeds == [])):
             return
         if (message.channel.id == channel_id):
