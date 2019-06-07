@@ -1,6 +1,7 @@
 import asyncio
 import io
 import aiohttp
+import re
 
 from collections import namedtuple
 
@@ -88,7 +89,8 @@ class PastePoints(BaseCog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if (message.author.id == self.bot.user.id or (message.attachments == [] and message.embeds == [])):
+        x = re.search("^The.*Spain$", txt)
+        if (message.author.id == self.bot.user.id or re.findall("http:\/\/|https:\/\/", message.content) == []):
             return
         if (message.channel.id == channel_id):
             upemoji = self.bot.get_emoji(upemoji_id)
@@ -110,6 +112,8 @@ class PastePoints(BaseCog):
         Ignores Private Channels and users reacting to their own message.
         """
         await self._check_reaction(reaction, user, added=False)
+
+    #Check if .pp has been used in the past 3 days, and post the leaderboard if not
 
     async def _check_reaction(self, reaction: discord.Reaction, user: discord.User, *, added: bool):
         message = reaction.message
