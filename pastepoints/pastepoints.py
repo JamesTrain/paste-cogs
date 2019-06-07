@@ -1,7 +1,6 @@
 import asyncio
 import io
 import aiohttp
-import re
 
 from collections import namedtuple
 
@@ -90,8 +89,7 @@ class PastePoints(BaseCog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        print (re.findall("http:\/\/|https:\/\/", message.content))
-        if (message.author.id == self.bot.user.id):
+        if (message.author.id == self.bot.user.id or (message.contents == [] and message.embeds == []) or ):
             return
         if (message.channel.id == channel_id):
             upemoji = self.bot.get_emoji(upemoji_id)
