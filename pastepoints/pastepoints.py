@@ -89,8 +89,8 @@ class PastePoints(BaseCog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        x = re.search("^The.*Spain$", txt)
-        if (message.author.id == self.bot.user.id or re.findall("http:\/\/|https:\/\/", message.content) == []):
+        print (re.findall("http:\/\/|https:\/\/", message.content))
+        if (message.author.id == self.bot.user.id):
             return
         if (message.channel.id == channel_id):
             upemoji = self.bot.get_emoji(upemoji_id)
