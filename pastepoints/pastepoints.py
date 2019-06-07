@@ -15,8 +15,8 @@ BaseCog = getattr(commands, "Cog", object)
 
 upemoji_id = 397064398830829569
 downemoji_id = 272737368916754432
-#channel_id = 331655111644545027
-channel_id = 163714449503551488
+channel_id = 331655111644545027
+#channel_id = 163714449503551488
 
 class PastePoints(BaseCog):
     """Paste Points cog settings"""
@@ -97,7 +97,6 @@ class PastePoints(BaseCog):
             downemoji = self.bot.get_emoji(downemoji_id)
             await message.add_reaction(upemoji)
             await message.add_reaction(downemoji)
-            await self._add_karma(author, 1)
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction: discord.Reaction, user: discord.User):
