@@ -25,8 +25,10 @@ class AutoKick(BaseCog):
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
         a = self.bot.get_channel(163714449503551488)
-        if (after.voice.voice_channel != None):
-            await a.send(after.voice.voice_channel)
+        await a.send(after.voice.voice_channel)
+        
+        #if (after.voice.voice_channel != None):
+            #await a.send(after.voice.voice_channel)
         #if (after.voice.channel == 502108640530923520):
             #await a.send("FUCKKKKKKK")
             #await after.id.move_to(channel=None, reason="No Furries Allowed")
