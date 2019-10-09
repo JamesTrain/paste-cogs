@@ -23,8 +23,8 @@ class AutoKick(BaseCog):
         self.config.register_guild(**default_guild)
 
     @commands.Cog.listener()
-    async def on_member_update(self, before, after):
-        if (after.voice.channel == 502108640530923520):
+    async def on_member_update(self, before: discord.Member, after: discord.Member):
+        if (after.voice.channel.id == 502108640530923520):
             a = self.bot.get_channel(364238602957226004)
             await a.send("FUCKKKKKKK")
             #await after.id.move_to(channel=None, reason="No Furries Allowed")
