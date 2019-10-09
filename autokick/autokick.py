@@ -27,4 +27,4 @@ class AutoKick(BaseCog):
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
         if (after.voice.voice_channel.id == channel_id):
-            await after.member.id.move_to(channel=None, reason="No Furries Allowed")
+            await after.id.move_to(channel=None, reason="No Furries Allowed")
