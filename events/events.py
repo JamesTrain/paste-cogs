@@ -1,3 +1,5 @@
+#Let's have this edit a message in #info that has a list of upcoming events
+
 import asyncio
 import contextlib
 from datetime import datetime as dt, timedelta
