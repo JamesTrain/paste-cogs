@@ -25,7 +25,7 @@ class AutoKick(BaseCog):
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
         a = self.bot.get_channel(163714449503551488)
-        await a.send(after.voice.voice_channel)
+        await a.send("Memes")
         
         #if (after.voice.voice_channel != None):
             #await a.send(after.voice.voice_channel)
