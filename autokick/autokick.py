@@ -23,7 +23,7 @@ class AutoKick(BaseCog):
         self.config.register_guild(**default_guild)
 
     @commands.Cog.listener()
-    async def on_voice_state_update(self, before, after):
+    async def on_voice_state_update(self, member, before, after):
         a = self.bot.get_channel(163714449503551488)
         await a.send(after.voice.voice_channel)
         
