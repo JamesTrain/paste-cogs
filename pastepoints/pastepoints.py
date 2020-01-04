@@ -19,7 +19,7 @@ channel_id = 331655111644545027
 #channel_id = 163714449503551488
 
 class PastePoints(BaseCog):
-    """Paste Points cog settings"""
+    """Paste Points cog settings meme"""
 
     def __init__(self, bot):
         self.bot = bot
