@@ -1,10 +1,9 @@
 import asyncio
 import io
-import aiohttp
 import re
-
 from collections import namedtuple
 
+import aiohttp
 import discord
 from redbot.core import Config, checks, commands
 from redbot.core.utils.chat_formatting import box, pagify
@@ -16,6 +15,7 @@ BaseCog = getattr(commands, "Cog", object)
 upemoji_id = 397064398830829569
 downemoji_id = 272737368916754432
 channel_id = 331655111644545027
+
 
 class PastePoints(BaseCog):
     """Paste Points cog settings meme"""
@@ -56,14 +56,15 @@ class PastePoints(BaseCog):
         place = 1
         for member in topten:
             highscore += str(place).ljust(len(str(top)) + 1)
-            highscore += "{} | ".format(member.name).ljust(18 - len(str(member.karma)))
+            highscore += "{} | ".format(member.name).ljust(18 -
+                                                           len(str(member.karma)))
             highscore += str(member.karma) + "\n"
             place += 1
         if highscore != "":
             for page in pagify(highscore, shorten_by=12):
                 await ctx.send(box(page, lang="py"))
         else:
-                await ctx.send("No one has any karma 🙁")
+            await ctx.send("No one has any karma 🙁")
 
     async def _get_all_members(self, bot):
         """Get a list of members which have karma.
@@ -77,7 +78,8 @@ class PastePoints(BaseCog):
             karma = await self.config.user(member).karma()
             if karma == 0:
                 continue
-            ret.append(member_info(id=member.id, name=str(member), karma=karma))
+            ret.append(member_info(
+                id=member.id, name=str(member), karma=karma))
         return ret
 
     @commands.command()
@@ -111,12 +113,12 @@ class PastePoints(BaseCog):
         """
         await self._check_reaction(reaction, user, added=False)
 
-    #Check if .pp has been used in the past 3 days, and post the leaderboard if not
+    # Check if .pp has been used in the past 3 days, and post the leaderboard if not
 
     async def _check_reaction(self, reaction: discord.Reaction, user: discord.User, *, added: bool):
         message = reaction.message
         (author, channel, guild) = (message.author, message.channel, message.guild)
-        if author == user or isinstance(channel, discord.abc.PrivateChannel): #fix this
+        if author == user or isinstance(channel, discord.abc.PrivateChannel):  # fix this
             return
         if (reaction.emoji.id == upemoji_id):
             await self._add_karma(author, 1 if added == True else -1)
