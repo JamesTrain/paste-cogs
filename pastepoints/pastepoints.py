@@ -27,14 +27,6 @@ class PastePoints(BaseCog):
         self.config.register_guild(**default_guild)
         self.config.register_user(karma=0)
 
-    @commands.group(autohelp=False)
-    @commands.guild_only()
-    @checks.admin_or_permissions(manage_guild=True)
-    async def points(self, ctx):
-        """Paste Points Are Cool"""
-
-        await ctx.send("I can do stuff!")
-
     @commands.command()
     async def pp(self, ctx: commands.Context, top: int = 10):
         """Prints out the karma leaderboard.
@@ -56,8 +48,7 @@ class PastePoints(BaseCog):
         place = 1
         for member in topten:
             highscore += str(place).ljust(len(str(top)) + 1)
-            highscore += "{} | ".format(member.name).ljust(18 -
-                                                           len(str(member.karma)))
+            highscore += "{} | ".format(member.name).ljust(18 - len(str(member.karma)))
             highscore += str(member.karma) + "\n"
             place += 1
         if highscore != "":
@@ -65,6 +56,13 @@ class PastePoints(BaseCog):
                 await ctx.send(box(page, lang="py"))
         else:
             await ctx.send("No one has any karma 🙁")
+
+    @commands.command()
+    @checks.is_owner()
+    async def setpp(self, ctx: commands.Context, user: discord.Member, amount: int):
+        """Resets a user's karma."""
+        await self.config.user(user).karma.set(amount)
+        await ctx.send("{}'s karma has been set.".format(user.display_name))
 
     async def _get_all_members(self, bot):
         """Get a list of members which have karma.
@@ -81,13 +79,6 @@ class PastePoints(BaseCog):
             ret.append(member_info(
                 id=member.id, name=str(member), karma=karma))
         return ret
-
-    @commands.command()
-    @checks.is_owner()
-    async def setpp(self, ctx: commands.Context, user: discord.Member, amount: int):
-        """Resets a user's karma."""
-        await self.config.user(user).karma.set(amount)
-        await ctx.send("{}'s karma has been set.".format(user.display_name))
 
     @commands.Cog.listener()
     async def on_message(self, message):

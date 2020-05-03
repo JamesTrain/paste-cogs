@@ -1,16 +1,16 @@
 import asyncio
 import io
-import aiohttp
-import time
 import re
-
+import time
 from collections import namedtuple
 
+import aiohttp
 import discord
 from redbot.core import Config, checks, commands
 from redbot.core.utils.chat_formatting import box, pagify
 
 BaseCog = getattr(commands, "Cog", object)
+
 
 class AutoKick(BaseCog):
     """Bye bye"""
