@@ -109,7 +109,7 @@ class PastePoints(BaseCog):
     async def _check_reaction(self, reaction: discord.Reaction, user: discord.User, *, added: bool):
         message = reaction.message
         (author, channel, guild) = (message.author, message.channel, message.guild)
-        if author == user or isinstance(channel, discord.abc.PrivateChannel):  # fix this
+        if author == user:
             return
         if (reaction.emoji.id == upemoji_id):
             await self._add_karma(author, 1 if added == True else -1)
