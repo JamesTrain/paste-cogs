@@ -1,11 +1,9 @@
 import discord
 from discord.ext import commands, tasks
 from redbot.core import commands, Config, checks
-import asyncio
 from collections import namedtuple
-import io
 import re
-from datetime import datetime, timedelta
+from datetime import datetime
 import pytz
 from pytz import timezone
 #from .pastepoints import PastePoints
@@ -14,6 +12,8 @@ from redbot.core.utils.chat_formatting import box, pagify
 upemoji_id = 397064398830829569
 downemoji_id = 272737368916754432
 channel_id = 331655111644545027
+
+
 class Pasteon(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -25,9 +25,9 @@ class Pasteon(commands.Cog):
 
     @commands.command()
     async def ppmonth(self, ctx: commands.Context, top: int = 10):
-        channel = self.bot.get_channel(id = channel_id)
+        channel = self.bot.get_channel(id=channel_id)
         thirty = self.get_month()
-        msglst = await channel.history(limit=1000, after=thirty, oldest_first = False).flatten()
+        msglst = await channel.history(limit=1000, after=thirty, oldest_first=False).flatten()
         if msglst:
             for msg in msglst:
                 await self._check_post(msg)
@@ -51,9 +51,11 @@ class Pasteon(commands.Cog):
             place = 1
             for member in topten:
                 highscore += str(place).ljust(len(str(top)) + 1)
-                highscore += "{} | ".format(member.name).ljust(18 - len(str(member.karmon)))
-                #add ratio here
-                highscore += str(member.karmon) +" ratio: "+ str(round(member.karmon/member.posts,2)) + "\n"
+                highscore += "{} | ".format(member.name).ljust(18 -
+                                                               len(str(member.karmon)))
+                # add ratio here
+                highscore += str(member.karmon) + " ratio: " + \
+                    str(round(member.karmon/member.posts, 2)) + "\n"
                 place += 1
             if highscore != "":
                 for page in pagify(highscore, shorten_by=12):
@@ -72,18 +74,19 @@ class Pasteon(commands.Cog):
             if any(member.id == m.id for m in ret):
                 continue
             karmon = await self.config.user(member).karmon()
-            if karmon ==0:
+            if karmon == 0:
                 continue
             posts = await self.config.user(member).posts()
-            if posts ==0:
+            if posts == 0:
                 continue
-            ret.append(member_info(id=member.id, name=str(member), karmon=karmon, posts=posts))
+            ret.append(member_info(id=member.id, name=str(
+                member), karmon=karmon, posts=posts))
         return ret
 
     async def _check_post(self, message):
         if (message.author.id == self.bot.user.id or (message.attachments == [] and message.embeds == [] and re.search("http:\/\/|https:\/\/", message.content) == None)):
             return
-        author = message.author
+        message.author
         await self._add_posts(message.author, 1)
 
     async def _check_reaction(self, reaction: discord.Reaction, count):
@@ -96,7 +99,7 @@ class Pasteon(commands.Cog):
         if (reaction.emoji.id == downemoji_id):
             await self._add_karmon(author, -count)
 
-    async def _add_posts(self, user:discord.User, amount:int):
+    async def _add_posts(self, user: discord.User, amount: int):
         settings = self.config.user(user)
         posts = await settings.posts()
         await settings.posts.set(posts + amount)
@@ -106,6 +109,7 @@ class Pasteon(commands.Cog):
         karmon = await settings.karmon()
         await settings.karmon.set(karmon + amount)
     '''past 30 days object'''
+
     def get_month(self):
         today = datetime.today()
         datem = datetime(today.year, today.month, 1)
@@ -116,6 +120,7 @@ class Pasteon(commands.Cog):
         """Resets a user's Monthly karma."""
         await self.config.user(user).karmon.set(amount)
         await ctx.send("{}'s karma has been set.".format(user.display_name))
+
 
 def setup(bot):
     bot.add_cog(Pasteon(bot))
