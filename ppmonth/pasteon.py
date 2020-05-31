@@ -80,10 +80,8 @@ class Pasteon(commands.Cog):
             ret.append(member_info(id=member.id, name=str(member), karmon=karmon, posts=posts))
         return ret
 
-    async def _check_post(self, message, user: discord.User,):
+    async def _check_post(self, message):
         if (message.author.id == self.bot.user.id or (message.attachments == [] and message.embeds == [] and re.search("http:\/\/|https:\/\/", message.content) == None)):
-            return
-        if author == user:
             return
         author = message.author
         await self._add_posts(message.author, 1)
