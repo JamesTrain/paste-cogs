@@ -30,7 +30,6 @@ class Pasteon(commands.Cog):
         msglst = await channel.history(limit=1000, after=thirty, oldest_first = False).flatten()
         if msglst:
             for msg in msglst:
-                await self._check_post(msg)
                 for react in msg.reactions:
                     await self._check_reaction(react, react.count)
 
