@@ -30,6 +30,7 @@ class Pasteon(commands.Cog):
         msglst = await channel.history(limit=1000, after=thirty, oldest_first = False).flatten()
         if msglst:
             for msg in msglst:
+                await self._check_post(msg)
                 for react in msg.reactions:
                     await self._check_reaction(react, react.count)
 
@@ -81,6 +82,8 @@ class Pasteon(commands.Cog):
 
     async def _check_post(self, message):
         if (message.author.id == self.bot.user.id or (message.attachments == [] and message.embeds == [] and re.search("http:\/\/|https:\/\/", message.content) == None)):
+            return
+        if author == user:
             return
         author = message.author
         await self._add_posts(message.author, 1)
