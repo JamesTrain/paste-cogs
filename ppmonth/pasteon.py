@@ -89,10 +89,10 @@ class Pasteon(commands.Cog):
         message.author
         await self._add_posts(message.author, 1)
 
-    async def _check_reaction(self, reaction: discord.Reaction, user: discord.User, *, added: bool):
+    async def _check_reaction(self, reaction: discord.Reaction, count, user: discord.User):
         message = reaction.message
         (author, channel, guild) = (message.author, message.channel, message.guild)
-        if author == user or isinstance(channel, discord.abc.PrivateChannel):  # fix this
+        if (isinstance(reaction.emoji, str) or author == user):
             return
         if (reaction.emoji.id == upemoji_id):
             await self._add_karmon(author, count)
