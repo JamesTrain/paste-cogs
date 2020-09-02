@@ -39,7 +39,7 @@ class Vibecheck(BaseCog):
 
         if datetime.date.today() == lastran:
             vibe = await self.config.user(ctx.message.author).vibe()
-            await ctx.send("No re-rolls (yet), you rolled a {} today.".format(vibe))
+            await ctx.send("No re-rolls (yet), you rolled a **{}** today.".format(vibe))
         else:
             await self.config.user(ctx.message.author).lastran.set(
                 datetime.datetime.strftime(datetime.date.today(), "%Y-%m-%d")
@@ -61,6 +61,6 @@ class Vibecheck(BaseCog):
             else:
                 comment = "Okay King"
 
-            await ctx.send(":game_die: {} checked their vibe and got {}\n{}".format(
+            await ctx.send(":game_die: {} checked their vibe and got **{}**\n{}".format(
                 ctx.message.author.mention,vibe,comment)
             )
