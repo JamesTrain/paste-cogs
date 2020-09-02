@@ -32,7 +32,8 @@ class Vibecheck(BaseCog):
     @commands.command()
     async def vibecheck(self, ctx: commands.Context):
         """Check your vibes"""
-        lastran = await self.config.user(ctx.message.author).lastran()
+        lastranstr = await self.config.user(ctx.message.author).lastran()
+        lastran = datetime.datetime.strptime(lastranstr, "%Y-%m-%d").date()
 
         if datetime.date.today() == lastran:
             await ctx.send("You only get one vibe per day :frowning:")
