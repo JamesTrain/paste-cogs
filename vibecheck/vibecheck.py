@@ -23,36 +23,39 @@ class Vibecheck(BaseCog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.config = Config.get_conf(self, identifier=974374574)
+        self.config = Config.get_conf(self, identifier = 974374574)
         default_guild = {}
         self.config.register_guild(**default_guild)
-        self.config.register_user(vibe=0)
-        self.config.register_user(lastran=datetime.date)
+        self.config.register_user(vibe = 0)
+        self.config.register_user(lastran = today - datetime.timedelta(days=1))
 
     @commands.command()
     async def vibecheck(self, ctx: commands.Context):
         """Check your vibes"""
         today = datetime.date.today()
-        last = await self.config.user(ctx.message.author).lastran()
+        lastran = await self.config.user(ctx.message.author).lastran()
 
-        await ctx.send(today)
-        await ctx.send(last)
-
-        vibe = randint(1, 20)
-
-        if vibe == 1:
-            comment = "lmaooo"
-        elif vibe < 6:
-            comment = "Sucks for you bro"
-        elif vibe < 11:
-            comment = "I guess that's fine"
-        elif vibe < 16:
-            comment = "Pretty sick dude"
-        elif vibe < 20:
-            comment = "Vibin hard"
+        if today == lastran:
+            await ctx.send("You only get one vibe per day :frowning:")
         else:
-            comment = "Okay King"
+            await ctx.send(today)
+            await ctx.send(last)
 
-        await ctx.send(":game_die: {} checked their vibe and got {}\n{}".format(
-            ctx.message.author.mention,vibe,comment)
-        )
+            vibe = randint(1, 20)
+
+            if vibe == 1:
+                comment = "lmaooo"
+            elif vibe < 6:
+                comment = "Sucks for you bro"
+            elif vibe < 11:
+                comment = "I guess that's fine"
+            elif vibe < 16:
+                comment = "Pretty sick dude"
+            elif vibe < 20:
+                comment = "Vibin hard"
+            else:
+                comment = "Okay King"
+
+            await ctx.send(":game_die: {} checked their vibe and got {}\n{}".format(
+                ctx.message.author.mention,vibe,comment)
+            )
