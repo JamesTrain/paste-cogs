@@ -29,4 +29,4 @@ class Vibecheck(BaseCog):
     @commands.command()
     async def vibecheck(self, ctx: commands.Context):
         """Check your vibes"""
-        await ctx.send("{} checked their vibe and got {}".format(user.ctx.message.author.mention,randint(1, 20)))
+        await ctx.send("{} checked their vibe and got {}".format(ctx.message.author.mention,randint(1, 20)))
