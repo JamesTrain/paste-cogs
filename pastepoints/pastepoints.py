@@ -104,8 +104,6 @@ class PastePoints(BaseCog):
         """
         await self._check_reaction(reaction, user, added=False)
 
-    # Check if .pp has been used in the past 3 days, and post the leaderboard if not
-
     async def _check_reaction(self, reaction: discord.Reaction, user: discord.User, *, added: bool):
         message = reaction.message
         (author, channel, guild) = (message.author, message.channel, message.guild)

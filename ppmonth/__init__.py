@@ -1,4 +1,3 @@
-
 from .pasteon import Pasteon
 
 def setup(bot):
