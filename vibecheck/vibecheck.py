@@ -35,7 +35,7 @@ class Vibecheck(BaseCog):
 
         if vibe == 1:
             comment = "lmaooo"
-        if vibe < 6:
+        elif vibe < 6:
             comment = "Sucks for you bro"
         elif vibe < 11:
             comment = "I guess that's fine"
