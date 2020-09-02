@@ -44,7 +44,7 @@ class Vibecheck(BaseCog):
         elif vibe < 20:
             comment = "Vibin hard"
         else:
-            comment = "So much :cum:"
+            comment = "Okay King"
 
         await ctx.send(":game_die: {} checked their vibe and got {}\n{}".format(
             ctx.message.author.mention,vibe,comment)
