@@ -1,6 +1,7 @@
 import asyncio
 import io
 import re
+import datetime
 import time
 from collections import namedtuple
 
@@ -26,11 +27,17 @@ class Vibecheck(BaseCog):
         default_guild = {}
         self.config.register_guild(**default_guild)
         self.config.register_user(vibe=0)
-        self.config.register_user(hasrun=0)
+        self.config.register_user(lastran=datetime.date)
 
     @commands.command()
     async def vibecheck(self, ctx: commands.Context):
         """Check your vibes"""
+        today = date.today()
+        last = await self.config.user(member).lastran()
+
+        await ctx.send(today)
+        await ctx.send(last)
+
         vibe = randint(1, 20)
 
         if vibe == 1:
