@@ -45,6 +45,7 @@ class Vibecheck(BaseCog):
             )
 
             vibe = randint(1, 20)
+            await self.config.user(ctx.message.author).vibe.set(vibe)
 
             if vibe == 1:
                 comment = "lmaooo"
