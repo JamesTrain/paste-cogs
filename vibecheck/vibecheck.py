@@ -27,6 +27,6 @@ class Vibecheck(BaseCog):
         self.config.register_guild(**default_guild)
 
     @commands.Cog.listener()
-    async def vibecheck(self, ctx: commands.Context, *):
+    async def vibecheck(self, ctx: commands.Context):
         """Check your vibes"""
         await ctx.send(randint(0, 20))
