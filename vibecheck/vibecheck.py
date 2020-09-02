@@ -27,6 +27,6 @@ class Vibecheck(BaseCog):
         self.config.register_guild(**default_guild)
 
     @commands.command()
-    async def vibecheck(self, ctx: commands.Context, user: discord.Member):
+    async def vibecheck(self, ctx: commands.Context):
         """Check your vibes"""
         await ctx.send("{} checked their vibe and got {}".format(user.ctx.message.author.mention,randint(1, 20)))
