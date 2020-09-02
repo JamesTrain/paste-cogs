@@ -27,15 +27,14 @@ class Vibecheck(BaseCog):
         default_guild = {}
         self.config.register_guild(**default_guild)
         self.config.register_user(vibe = 0)
-        self.config.register_user(lastran = today - datetime.timedelta(days=1))
+        self.config.register_user(lastran = datetime.date.today() - datetime.timedelta(days=1))
 
     @commands.command()
     async def vibecheck(self, ctx: commands.Context):
         """Check your vibes"""
-        today = datetime.date.today()
         lastran = await self.config.user(ctx.message.author).lastran()
 
-        if today == lastran:
+        if datetime.date.today() == lastran:
             await ctx.send("You only get one vibe per day :frowning:")
         else:
             await ctx.send(today)
