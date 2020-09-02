@@ -27,7 +27,9 @@ class Vibecheck(BaseCog):
         default_guild = {}
         self.config.register_guild(**default_guild)
         self.config.register_user(vibe = 0)
-        self.config.register_user(lastran = datetime.datetime.strftime(datetime.date.today() - datetime.timedelta(days=1)), "%Y-%m-%d")
+
+        yesterday = datetime.date.today() - datetime.timedelta(days=1)
+        self.config.register_user(lastran = datetime.datetime.strftime(yesterday, "%Y-%m-%d"))
 
     @commands.command()
     async def vibecheck(self, ctx: commands.Context):
