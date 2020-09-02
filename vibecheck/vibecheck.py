@@ -33,7 +33,7 @@ class Vibecheck(BaseCog):
     async def vibecheck(self, ctx: commands.Context):
         """Check your vibes"""
         today = datetime.date.today()
-        last = await self.config.user(member).lastran()
+        last = await self.config.user(ctx.message.author).lastran()
 
         await ctx.send(today)
         await ctx.send(last)
