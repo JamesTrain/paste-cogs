@@ -32,18 +32,20 @@ class Vibecheck(BaseCog):
     async def vibecheck(self, ctx: commands.Context):
         """Check your vibes"""
         vibe = randint(1, 20)
-        await ctx.send(":game_die: {} checked their vibe and got {}".format(
-            ctx.message.author.mention,vibe)
-        )
+
         if vibe == 1:
-            await ctx.send("lmaooo")
+            comment = "lmaooo"
         if vibe < 6:
-            await ctx.send("Sucks for you bro")
+            comment = "Sucks for you bro"
         elif vibe < 11:
-            await ctx.send("I guess that's fine")
+            comment = "I guess that's fine"
         elif vibe < 16:
-            await ctx.send("Pretty sick dude")
+            comment = "Pretty sick dude"
         elif vibe < 20:
-            await ctx.send("Vibin hard")
+            comment = "Vibin hard"
         else:
-            await ctx.send("So much :cum:")
+            comment = "So much :cum:"
+
+        await ctx.send(":game_die: {} checked their vibe and got {}\n{}".format(
+            ctx.message.author.mention,vibe,comment)
+        )
