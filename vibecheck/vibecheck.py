@@ -30,3 +30,4 @@ class Vibecheck(BaseCog):
     async def vibecheck(self, ctx: commands.Context):
         """Check your vibes"""
         await ctx.send(randint(0, 20))
+        await ctx.send("Testing")
