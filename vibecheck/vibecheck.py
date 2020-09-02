@@ -37,7 +37,6 @@ class Vibecheck(BaseCog):
         if datetime.date.today() == lastran:
             await ctx.send("You only get one vibe per day :frowning:")
         else:
-            await ctx.send(today)
             await ctx.send(last)
 
             vibe = randint(1, 20)
