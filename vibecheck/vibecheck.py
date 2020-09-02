@@ -29,4 +29,4 @@ class Vibecheck(BaseCog):
     @commands.command()
     async def vibecheck(self, ctx: commands.Context, user: discord.Member):
         """Check your vibes"""
-        await ctx.send("{} checked their vibe and got {}".format(user.display_name,randint(1, 20)))
+        await ctx.send("{} checked their vibe and got {}".format(user.ctx.message.author.mention,randint(1, 20)))
