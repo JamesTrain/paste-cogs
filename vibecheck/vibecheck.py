@@ -29,4 +29,4 @@ class Vibecheck(BaseCog):
     @commands.Cog.listener()
     async def vibecheck(self, ctx: commands.Context, *):
         """Check your vibes"""
-	    print(randint(0, 20))
+	    await ctx.send(randint(0, 20))
