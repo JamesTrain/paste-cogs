@@ -15,7 +15,7 @@ seed(1)
 print("Should be UTC{}".format(datetime.datetime.now()))
 
 # Set timezone
-os.environ['TZ'] = 'UTC'
+os.environ['TZ'] = 'EST'
 time.tzset()
 
 print("Should be EST{}".format(datetime.datetime.now()))
