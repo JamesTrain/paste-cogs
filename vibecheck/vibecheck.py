@@ -12,9 +12,13 @@ from random import randint
 # seed random number generator
 seed(1)
 
+print("should be UTC" + datetime.datetime.now())
+
 # Set timezone
-#os.environ['TZ'] = 'EST'
-#time.tzset()
+os.environ['TZ'] = 'EST'
+time.tzset()
+
+print("Should be EST" + datetime.datetime.now())
 
 BaseCog = getattr(commands, "Cog", object)
 
@@ -36,7 +40,6 @@ class Vibecheck(BaseCog):
         """Check your vibes"""
         lastranstr = await self.config.user(ctx.message.author).lastran()
         lastran = datetime.datetime.strptime(lastranstr, "%Y-%m-%d").date()
-        print(datetime.datetime.now())
 
         if datetime.datetime.now() == lastran:
             vibe = await self.config.user(ctx.message.author).vibe()
