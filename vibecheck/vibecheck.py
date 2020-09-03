@@ -36,6 +36,7 @@ class Vibecheck(BaseCog):
         """Check your vibes"""
         lastranstr = await self.config.user(ctx.message.author).lastran()
         lastran = datetime.datetime.strptime(lastranstr, "%Y-%m-%d").date()
+        print("Last ran {}. Now {}".format(lastran, datetime.datetime.now()))
 
         if datetime.datetime.now() == lastran:
             vibe = await self.config.user(ctx.message.author).vibe()
