@@ -1,8 +1,4 @@
-import asyncio
-import io
-import re
-import datetime
-import time
+import asyncio, io, re, datetime, time, os
 from collections import namedtuple
 
 import aiohttp
@@ -15,6 +11,12 @@ from random import seed
 from random import randint
 # seed random number generator
 seed(1)
+
+# Set timezone
+os.environ['TZ'] = 'EST'
+time.tzset()
+
+print(datetime.date.today())
 
 BaseCog = getattr(commands, "Cog", object)
 
