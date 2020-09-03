@@ -12,13 +12,13 @@ from random import randint
 # seed random number generator
 seed(1)
 
-print("should be UTC" + datetime.datetime.now())
+print("Should be UTC{}".format(datetime.datetime.now()))
 
 # Set timezone
 os.environ['TZ'] = 'EST'
 time.tzset()
 
-print("Should be EST" + datetime.datetime.now())
+print("Should be EST{}".format(datetime.datetime.now()))
 
 BaseCog = getattr(commands, "Cog", object)
 
