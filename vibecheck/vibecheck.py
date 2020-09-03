@@ -13,8 +13,8 @@ from random import randint
 seed(1)
 
 # Set timezone
-os.environ['TZ'] = 'EST'
-time.tzset()
+#os.environ['TZ'] = 'EST'
+#time.tzset()
 
 BaseCog = getattr(commands, "Cog", object)
 
