@@ -16,8 +16,6 @@ seed(1)
 os.environ['TZ'] = 'EST'
 time.tzset()
 
-print(datetime.date.today())
-
 BaseCog = getattr(commands, "Cog", object)
 
 class Vibecheck(BaseCog):
@@ -38,6 +36,7 @@ class Vibecheck(BaseCog):
         """Check your vibes"""
         lastranstr = await self.config.user(ctx.message.author).lastran()
         lastran = datetime.datetime.strptime(lastranstr, "%Y-%m-%d").date()
+        print(datetime.date.today())
 
         if datetime.date.today() == lastran:
             vibe = await self.config.user(ctx.message.author).vibe()
