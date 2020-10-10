@@ -24,7 +24,7 @@ class AutoKick(BaseCog):
     async def on_voice_state_update(self, member, before, after):
         print("DEBUG after.channel.id: {}".format(after.channel.id))
         print("DEBUG after.channel: {}".format(after.channel))
-       channel = after.channel.id
+        channel = after.channel.id
         if (channel == 502108640530923520):
             time.sleep(1)
             await member.move_to(channel=None, reason="Get rekd nerd")
