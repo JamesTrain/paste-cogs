@@ -49,15 +49,3 @@ class MessageLog(BaseCog):
 
         cursor.close()
         cnx.close()
-
-    @commands.Cog.listener()
-    async def on_reaction_add(self, reaction: discord.Reaction, user: discord.User):
-        """Fires when the bot sees a reaction being added, and updates karma."""
-        print("DEBUG :: Reaction Added")
-        print(reaction.message)
-
-    @commands.Cog.listener()
-    async def on_reaction_remove(self, reaction: discord.Reaction, user: discord.User):
-        """Fires when the bot sees a reaction being removed, and updates karma."""
-        print("DEBUG :: Reaction Removed")
-        print(reaction.message)
