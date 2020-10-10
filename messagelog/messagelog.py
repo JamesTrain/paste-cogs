@@ -48,4 +48,4 @@ class MessageLog(BaseCog):
     password="8Kv7@D5S@HuQ"
     )
 
-    print(mydb)
+    print("DEBUG :: {}".format(mydb))
