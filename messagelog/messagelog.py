@@ -27,7 +27,7 @@ class MessageLog(BaseCog):
     async def on_message(self, message):
         _insert_message(message)
 
-    async def _insert_message(self, message)
+    async def _insert_message(self, message):
         cnx = mysql.connector.connect(
         host="localhost",
         user="pastebot",
