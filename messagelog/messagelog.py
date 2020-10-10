@@ -2,6 +2,7 @@ import asyncio
 import io
 import re
 from collections import namedtuple
+import mysql.connector
 
 import aiohttp
 import discord
@@ -39,3 +40,12 @@ class MessageLog(BaseCog):
         """Fires when the bot sees a reaction being removed, and updates karma."""
         print("DEBUG :: Reaction Removed")
         print(reaction.message)
+
+    
+    mydb = mysql.connector.connect(
+    host="localhost",
+    user="pastebot",
+    password="8Kv7@D5S@HuQ"
+    )
+
+    print(mydb)
