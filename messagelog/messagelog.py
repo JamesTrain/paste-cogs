@@ -2,6 +2,7 @@ import asyncio
 import io
 import re
 from collections import namedtuple
+from datetime import date, datetime, timedelta
 import mysql.connector
 
 import aiohttp
@@ -22,12 +23,32 @@ class MessageLog(BaseCog):
         default_guild = {}
         self.config.register_guild(**default_guild)
 
-    # @commands.Cog.listener()
-    # async def on_message(self, message):
-    #     print(message)
-    #     print(message.id)
-    #     print(message.channel)
-    #     print(message.channel.id)
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        cnx = mysql.connector.connect(
+        host="localhost",
+        user="pastebot",
+        password="8Kv7@D5S@HuQ",
+        database="paste"
+        )
+        cursor = cnx.cursor()
+
+        date = datetime.now().date()
+
+        add_message = ("INSERT INTO messages "
+                    "(creation_date, message_id, member_id, channel_id, upvotes, downvotes) "
+                    "VALUES (%s, %s, %s, %s, %s, %s)")
+
+        data_message = (date, message.id, message.member.id, message.channel, '0', '0')
+
+        # Insert new message
+        cursor.execute(add_message, data_message)
+
+        # Make sure data is committed to the database
+        cnx.commit()
+
+        cursor.close()
+        cnx.close()
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction: discord.Reaction, user: discord.User):
@@ -40,12 +61,3 @@ class MessageLog(BaseCog):
         """Fires when the bot sees a reaction being removed, and updates karma."""
         print("DEBUG :: Reaction Removed")
         print(reaction.message)
-
-    
-    mydb = mysql.connector.connect(
-    host="localhost",
-    user="pastebot",
-    password="8Kv7@D5S@HuQ"
-    )
-
-    print("DEBUG :: {}".format(mydb))
