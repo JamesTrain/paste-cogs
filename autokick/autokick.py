@@ -21,7 +21,9 @@ class AutoKick(BaseCog):
         self.config.register_guild(**default_guild)
 
     @commands.Cog.listener()
-    async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
-        if (after.channel == 502108640530923520):
+    async def on_voice_state_update(self, member, before, after):
+        print("DEBUG after.channel.id: {}".format(after.channel.id))
+        print("DEBUG after.channel: {}".format(after.channel))
+        if (after.channel.id == 502108640530923520):
             time.sleep(1)
             await member.move_to(channel=None, reason="Get rekd nerd")
