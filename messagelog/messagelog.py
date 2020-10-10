@@ -25,6 +25,9 @@ class MessageLog(BaseCog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
+        _insert_message(message)
+
+    async def _insert_message(self, message)
         cnx = mysql.connector.connect(
         host="localhost",
         user="pastebot",
@@ -33,7 +36,7 @@ class MessageLog(BaseCog):
         )
         cursor = cnx.cursor()
 
-        date = datetime.now().date()
+        date = datetime.now()
 
         add_message = ("INSERT INTO messages "
                     "(creation_date, message_id, member_id, channel_id, upvotes, downvotes) "
