@@ -24,10 +24,10 @@ class MessageLog(BaseCog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        print(message)
-        print(message.id)
-        print(message.channel)
-        print(message.channel.id)
+        # print(message)
+        # print(message.id)
+        # print(message.channel)
+        # print(message.channel.id)
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction: discord.Reaction, user: discord.User):
