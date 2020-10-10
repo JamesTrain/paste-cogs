@@ -1,8 +1,4 @@
-import asyncio
-import io
-import re
-import time
-from collections import namedtuple
+import asyncio, io, time
 
 import aiohttp
 import discord

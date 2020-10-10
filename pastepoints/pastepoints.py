@@ -16,7 +16,6 @@ upemoji_id = 397064398830829569
 downemoji_id = 272737368916754432
 channel_id = 331655111644545027
 
-
 class PastePoints(BaseCog):
     """Paste Points cog settings meme"""
 
@@ -108,8 +107,6 @@ class PastePoints(BaseCog):
         message = reaction.message
         (author, channel, guild) = (message.author, message.channel, message.guild)
         if author == user:
-            return
-        if (reaction.emoji.id is None):
             return
         if (reaction.emoji.id == upemoji_id):
             await self._add_karma(author, 1 if added == True else -1)

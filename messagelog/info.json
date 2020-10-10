@@ -1,0 +1,9 @@
+{
+    "author" : ["JamesTrain"],
+    "install_msg" : "Thanks for installing Message Log.",
+    "name" : "MessageLog",
+    "disabled" : false,
+    "short" : "Logs all messages to a MySQL database",
+    "description" : "Listens for new messages and keeps a running database of all messages including the date, author, channel, reactions, etc.",
+    "tags" : ["message", "mysql", "database", "log"]
+}
