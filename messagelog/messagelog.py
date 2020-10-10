@@ -25,7 +25,7 @@ class MessageLog(BaseCog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        self._insert_message(message)
+        await self._insert_message(message)
 
     async def _insert_message(self, message):
         cnx = mysql.connector.connect(
