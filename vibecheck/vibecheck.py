@@ -50,15 +50,15 @@ class Vibecheck(BaseCog):
             await self.config.user(ctx.message.author).vibe.set(vibe)
 
             if vibe == 1:
-                comment = "lmaooo"
+                comment = "Uh oh stinky!"
             elif vibe < 6:
-                comment = "Sucks for you bro"
+                comment = "That's gonna be an oof from me dog"
             elif vibe < 11:
-                comment = "I guess that's fine"
+                comment = "That's almost a vibe"
             elif vibe < 16:
-                comment = "Pretty sick dude"
+                comment = "Alright, now that's a meme"
             elif vibe < 20:
-                comment = "Vibin hard"
+                comment = "It's gonna be a good day :)"
             else:
                 comment = "Okay King"
 
