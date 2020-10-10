@@ -39,7 +39,7 @@ class MessageLog(BaseCog):
                     "(creation_date, message_id, member_id, channel_id, upvotes, downvotes) "
                     "VALUES (%s, %s, %s, %s, %s, %s)")
 
-        data_message = (date, message.id, message.member.id, message.channel, '0', '0')
+        data_message = (date, message.id, message.author.id, message.channel, '0', '0')
 
         # Insert new message
         cursor.execute(add_message, data_message)
