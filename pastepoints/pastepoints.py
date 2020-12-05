@@ -13,8 +13,8 @@ from redbot.core.utils.chat_formatting import box, pagify
 BaseCog = getattr(commands, "Cog", object)
 
 upemoji_id = 397064398830829569
-downemoji_id = 784724908189548554
-channel_id = 331655111644545027
+downemoji_id = 784723771150827582
+channel_id = 163714449503551488
 
 class PastePoints(BaseCog):
     """Paste Points cog settings meme"""
