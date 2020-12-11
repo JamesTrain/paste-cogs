@@ -92,7 +92,7 @@ class PastePoints(BaseCog):
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction: discord.Reaction, user: discord.User):
         """Fires when the bot sees a reaction being added, and updates karma."""
-        if (not isinstance(reaction, str):
+        if not isinstance(reaction, str):
             await self._check_reaction(reaction, user, added=True)
 
     @commands.Cog.listener()
