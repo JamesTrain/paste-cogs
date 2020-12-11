@@ -92,8 +92,7 @@ class PastePoints(BaseCog):
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction: discord.Reaction, user: discord.User):
         """Fires when the bot sees a reaction being added, and updates karma."""
-        if not isinstance(reaction, str):
-            await self._check_reaction(reaction, user, added=True)
+        await self._check_reaction(reaction, user, added=True)
 
     @commands.Cog.listener()
     async def on_reaction_remove(self, reaction: discord.Reaction, user: discord.User):
@@ -105,6 +104,7 @@ class PastePoints(BaseCog):
         (author, channel, guild) = (message.author, message.channel, message.guild)
         if author == user:
             return
+        print("reaction {}".format(type(reaction)))
         if (reaction.emoji.id == upemoji_id):
             await self._add_karma(author, 1 if added == True else -1)
         elif (reaction.emoji.id == downemoji_id):
