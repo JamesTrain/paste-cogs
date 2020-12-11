@@ -104,6 +104,7 @@ class PastePoints(BaseCog):
         (author, channel, guild) = (message.author, message.channel, message.guild)
         if author == user:
             return
+        print("reaction.emoji.id is: {}".format(reaction.emoji.id))
         if (reaction.emoji.id == upemoji_id):
             await self._add_karma(author, 1 if added == True else -1)
         elif (reaction.emoji.id == downemoji_id):
