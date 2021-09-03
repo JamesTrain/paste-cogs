@@ -1,4 +1,5 @@
-import discord; import re
+import discord
+import re
 from redbot.core import commands
 from .pcx_lib import type_message
 from .split import split_into_sentences
@@ -31,7 +32,7 @@ class lmgtfy(commands.Cog):
         sentence = split_into_sentences(io)
         for i in sentence:
             if '?' in i[::-1]:
-                o = re.split('\\s|(?<!\d)[\?](?!\d)', i)
+                o = re.split('\s|(?<!\d)[\?](?!\d)', i)
                 output = "https://lmgtfy.app/?q="
                 for l in o:
                     output = ''.join([output], l+'+')
