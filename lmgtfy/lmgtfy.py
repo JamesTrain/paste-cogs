@@ -21,8 +21,8 @@ class lmgtfy(commands.Cog):
     @staticmethod
     def lmgtfy(x):
         #Convert the above message into lmgtfy link
-        x = split_into_sentences(x)
-        for i in x:
+        sentence = split_into_sentences(x)
+        for i in sentence:
             if '?' in i[::-1]:
                 return i
             else:
