@@ -17,14 +17,14 @@ class lmgtfy(commands.Cog):
         else:
             await type_message(
                 ctx.channel,
-                self.google(self, message),
+                self.google(message),
                 allowed_mentions=discord.AllowedMentions(
                 everyone=False, users=False, roles=False)
                 ,
             )
 
     @staticmethod
-    def google(self, io):
+    def google(io):
         #Convert the above message into lmgtfy link
         sentence = split_into_sentences(io)
         for i in sentence:
@@ -33,7 +33,7 @@ class lmgtfy(commands.Cog):
                 output = "https://lmgtfy.app/?q="
                 for l in o:
                     output = ''.join([output, l+'+'])
-                return discord.Attachment(output[:-1]+'?')
+                return discord.Attachment.url(output[:-1]+'?')
             elif '?' not in i[::-1]:
                 continue
             else:
