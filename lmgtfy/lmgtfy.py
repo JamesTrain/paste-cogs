@@ -19,3 +19,4 @@ class lmgtfy(commands.Cog):
             )
 
     def lmgtfy (self, ctx, User_Mention):
+        return "This cog loaded properly"
