@@ -33,7 +33,7 @@ class lmgtfy(commands.Cog):
                 output = "https://lmgtfy.app/?q="
                 for l in o:
                     output = ''.join([output, l+'+'])
-                return '``` ' + output[:-1] + '?' + '```'
+                return '```\n' + output[:-1] + '?' + '\n```'
             elif '?' not in i[::-1]:
                 continue
             else:
