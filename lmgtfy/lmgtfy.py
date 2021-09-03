@@ -54,7 +54,7 @@ class lmgtfy(commands.Cog):
                 everyone=False, users=False, roles=False),
         )
     @staticmethod
-    def lmgtfy(self, x):
+    def lmgtfy(x):
         #Convert the above message into lmgtfy link
         x = split_into_sentences(x)
         for i in x:
