@@ -36,7 +36,6 @@ class lmgtfy(commands.Cog):
                 for l in o:
                     output = ''.join([output], l+'+')
                 return output[:-1]+'?'
-                
             elif '?' not in i[::-1]:
                 continue
             else:
