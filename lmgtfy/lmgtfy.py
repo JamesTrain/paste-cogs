@@ -29,8 +29,8 @@ class lmgtfy(commands.Cog):
     @staticmethod
     def google(io):
         #Convert the above message into lmgtfy link
-        io = io
-        sentence = split_into_sentences(io)
+        inp = io
+        sentence = split_into_sentences(inp)
         for i in sentence:
             if '?' in i[::-1]:
                 o = re.split('\s|(?<!\d)[\?](?!\d)', i)
