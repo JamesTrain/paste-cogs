@@ -17,7 +17,7 @@ class lmgtfy(commands.Cog):
         else:
             await type_message(
                 ctx.channel,
-                self.google(message),
+                self.google(self, message),
                 allowed_mentions=discord.AllowedMentions(
                 everyone=False, users=False, roles=False)
                 ,
