@@ -1,5 +1,4 @@
-import discord
-import re
+import discord; import re
 from redbot.core import commands
 from .pcx_lib import type_message
 from .split import split_into_sentences
@@ -41,4 +40,3 @@ class lmgtfy(commands.Cog):
                 continue
             else:
                 return "I can't seem to find a question."
-                
