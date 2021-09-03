@@ -33,7 +33,7 @@ class lmgtfy(commands.Cog):
                 output = "https://lmgtfy.app/?q="
                 for l in o:
                     output = ''.join([output, l+'+'])
-                return output[:-1]+'?'
+                return discord.Embed.url.output[:-1]+'?'
             elif '?' not in i[::-1]:
                 continue
             else:
