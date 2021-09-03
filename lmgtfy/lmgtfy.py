@@ -41,3 +41,4 @@ class lmgtfy(commands.Cog):
                 continue
             else:
                 return "I can't seem to find a question."
+                
