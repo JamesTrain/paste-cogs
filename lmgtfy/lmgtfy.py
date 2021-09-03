@@ -32,7 +32,7 @@ class lmgtfy(commands.Cog):
                 o = re.split(r'\s|(?<!\d)[\?](?!\d)/gm', i)
                 output = "https://lmgtfy.app/?q="
                 for l in o:
-                    output = ''.join([output], l+'+')
+                    output = ''.join([output], (l+'+'))
                 return output[:-1]+'?'
             elif '?' not in i[::-1]:
                 continue
