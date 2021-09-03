@@ -9,6 +9,7 @@ client = commands.Bot(command_prefix = '.')
 #Redbot cog that takes the above message and converts it to a "lmgtfy" link.
 class lmgtfy(commands.Cog):
     @commands.command()
+    @staticmethod
     async def google(self, ctx: commands.Context):
         #Convert the above message into lmgtfy link
         message = (await ctx.channel.history(limit=2).flatten())[1].content
