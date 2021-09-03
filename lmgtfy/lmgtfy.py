@@ -49,7 +49,7 @@ class lmgtfy(commands.Cog):
             message = "I can't translate that!"
         await type_message(
             ctx.channel,
-            self.sarcog_string(message),
+            self.lmgtfy(message),
             allowed_mentions=discord.AllowedMentions(
                 everyone=False, users=False, roles=False),
         )
