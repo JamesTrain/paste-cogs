@@ -30,10 +30,10 @@ class lmgtfy(commands.Cog):
         for i in sentence:
             if '?' in i[::-1]:
                 o = re.split(r'\s|(?<!\d)[\?](?!\d)/gm', i)
-                output = "https://lmgtfy.app/?q="
+                output = "lmgtfy.app/?q="
                 for l in o:
                     output = ''.join([output, l+'+'])
-                return discord.Embed.url(output[:-1]+'?')
+                return output[:-1]+'?'
             elif '?' not in i[::-1]:
                 continue
             else:
