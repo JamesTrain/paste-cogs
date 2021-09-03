@@ -20,7 +20,7 @@ class lmgtfy(commands.Cog):
                 everyone=False, users=False, roles=False)
                 )
             except (RuntimeError, ValueError, TypeError):
-                return "I can't seem to detect any questions."
+                return message
 
     @staticmethod
     def command(io):
@@ -32,4 +32,4 @@ class lmgtfy(commands.Cog):
             elif '?' not in i[::-1]:
                 continue
             else:
-                return "I can't seem to detect any questions."
+                return "I can't seem to find a question."
