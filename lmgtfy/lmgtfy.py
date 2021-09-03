@@ -33,7 +33,7 @@ class lmgtfy(commands.Cog):
         sentence = split_into_sentences(inp)
         for i in sentence:
             if '?' in i[::-1]:
-                o = re.split('\s|(?<!\d)[\?](?!\d)', i)
+                o = re.split('\s|(?<!\d)[\?](?!\d)/gm', i)
                 output = "https://lmgtfy.app/?q="
                 for l in o:
                     output = ''.join([output], l+'+')
