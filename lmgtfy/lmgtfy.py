@@ -2,14 +2,13 @@ import discord; import re; import asyncio
 from redbot.core import commands
 from .pcx_lib import type_message
 from .split import split_into_sentences
-
+client = commands.Bot(command_prefix = '.')
 # example url
 # https://lmgtfy.app/?q=fuck+this+nonsense%3F
 
 #Redbot cog that takes the above message and converts it to a "lmgtfy" link.
 class lmgtfy(commands.Cog):
     @commands.command()
-    
     async def google(self, io):
         #Convert the above message into lmgtfy link
         sentence = split_into_sentences(io)
