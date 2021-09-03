@@ -1,5 +1,4 @@
 import discord
-import random
 from redbot.core import commands
 from .pcx_lib import type_message
 

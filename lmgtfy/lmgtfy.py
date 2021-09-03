@@ -29,6 +29,7 @@ class lmgtfy(commands.Cog):
     @staticmethod
     def google(io):
         #Convert the above message into lmgtfy link
+        io = io
         sentence = split_into_sentences(io)
         for i in sentence:
             if '?' in i[::-1]:
