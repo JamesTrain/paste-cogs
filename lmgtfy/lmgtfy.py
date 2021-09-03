@@ -10,14 +10,14 @@ class lmgtfy(commands.Cog):
         #Define the command for redbot
         message = (await ctx.channel.history(limit=2).flatten())[1].content
         if not message:
-            message = "I can't translate that!"
+            message = "***OMAE WA MOU SHINDEIRU***"
         else:
             await type_message(
             ctx.channel,
             self.command(message),
             allowed_mentions=discord.AllowedMentions(
-            everyone=False, users=False, roles=False),
-            )
+                everyone=False, users=False, roles=False),
+        )
     @staticmethod
     def command(io):
         #Convert the above message into lmgtfy link
