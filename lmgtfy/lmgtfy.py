@@ -4,7 +4,7 @@ from .pcx_lib import type_message
 
 class lmgtfy(commands.Cog):
     @commands.command(aliases=[""])
-    async def lmgtfy(self, ctx:commands.Context):
+    async def lmgtfy(self, ctx:commands.Context, User_Mention):
         message = (await ctx.channel.history(limit=2).flatten())[1].content
         if not message:
             message = "This isn't a question. You a dumb person."
