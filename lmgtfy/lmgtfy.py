@@ -19,7 +19,7 @@ class lmgtfy(commands.Cog):
                 allowed_mentions=discord.AllowedMentions(
                 everyone=False, users=False, roles=False)
                 )
-            except ValueError:
+            except (RuntimeError, ValueError, TypeError):
                 return "I can't seem to detect any questions."
 
     @staticmethod
