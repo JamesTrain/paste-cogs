@@ -20,12 +20,13 @@ class lmgtfy(commands.Cog):
                 self.google(message),
                 allowed_mentions=discord.AllowedMentions(
                 everyone=False, users=False, roles=False)
-                )
+                ,
+            )
 
     @staticmethod
     def google(io):
         #Convert the above message into lmgtfy link
-        sentence = split_into_sentences(str(io))
+        sentence = split_into_sentences(io)
         for i in sentence:
             if '?' in i[::-1]:
                 o = re.split(r'\s|(?<!\d)[\?](?!\d)/gm', i)
