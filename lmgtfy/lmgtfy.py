@@ -10,14 +10,18 @@ class lmgtfy(commands.Cog):
         #Define the command for redbot
         message = (await ctx.channel.history(limit=2).flatten())[1].content
         if not message:
-            message = "***OMAE WA MOU SHINDEIRU***"
+            message = "I can't seem to detect any questions."
         else:
-            await type_message(
-            ctx.channel,
-            self.command(message),
-            allowed_mentions=discord.AllowedMentions(
-                everyone=False, users=False, roles=False),
-        )
+            try:
+                await type_message(
+                ctx.channel,
+                self.command(message),
+                allowed_mentions=discord.AllowedMentions(
+                everyone=False, users=False, roles=False)
+                )
+            except ValueError:
+                return "I can't seem to detect any questions."
+
     @staticmethod
     def command(io):
         #Convert the above message into lmgtfy link
