@@ -1,5 +1,4 @@
-import discord
-import re
+import discord; import re
 from redbot.core import commands
 from .pcx_lib import type_message
 from .split import split_into_sentences
@@ -14,14 +13,14 @@ class lmgtfy(commands.Cog):
             message = "I can't translate that!"
         await type_message(
             ctx.channel,
-            self.lmgtfy(message),
+            self.command(message),
             allowed_mentions=discord.AllowedMentions(
                 everyone=False, users=False, roles=False),
         )
     @staticmethod
-    def lmgtfy(x):
+    def command(io):
         #Convert the above message into lmgtfy link
-        sentence = split_into_sentences(x)
+        sentence = split_into_sentences(io)
         for i in sentence:
             if '?' in i[::-1]:
                 return i
