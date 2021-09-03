@@ -29,11 +29,10 @@ class lmgtfy(commands.Cog):
     @staticmethod
     def google(io):
         #Convert the above message into lmgtfy link
-        inp = io
-        sentence = split_into_sentences(inp)
+        sentence = split_into_sentences(io)
         for i in sentence:
             if '?' in i[::-1]:
-                o = re.split('\s|(?<!\d)[\?](?!\d)/gm', i)
+                o = re.split(r'\s|(?<!\d)[\?](?!\d)/gm', i)
                 output = "https://lmgtfy.app/?q="
                 for l in o:
                     output = ''.join([output], l+'+')
