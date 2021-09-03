@@ -30,11 +30,10 @@ class lmgtfy(commands.Cog):
         for i in sentence:
             if '?' in i[::-1]:
                 o = re.split(r'\s|(?<!\d)[\?](?!\d)/gm', i)
-                out = "https:/"
-                put = "/lmgtfy.app/?q="
+                output = "https://lmgtfy.app/?q="
                 for l in o:
-                    put = ''.join([put, l+'+'])
-                return out + put[:-1]+'?'
+                    output = ''.join([output, l+'+'])
+                return output[:-1]+'?'
             elif '?' not in i[::-1]:
                 continue
             else:
