@@ -18,7 +18,7 @@ class lmgtfy(commands.Cog):
             try:
                 await type_message(
                 ctx.channel,
-                self.command(message),
+                self.google(message),
                 allowed_mentions=discord.AllowedMentions(
                 everyone=False, users=False, roles=False)
                 )
@@ -26,7 +26,7 @@ class lmgtfy(commands.Cog):
                 return "I can't seem to find a question. Try again."
 
     @staticmethod
-    def command(io):
+    def google(io):
         #Convert the above message into lmgtfy link
         sentence = split_into_sentences(io)
         for i in sentence:
