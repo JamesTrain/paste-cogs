@@ -24,7 +24,7 @@ class lmgtfy(commands.Cog):
             )
 
     @staticmethod
-    def google(io):
+    def google(self, io):
         #Convert the above message into lmgtfy link
         sentence = split_into_sentences(io)
         for i in sentence:
