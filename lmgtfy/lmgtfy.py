@@ -9,9 +9,10 @@ client = commands.Bot(command_prefix = '.')
 #Redbot cog that takes the above message and converts it to a "lmgtfy" link.
 class lmgtfy(commands.Cog):
     @commands.command()
-    async def google(self, io):
+    async def google(self, ctx: commands.Context):
         #Convert the above message into lmgtfy link
-        sentence = split_into_sentences(io)
+        message = (await ctx.channel.history(limit=2).flatten())[1].content
+        sentence = split_into_sentences(message)
         for i in sentence:
             if '?' in i[::-1]:
                 o = re.split(r'\s|(?<!\d)[\?](?!\d)/gm', i)
