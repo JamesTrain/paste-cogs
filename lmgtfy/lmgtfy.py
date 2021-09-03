@@ -24,5 +24,7 @@ class lmgtfy(commands.Cog):
         for i in sentence:
             if '?' in i[::-1]:
                 return i
-            else:
+            elif '?' not in i[::-1]:
                 continue
+            else:
+                return "I can't seem to detect any questions."
