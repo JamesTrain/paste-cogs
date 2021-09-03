@@ -22,7 +22,7 @@ class lmgtfy(commands.Cog):
                 allowed_mentions=discord.AllowedMentions(
                 everyone=False, users=False, roles=False)
                 )
-            except (RuntimeError, ValueError, TypeError):
+            except (ValueError, TypeError):
                 return "I can't seem to find a question. Try again."
 
     @staticmethod
