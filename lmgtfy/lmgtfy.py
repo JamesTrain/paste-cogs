@@ -17,14 +17,14 @@ class lmgtfy(commands.Cog):
         else:
             await type_message(
                 ctx.channel,
-                self.google(self, message),
+                self.google(message),
                 allowed_mentions=discord.AllowedMentions(
                 everyone=False, users=False, roles=False)
                 ,
             )
 
     @staticmethod
-    def google(self, io):
+    def google(io):
         #Convert the above message into lmgtfy link
         sentence = split_into_sentences(io)
         for i in sentence:
