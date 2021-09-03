@@ -3,9 +3,8 @@ import re
 from redbot.core import commands
 from .pcx_lib import type_message
 from .split import split_into_sentences
-#Redbot cog that takes the above message and converts it to a "lmgtfy" link.
 
-#Define redbot cog command
+#Redbot cog that takes the above message and converts it to a "lmgtfy" link.
 class lmgtfy(commands.Cog):
     @commands.command()
     async def lmgtfy(self, ctx: commands.Context):
