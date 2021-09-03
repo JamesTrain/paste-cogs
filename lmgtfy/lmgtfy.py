@@ -13,10 +13,10 @@ class lmgtfy(commands.Cog):
             message = "I can't translate that!"
         else:
             await type_message(
-                ctx.channel,
-                self.command(message),
-                allowed_mentions=discord.AllowedMentions(
-                    everyone=False, users=False, roles=False),
+            ctx.channel,
+            self.command(message),
+            allowed_mentions=discord.AllowedMentions(
+            everyone=False, users=False, roles=False),
             )
     @staticmethod
     def command(io):
