@@ -15,15 +15,12 @@ class lmgtfy(commands.Cog):
         if not message:
             message = "I can't seem to detect any questions."
         else:
-            try:
-                await type_message(
+            await type_message(
                 ctx.channel,
                 self.google(message),
                 allowed_mentions=discord.AllowedMentions(
                 everyone=False, users=False, roles=False)
                 )
-            except (TypeError):
-                return "I can't seem to find a question. Try again."
 
     @staticmethod
     def google(io):
