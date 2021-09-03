@@ -1,4 +1,4 @@
-import discord; import re
+import discord; import re; import asyncio
 from redbot.core import commands
 from .pcx_lib import type_message
 from .split import split_into_sentences
@@ -15,12 +15,12 @@ class lmgtfy(commands.Cog):
         if not message:
             message = "I can't seem to detect any questions."
         else:
-            await str(type_message(
+            await type_message(
                 ctx.channel,
                 self.google(message),
                 allowed_mentions=discord.AllowedMentions(
                 everyone=False, users=False, roles=False)
-                ))
+                )
 
     @staticmethod
     def google(io):
