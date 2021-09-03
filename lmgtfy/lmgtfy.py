@@ -10,7 +10,7 @@ from .split import split_into_sentences
 class lmgtfy(commands.Cog):
     @commands.command()
     
-    async def google(io):
+    async def google(self, io):
         #Convert the above message into lmgtfy link
         sentence = split_into_sentences(io)
         for i in sentence:
