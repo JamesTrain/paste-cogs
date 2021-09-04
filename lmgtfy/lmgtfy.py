@@ -11,8 +11,6 @@ class lmgtfy(commands.Cog):
     @commands.command()
     async def lmgtfy(self, ctx: commands.Context):
         message = ctx.channel.history(limit=2).flatten
-        if message:
-            await google(message)
  
         def google(io):
             sentence = split_into_sentences(io)
@@ -35,4 +33,5 @@ class lmgtfy(commands.Cog):
                     continue
                 else:
                     return "I can't seem to find a question."
-            
+        if message:
+            await google(message)
