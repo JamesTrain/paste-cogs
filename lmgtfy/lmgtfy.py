@@ -10,7 +10,7 @@ class lmgtfy(commands.Cog):
 
     @commands.command()
     async def lmgtfy(self, ctx, Question):
-        sentence = split_into_sentences(Question)
+        sentence = split_into_sentences(ctx)
         for i in sentence:
             if '?' in i[::-1]:
                 o = re.split(r'\s|(?<!\d)[\?](?!\d)/gm', i)
