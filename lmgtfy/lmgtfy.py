@@ -6,8 +6,8 @@ from .split import split_into_sentences
 # https://lmgtfy.app/?q=fuck+this+nonsense%3F
 
 #Redbot cog that takes the above message and converts it to a "lmgtfy" link.
-class lmgtfy:
-    
+class lmgtfy(commands.Cog):
+
     @commands.command(pass_context=True)
     async def lmgtfy(self, ctx: commands.Context):
         message = (await ctx.channel.history(limit=2).flatten())[1].content
