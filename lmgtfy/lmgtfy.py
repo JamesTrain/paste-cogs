@@ -1,5 +1,4 @@
 import discord; import re
-from discord.ext import commands
 from redbot.core import commands
 from .split import split_into_sentences
 
@@ -9,7 +8,7 @@ from .split import split_into_sentences
 #Redbot cog that takes the above message and converts it to a "lmgtfy" link.
 class lmgtfy(commands.Cog):
 
-    @commands.command(pass_context=True)
+    @commands.command()
     async def lmgtfy(self, ctx: commands.Context):
         message = (ctx.channel.history(limit=2).flatten())[1].content
         if message:
