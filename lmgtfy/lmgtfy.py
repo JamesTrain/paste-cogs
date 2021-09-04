@@ -18,14 +18,7 @@ class lmgtfy(commands.Cog):
                 for l in o:
                     output = ''.join([output, l+'+'])
                 output = output[:-1] + '?'
-
-                embed = discord.Embed(
-                    title = 'LMGTFY',
-                    description = 'You lazy POS. Google it yourself next time',
-                    colour = discord.Colour.red()
-                 )
-                embed.add_field(name="Here.", value=output)
-                await ctx.send(embed)
+                await ctx.send(output)
             elif '?' not in i[::-1]:
                 continue
             else:
