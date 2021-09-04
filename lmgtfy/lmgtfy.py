@@ -9,21 +9,22 @@ from .split import split_into_sentences
 #Redbot cog that takes the above message and converts it to a "lmgtfy" link.
 class lmgtfy(commands.Cog):
 
-    def __init__(self, bot):
-        self.bot = bot
-
     @commands.command()
+
     async def lmgtfy(self, ctx: commands.Context):
         message = ctx.channel.history(limit=2).flatten
         if message:
             await self.google(message)
+
     @staticmethod
     def google(message):
         sentence = split_into_sentences(message)
+
         for i in sentence:
             if '?' in i[::-1]:
                 o = re.split(r'\s|(?<!\d)[\?](?!\d)/gm', i)
                 output = "https://lmgtfy.app/?q="
+
                 for l in o:
                     output = ''.join([output, l+'+'])
                 output = output[:-1] + '?'
@@ -35,10 +36,9 @@ class lmgtfy(commands.Cog):
                 )
                 embed.add_field(name="Here.", value=output)
                 return embed
+
             elif '?' not in i[::-1]:
                 continue
+            
             else:
                 return "I can't seem to find a question."
-
-def setup(bot):
-    bot.add_cog(lmgtfy(bot))
