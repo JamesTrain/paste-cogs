@@ -3,6 +3,8 @@ from redbot.core import commands
 from discord.ext import commands
 from .split import split_into_sentences
 
+client = commands.Bot(command_prefix = '.')
+
 # example url
 # https://lmgtfy.app/?q=fuck+this+nonsense%3F
 
