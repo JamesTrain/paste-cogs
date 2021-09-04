@@ -9,14 +9,13 @@ from .split import split_into_sentences
 #Redbot cog that takes the above message and converts it to a "lmgtfy" link.
 class lmgtfy(commands.Cog):
 
-    @commands.command()
+    @client.command()
 
     async def lmgtfy(self, ctx: commands.Context):
         message = ctx.channel.history(limit=2).flatten
         if message:
             await self.google(message)
 
-    @staticmethod
     def google(message):
         sentence = split_into_sentences(message)
 
