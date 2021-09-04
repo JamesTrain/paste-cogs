@@ -1,5 +1,6 @@
 import discord; import re
 from discord.ext import commands
+from redbot.core import commands
 from .split import split_into_sentences
 
 # example url
