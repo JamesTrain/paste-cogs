@@ -40,7 +40,7 @@ class lmgtfy(commands.Cog):
                     description = 'You lazy POS. Google it yourself next time',
                     colour = discord.Colour.red()
                  )
-                embed.add_field(name=output)
+                embed.add_field(name="Here.", value=output)
                 return embed
             elif '?' not in i[::-1]:
                 continue
