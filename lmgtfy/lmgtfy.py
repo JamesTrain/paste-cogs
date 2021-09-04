@@ -24,5 +24,5 @@ class lmgtfy(commands.Cog):
                     continue
                 else:
                     await ctx.send("I can't seem to find a question.")
-        except (TypeError):
+        except TypeError:
             await ctx.send("I can't make sense of this. Try harder.")
