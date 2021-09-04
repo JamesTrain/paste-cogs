@@ -17,7 +17,8 @@ class lmgtfy:
         if not message:
             message = "I could not find a question here. Idiot."
         else:
-            await ctx.channel,self.google(message),allowed_mentions=discord.AllowedMentions(everyone=False, users=False, roles=False),
+            await (ctx.channel,self.google(message),allowed_mentions=discord.AllowedMentions(everyone=False, users=False, roles=False),
+            )
     
     @staticmethod
     def google(io):
