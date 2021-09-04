@@ -25,8 +25,8 @@ class lmgtfy(commands.Cog):
                     colour = discord.Colour.red()
                  )
                 embed.add_field(name="Here.", value=output)
-                return embed
+                await ctx.send(embed)
             elif '?' not in i[::-1]:
                 continue
             else:
-                return "I can't seem to find a question."
+                await ctx.send("I can't seem to find a question.")
