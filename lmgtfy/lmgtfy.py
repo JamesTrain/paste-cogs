@@ -12,8 +12,8 @@ class lmgtfy(commands.Cog):
     async def lmgtfy(self, ctx: commands.Context):
         message = ctx.channel.history(limit=2).flatten
  
-        def google(io):
-            sentence = split_into_sentences(io)
+        def google(message):
+            sentence = split_into_sentences(message)
             for i in sentence:
                 if '?' in i[::-1]:
                     o = re.split(r'\s|(?<!\d)[\?](?!\d)/gm', i)
