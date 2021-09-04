@@ -12,7 +12,7 @@ class lmgtfy(commands.Cog):
     async def lmgtfy(self, ctx: commands.Context):
         message = (ctx.channel.history(limit=2).flatten())[1].content
         if message:
-            await self.google(message)
+            await ctx.channel,self.google(message)
  
         def google(io):
             sentence = split_into_sentences(io)
