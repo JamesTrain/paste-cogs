@@ -13,25 +13,25 @@ class lmgtfy(commands.Cog):
         message = ctx.channel.history(limit=2).flatten
         if message:
             await self.google(message)
-        @staticmethod
-        def google(message):
-            sentence = split_into_sentences(message)
-            for i in sentence:
-                if '?' in i[::-1]:
-                    o = re.split(r'\s|(?<!\d)[\?](?!\d)/gm', i)
-                    output = "https://lmgtfy.app/?q="
-                    for l in o:
-                        output = ''.join([output, l+'+'])
-                    output = output[:-1] + '?'
+    @staticmethod
+    def google(message):
+        sentence = split_into_sentences(message)
+        for i in sentence:
+            if '?' in i[::-1]:
+                o = re.split(r'\s|(?<!\d)[\?](?!\d)/gm', i)
+                output = "https://lmgtfy.app/?q="
+                for l in o:
+                    output = ''.join([output, l+'+'])
+                output = output[:-1] + '?'
 
-                    embed = discord.Embed(
-                        title = 'LMGTFY',
-                        description = 'You lazy POS. Google it yourself next time',
-                        colour = discord.Colour.red()
-                    )
-                    embed.add_field(name="Here.", value=output)
-                    return embed
-                elif '?' not in i[::-1]:
-                    continue
-                else:
-                    return "I can't seem to find a question."
+                embed = discord.Embed(
+                    title = 'LMGTFY',
+                    description = 'You lazy POS. Google it yourself next time',
+                    colour = discord.Colour.red()
+                )
+                embed.add_field(name="Here.", value=output)
+                return embed
+            elif '?' not in i[::-1]:
+                continue
+            else:
+                return "I can't seem to find a question."
