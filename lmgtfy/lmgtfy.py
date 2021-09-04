@@ -16,7 +16,7 @@ class lmgtfy(commands.Cog):
     async def lmgtfy(self, ctx: commands.Context):
         message = ctx.channel.history(limit=2).flatten
         if message:
-            await self.google(message)
+            await ctx.send(self.google(message))
 
     def google(message):
         sentence = split_into_sentences(message)
