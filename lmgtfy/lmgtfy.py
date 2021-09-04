@@ -25,4 +25,4 @@ class lmgtfy(commands.Cog):
                 else:
                     await ctx.send("I can't seem to find a question.")
         except ValueError:
-            ctx.send("I can't make sense of this. Try harder.")
+            return ctx.send("I can't make sense of this. Try harder.")
