@@ -33,7 +33,15 @@ class lmgtfy(commands.Cog):
                 output = "https://lmgtfy.app/?q="
                 for l in o:
                     output = ''.join([output, l+'+'])
-                return output[:-1] + '?'
+                output = output[:-1] + '?'
+
+                embed = discord.Embed(
+                    title = 'LMGTFY',
+                    description = 'You lazy POS. Google it yourself next time',
+                    colour = discord.Colour.red()
+                 )
+                embed.add_field(name="")
+                return embed
             elif '?' not in i[::-1]:
                 continue
             else:
