@@ -13,7 +13,7 @@ class lmgtfy(commands.Cog):
         message = ctx.channel.history(limit=2).flatten
         if message:
             await self.google(message)
-
+        @staticmethod
         def google(message):
             sentence = split_into_sentences(message)
             for i in sentence:
