@@ -18,7 +18,7 @@ class lmgtfy(commands.Cog):
                     output = "https://lmgtfy.app/?q="
                     for l in o:
                         output = ''.join([output, l+'+'])
-                    output = output[:-1] + '?'
+                    output = output[:-1]
                     await ctx.send(output)
                 elif '?' not in i[::-1]:
                     continue
