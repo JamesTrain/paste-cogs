@@ -1,4 +1,4 @@
-import discord; import re; import asyncio
+import discord; import re
 from discord.ext import commands
 from .split import split_into_sentences
 
@@ -17,8 +17,7 @@ class lmgtfy:
         if not message:
             message = "I could not find a question here. Idiot."
         else:
-            await (ctx.channel,self.google(message),allowed_mentions=discord.AllowedMentions(everyone=False, users=False, roles=False),
-            )
+            await (ctx.channel,self.google(message))
     
     @staticmethod
     def google(io):
