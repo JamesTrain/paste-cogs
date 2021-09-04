@@ -9,10 +9,9 @@ class lmgtfy(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def lmgtfy(self, ctx):
+    async def lmgtfy(self, ctx: commands.Context):
         message = (await ctx.channel.history(limit=2).flatten())[1].content
-        sentence = split_into_sentences(message)
-        for i in sentence:
+        for i in split_into_sentences(message):
             if '?' in i[::-1]:
                 o = re.split(r'\s|(?<!\d)[\?](?!\d)/gm', i)
                 output = "https://lmgtfy.app/?q="
