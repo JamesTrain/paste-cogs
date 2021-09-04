@@ -1,5 +1,6 @@
 import discord; import re
 from redbot.core import commands
+from discord.ext import commands
 from .split import split_into_sentences
 
 # example url
@@ -7,6 +8,9 @@ from .split import split_into_sentences
 
 #Redbot cog that takes the above message and converts it to a "lmgtfy" link.
 class lmgtfy(commands.Cog):
+
+    def __init__(self, bot):
+        self.bot = bot
 
     @commands.command()
     async def lmgtfy(self, ctx: commands.Context):
@@ -35,3 +39,6 @@ class lmgtfy(commands.Cog):
                 continue
             else:
                 return "I can't seem to find a question."
+
+def setup(bot):
+    bot.add_cog(lmgtfy(bot))
