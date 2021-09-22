@@ -13,9 +13,9 @@ class lmgtfy(commands.Cog):
     @commands.command()
     async def lmgtfy(self, ctx: commands.Context, question):
         
-        message = (await ctx.channel.history(limit=2).flatten())[1].content
+        #message = (await ctx.channel.history(limit=2).flatten())[1].content
         
-        for i in split_into_sentences(message):
+        for i in split_into_sentences(question):
             if 'app/?' not in i:
                 if 'q=' not in i[0:2]:
                     if '?' in i[::-1]:
