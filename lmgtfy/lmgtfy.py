@@ -15,7 +15,7 @@ class lmgtfy(commands.Cog):
     @commands.command()
     async def google(self, ctx: commands.Context):
         """
-        
+        Takes the previous message and splits the text into sentences. If there is a question denoted by a '?', than this command will generate a 'lmgtfy' link with much sass. Otherwise nothing happens.
         """
         message = (await ctx.channel.history(limit=2).flatten())[1].content
         for i in split_into_sentences(message):
@@ -31,7 +31,7 @@ class lmgtfy(commands.Cog):
                     elif '?' not in i[::-1]:
                         continue
                     else:
-                        await ctx.send("I can't seem to find a question.")
+                        return ("I can't seem to find a question.")
 
     @commands.command()
     async def lmgtfy(self, ctx: commands.Context, question):
