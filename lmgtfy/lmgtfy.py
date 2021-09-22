@@ -24,14 +24,26 @@ class lmgtfy(commands.Cog):
         for i in split_into_sentences(self, question):
             if 'app/?' not in i:
                 if 'q=' not in i[0:2]:
-                    if '?' in i[::-1]:
-                        o = re.split(r'\s|(?<!\d)[\?](?!\d)/gm', i)
-                        output = "https://lmgtfy.app/?q="
-                        for l in o:
-                            output = ''.join([output, l+'+'])
-                        output = output[:-1]
-                        await ctx.send(output)
-                    elif '?' not in i[::-1]:
-                        continue
-                    else:
-                        return ("I can't seem to find a question.")
+                    o = re.split(r'\s|(?<!\d)[\?](?!\d)/gm', i)
+                    output = "https://lmgtfy.app/?q="
+                    for l in o:
+                        output = ''.join([output, l+'+'])
+                    output = output[:-1]
+                    await ctx.send(output)
+                else:
+                    return ("I can't seem to find a question.")
+
+        # for i in split_into_sentences(self, question):
+        #     if 'app/?' not in i:
+        #         if 'q=' not in i[0:2]:
+        #             if '?' in i[::-1]:
+        #                 o = re.split(r'\s|(?<!\d)[\?](?!\d)/gm', i)
+        #                 output = "https://lmgtfy.app/?q="
+        #                 for l in o:
+        #                     output = ''.join([output, l+'+'])
+        #                 output = output[:-1]
+        #                 await ctx.send(output)
+        #             elif '?' not in i[::-1]:
+        #                 continue
+        #             else:
+        #                 return ("I can't seem to find a question.")
