@@ -8,7 +8,6 @@ class lmgtfy(commands.Cog):
     """
     Redbot cog that takes a message and makes a 'lmgtfy' link out of it.
 
-    Syntax:
     .lmgtfy "Ask question here, wrapped in double quotes"
     """
 
