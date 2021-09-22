@@ -17,7 +17,7 @@ class lmgtfy(commands.Cog):
     @commands.command()
     async def lmgtfy(self, ctx: commands.Context, question):
         """
-        .lmgtfy "Ask your question here, wrapped in double quotes"
+        **Wrap your <question> in DOUBLE QUOTES**
         """
         #message = (await ctx.channel.history(limit=2).flatten())[1].content
 
