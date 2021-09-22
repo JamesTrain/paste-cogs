@@ -17,7 +17,7 @@ class lmgtfy(commands.Cog):
     @commands.command()
     async def lmgtfy(self, ctx: commands.Context, question):
         """
-        **Wrap your <question> in DOUBLE QUOTES**
+        **Wrap your <question> in DOUBLE cum QUOTES**
         """
         
         for i in split_into_sentences(self, question):
