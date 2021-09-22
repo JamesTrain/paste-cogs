@@ -40,9 +40,9 @@ class lmgtfy(commands.Cog):
         """
         Wrap your <question> in **double quotes**
         """
-        o = re.split(r'\s|(?<!\d)[\?](?!\d)/gm', question)
+        o = [re.split(r'\s|(?<!\d)[\?](?!\d)/gm', question)]
         output = "https://lmgtfy.app/?q="
-        if len(o.split(' ')) <= 1:
+        if len(o) <= 1:
             for l in o:
                 output = ''.join([output, l+'+'])
             output = output[:-1]
