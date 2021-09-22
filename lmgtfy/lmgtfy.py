@@ -17,17 +17,25 @@ class lmgtfy(commands.Cog):
     @commands.command()
     async def lmgtfy(self, ctx: commands.Context, question):
         """
-        **Wrap your <question> in DOUBLE cum QUOTES**
+        **Wrap your <question> in DOUBLE QUOTES**
         """
         
         for i in split_into_sentences(self, question):
-            if 'app/?' not in i[0:5]:
+            if 'app/?' not in i:
                 if 'q=' not in i[0:2]:
-                    o = re.split(r'\s|(?<!\d)[\?](?!\d)/gm', i)
-                    output = "https://lmgtfy.app/?q="
-                    for l in o:
-                        output = ''.join([output, l+'+'])
-                    output = output[:-1]
-                    await ctx.send(output)
-                else:
-                    return ("I can't seem to find a question.")
+                    if '?' in i[::-1]:
+                        o = re.split(r'\s|(?<!\d)[\?](?!\d)/gm', i)
+                        output = "https://lmgtfy.app/?q="
+                        for l in o:
+                            output = ''.join([output, l+'+'])
+                        output = output[:-1]
+                        await ctx.send(output)
+                    elif '?' not in i[::-1]:
+                        o = re.split(r'\s/gm', i)
+                        output = "https://lmgtfy.app/?q="
+                        for l in o:
+                            output = ''.join([output, l+'+'])
+                        output = output[:-1]
+                        await ctx.send(output)
+                    else:
+                        return ("I can't seem to find a question.")
