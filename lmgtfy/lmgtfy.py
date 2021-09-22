@@ -11,8 +11,10 @@ class lmgtfy(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def lmgtfy(self, ctx: commands.Context):
+    async def lmgtfy(self, ctx: commands.Context, question):
+        
         message = (await ctx.channel.history(limit=2).flatten())[1].content
+        
         for i in split_into_sentences(message):
             if 'app/?' not in i:
                 if 'q=' not in i[0:2]:
@@ -26,4 +28,4 @@ class lmgtfy(commands.Cog):
                     elif '?' not in i[::-1]:
                         continue
                     else:
-                        await ctx.send("I can't seem to find a question.")
+                        return ("I can't seem to find a question.")
