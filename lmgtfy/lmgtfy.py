@@ -31,7 +31,7 @@ class lmgtfy(commands.Cog):
                         output = output[:-1]
                         await ctx.send(output)
                     elif '?' not in i[::-1]:
-                        o = re.split(r'\s/gm', i)
+                        o = re.split(r'\s|(?<!\d)[\?](?!\d)/gm', i)
                         output = "https://lmgtfy.app/?q="
                         for l in o:
                             output = ''.join([output, l+'+'])
