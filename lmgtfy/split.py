@@ -10,7 +10,7 @@ websites = "[.](com|net|org|io|gov)"
 
 # Define function to split strings into sentences.
 
-def split_into_sentences(self, text):
+def split_into_sentences(text):
     text = " " + text + "  "
     text = text.replace("\n", " ")
     text = re.sub(prefixes, "\\1<prd>", text)
