@@ -38,8 +38,8 @@ class lmgtfy(commands.Cog):
         Wrap your <question> in **double quotes**
         """
         o = re.split(r'\s|(?<!\d)[\?](?!\d)/gm', question)
-            output = "https://lmgtfy.app/?q="
-            for l in o:
-                output = ''.join([output, l+'+'])
-            output = output[:-1]
-            await ctx.send(output)
+        output = "https://lmgtfy.app/?q="
+        for l in o:
+            output = ''.join([output, l+'+'])
+        output = output[:-1]
+        await ctx.send(output)
