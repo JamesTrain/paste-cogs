@@ -18,6 +18,8 @@ class lmgtfy(commands.Cog):
         Takes the previous message and splits the text into sentences. If there is a question denoted by a '?', than this command will generate a 'lmgtfy' link with much sass. Otherwise nothing happens.
         """
         message = (await ctx.channel.history(limit=2).flatten())[1].content
+        if not message:
+            return ("I can't seem to find a question!")
         for i in split_into_sentences(message):
             if 'app/?' not in i:
                 if 'q=' not in i[0:2]:
