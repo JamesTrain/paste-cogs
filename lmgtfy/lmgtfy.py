@@ -33,6 +33,7 @@ class lmgtfy(commands.Cog):
                     else:
                         await ctx.send("I can't seem to find a question.")
 
+    @commands.command()
     async def lmgtfy(self, ctx: commands.Context, question):
         """
         Wrap your <question> in **double quotes**
