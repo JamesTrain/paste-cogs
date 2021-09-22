@@ -5,7 +5,12 @@ from .split import split_into_sentences
 
 
 class lmgtfy(commands.Cog):
-    """Redbot cog that takes a message and makes a 'lmgtfy' link out of it."""
+    """
+    Redbot cog that takes a message and makes a 'lmgtfy' link out of it.
+
+    Syntax:
+    .lmgtfy "Ask question here, wrapped in double quotes"
+    """
 
     def __init__(self, bot):
         self.bot = bot
