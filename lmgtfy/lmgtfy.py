@@ -19,10 +19,9 @@ class lmgtfy(commands.Cog):
         """
         **Wrap your <question> in DOUBLE QUOTES**
         """
-        #message = (await ctx.channel.history(limit=2).flatten())[1].content
-
+        
         for i in split_into_sentences(self, question):
-            if 'app/?' not in i:
+            if 'app/?' not in i[0:5]:
                 if 'q=' not in i[0:2]:
                     o = re.split(r'\s|(?<!\d)[\?](?!\d)/gm', i)
                     output = "https://lmgtfy.app/?q="
@@ -32,4 +31,3 @@ class lmgtfy(commands.Cog):
                     await ctx.send(output)
                 else:
                     return ("I can't seem to find a question.")
-
