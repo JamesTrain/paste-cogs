@@ -30,6 +30,8 @@ class lmgtfy(commands.Cog):
                             output = ''.join([output, l+'+'])
                         output = output[:-1]
                         await ctx.send(output)
+            else:
+                await ctx.send("I can't seem to find a question!")
 
     @commands.command()
     async def lmgtfy(self, ctx: commands.Context, question):
