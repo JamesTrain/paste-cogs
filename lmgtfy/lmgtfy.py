@@ -48,4 +48,4 @@ class lmgtfy(commands.Cog):
             output = output[:-1]
             await ctx.send(output)
         else:
-            return ("Wrap your <question> in **double quotes**")
+            await ctx.send("Wrap your <question> in **double quotes**")
