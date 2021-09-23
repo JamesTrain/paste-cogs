@@ -42,7 +42,7 @@ class lmgtfy(commands.Cog):
         """
         o = re.split(r'\s|(?<!\d)[\?](?!\d)/gm', question)
         output = "https://lmgtfy.app/?q="
-        if len(o) <= 1:
+        if len(o) > 1:
             for l in o:
                 output = ''.join([output, l+'+'])
             output = output[:-1]
