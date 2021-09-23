@@ -20,7 +20,7 @@ class lmgtfy(commands.Cog):
         try:
             message = (await ctx.channel.history(limit=2).flatten())[1].content
             if not message:
-                return ("I can't seem to find a question!")
+                await ctx.send("I can't seem to find a question!")
             for i in split_into_sentences(message):
                 if 'app/?' not in i:
                     if 'q=' not in i[0:2]:
