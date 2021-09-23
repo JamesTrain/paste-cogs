@@ -15,7 +15,7 @@ class lmgtfy(commands.Cog):
     @commands.command()
     async def google(self, ctx: commands.Context):
         """
-        Creates a 'lmgtfy' link from a previous message ONLY if a question is present.
+        Creates a 'lmgtfy' link from a previous question
         """
         message = (await ctx.channel.history(limit=2).flatten())[1].content
         if not message:
