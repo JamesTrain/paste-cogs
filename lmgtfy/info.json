@@ -1,0 +1,8 @@
+{
+    "author" : ["Daniel Bush, A.K.A. Daddy"],
+    "install_msg" : "Thanks for installing lmgtfy",
+    "name" : "lmgtfy",
+    "disabled" : false,
+    "short" : "Let me google that for you!",
+    "description" : ".lmgtfy 'ask your question here, wrapped in **double quotes**.'"
+}

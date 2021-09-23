@@ -1,30 +1,27 @@
-#import necessary libs
-import discord; import re
+import discord
+import re
 from redbot.core import commands
 from .split import split_into_sentences
-
-#version 0.1.0
+#v0.2.0
 class lmgtfy(commands.Cog):
+    """
+    Redbot cog that takes a message and makes a 'lmgtfy' link out of it.
+    """
 
-    #init bot
     def __init__(self, bot):
         self.bot = bot
 
-    #define command 'lmgtfy'
     @commands.command()
-    async def lmgtfy(self, ctx: commands.Context):
-
-        #grab message from discord
+    async def google(self, ctx: commands.Context):
+        """
+        Creates a 'lmgtfy' link from a previous question
+        """
         message = (await ctx.channel.history(limit=2).flatten())[1].content
-
-        #pipe message through 'split' function
+        if not message:
+            await ctx.send("I can't seem to find a question!")
         for i in split_into_sentences(message):
-
-            #error/value handling to prevent repetition abuse
             if 'app/?' not in i:
                 if 'q=' not in i[0:2]:
-                    
-                    #determine if question and return relevant results
                     if '?' in i[::-1]:
                         o = re.split(r'\s|(?<!\d)[\?](?!\d)/gm', i)
                         output = "https://lmgtfy.app/?q="
@@ -32,7 +29,20 @@ class lmgtfy(commands.Cog):
                             output = ''.join([output, l+'+'])
                         output = output[:-1]
                         await ctx.send(output)
-                    elif '?' not in i[::-1]:
-                        continue
-                    else:
-                        await ctx.send("I can't seem to find a question.")
+            else:
+                await ctx.send("I can't seem to find a question!")
+
+    @commands.command()
+    async def lmgtfy(self, ctx: commands.Context, question):
+        """
+        Wrap your <question> in **double quotes**
+        """
+        o = re.split(r'\s|(?<!\d)[\?](?!\d)/gm', question)
+        output = "https://lmgtfy.app/?q="
+        if len(o) > 1:
+            for l in o:
+                output = ''.join([output, l+'+'])
+            output = output[:-1]
+            await ctx.send(output)
+        else:
+            await ctx.send("Wrap your <question> in **double quotes**")
