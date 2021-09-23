@@ -32,9 +32,9 @@ class lmgtfy(commands.Cog):
                             output = output[:-1]
                             await ctx.send(output)
                         elif '?' not in i[::-1]:
-                            return ("I can't seem to find a question.")
+                            await ctx.send("I can't seem to find a question.")
                         else:
-                            return ("I can't seem to find a question.")
+                            await ctx.send("I can't seem to find a question.")
         except:
             await ctx.send("I can't seem to find a question.")
 
