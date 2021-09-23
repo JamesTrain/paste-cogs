@@ -15,7 +15,7 @@ class lmgtfy(commands.Cog):
     @commands.command()
     async def google(self, ctx: commands.Context):
         """
-        Takes the previous message and splits the text into sentences. If there is a question denoted by a '?', than this command will generate a 'lmgtfy' link with much sass. Otherwise nothing happens.
+        Creates a 'lmgtfy' link from a previous message ONLY if a question is present.
         """
         message = (await ctx.channel.history(limit=2).flatten())[1].content
         if not message:
