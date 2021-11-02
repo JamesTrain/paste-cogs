@@ -12,4 +12,3 @@ class rmjoey(commands.Cog):
     async def on_message(self, message):
         if message.author.id == 295400354160443403:
             await message.delete()
-            await message.send(f"You can't do that, {message.author.mention}")
