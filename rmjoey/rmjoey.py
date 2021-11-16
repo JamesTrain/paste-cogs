@@ -7,4 +7,3 @@ class rmjoey(commands.Cog):
         if message.author.id == 194299256750735361:
             await message.delete()
             await message.channel.send(f"You can't do that, {message.author.mention}")
-
