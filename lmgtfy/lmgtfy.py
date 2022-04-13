@@ -38,7 +38,7 @@ class lmgtfy(commands.Cog):
         Wrap your <question> in **double quotes**
         """
         o = re.split(r'\s|(?<!\d)[\?](?!\d)/gm', question)
-        output = "https://lmgtfy.app/?q="
+        output = "https://www.google.com/search?q="
         if len(o) > 1:
             for l in o:
                 output = ''.join([output, l+'+'])
