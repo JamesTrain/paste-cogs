@@ -44,5 +44,7 @@ class lmgtfy(commands.Cog):
                 output = ''.join([output, l+'+'])
             output = output[:-1]
             await ctx.send(output)
+        elif len(o) == 1:
+            output = ''.join([output, o])
         else:
             await ctx.send("Wrap your <question> in **double quotes**")
