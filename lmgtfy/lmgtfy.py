@@ -33,7 +33,7 @@ class lmgtfy(commands.Cog):
         """
         I can't seem to find a question to google?
         """
-        o = re.split(r'\s|(?<!\d)[\?](?!\d)/gm', question)
+        o = re.split(r'\s|(?<!\d)[\?](?!\d)/gm', *question)
         output = "https://www.google.com/search?q="
         if len(o) > 1:
             for l in o:
@@ -41,5 +41,5 @@ class lmgtfy(commands.Cog):
             output = output[:-1]
             await ctx.send(output)
         elif len(o) == 1:
-            output = ''.join([output, question])
+            output = ''.join([output, *question])
             await ctx.send(output)
