@@ -1,0 +1,8 @@
+{
+    "author" : ["JamesTrain"],
+    "install_msg" : "Thanks for installing vibecheck.",
+    "name" : "vibecheck",
+    "short" : "Check your vibes bro",
+    "description" : "Rolls a d20 to determine the users vibe",
+    "tags" : ["vibe", "check", "roll"]
+}

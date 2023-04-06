@@ -1,0 +1,8 @@
+{
+    "author" : ["Dantanna"],
+    "install_msg" : "Thanks for caring about monthly PastePoints.",
+    "name" : "Pasteon.",
+    "short" : "Cog for PastePoints monthly tally.",
+    "description" : "It might be long depending on if I get this working.",
+    "tags" : ["Monthly"]
+}
