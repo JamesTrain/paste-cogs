@@ -6,7 +6,7 @@ from redbot.core import commands
 class ChatGPT(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.api_key = await self.bot.get_shared_api_tokens("chatgpt")
+        self.api_key = self.bot.get_shared_api_tokens("chatgpt")
         openai.api_key = self.api_key
 
     @commands.command(name="chatgpt")
