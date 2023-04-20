@@ -1,0 +1,9 @@
+{
+    "author" : ["JamesTrain"],
+    "install_msg" : "Thanks for installing ChatGPT.",
+    "name" : "ChatGPT",
+    "disabled" : false,
+    "short" : "Use ChatGPT",
+    "description" : "It's just ChatGPT",
+    "tags" : ["Chat", "GPT", "AI"]
+}
