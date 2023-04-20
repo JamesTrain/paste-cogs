@@ -6,7 +6,6 @@ from redbot.core import commands
 class ChatGPT(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.api_key = self.bot.get_shared_api_tokens("chatgpt")
         openai.api_key = self.api_key
 
     @commands.command(name="chatgpt")
@@ -14,6 +13,9 @@ class ChatGPT(commands.Cog):
         """
         Sends a prompt to the OpenAI API and receives a response.
         """
+
+        await self.bot.get_shared_api_tokens("chatgpt")
+
         if self.api_key is None:
             await ctx.send("Error: No API key found. Please set the 'OPENAI_API_KEY' environment variable.")
             return
