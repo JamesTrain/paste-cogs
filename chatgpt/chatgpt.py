@@ -1,12 +1,11 @@
 import discord
 import openai
-import os
 from redbot.core import commands
 
 class ChatGPT(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot, api_key):
         self.bot = bot
-        self.api_key = os.getenv("OPENAI_API_KEY")
+        self.api_key = api_key
         openai.api_key = self.api_key
 
     @commands.command(name="chatgpt")
@@ -14,13 +13,9 @@ class ChatGPT(commands.Cog):
         """
         Sends a prompt to the OpenAI API and receives a response.
         """
-        if self.api_key is None:
-            await ctx.send("Error: No API key found. Please set the 'OPENAI_API_KEY' environment variable.")
-            return
-
         try:
             response = openai.Completion.create(
-                engine="text-davinci-003",
+                engine="text-davinci-002",
                 prompt=prompt,
                 max_tokens=150,
                 n=1,
@@ -34,4 +29,5 @@ class ChatGPT(commands.Cog):
             await ctx.send(f"Error: {str(e)}")
 
 def setup(bot):
-    bot.add_cog(ChatGPT(bot))
+    api_key = bot.get_cog("Config").get_conf(None, identifier=1234567890).get_raw("OPENAI_API_KEY")
+    bot.add_cog(ChatGPT(bot, api_key))
