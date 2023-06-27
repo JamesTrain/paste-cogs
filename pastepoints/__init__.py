@@ -1,4 +1,4 @@
 from .pastepoints import PastePoints
 
-def setup(bot):
-    bot.add_cog(PastePoints(bot))
+async def setup(bot):
+    await bot.add_cog(PastePoints(bot))
