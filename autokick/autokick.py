@@ -19,6 +19,6 @@ class AutoKick(BaseCog):
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
         if after.channel is not None:
-            if (after.channel.id == 502108640530923520):
+            if (after.channel.id == 845055977182330901):
                 time.sleep(1)
                 await member.move_to(channel=None, reason="Get rekd nerd")
