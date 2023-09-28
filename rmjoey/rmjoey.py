@@ -10,5 +10,5 @@ class rmjoey(commands.Cog):
     
     @commands.Cog.listener()
     async def on_message(self, message):
-        if message.author.id == 249575158719840266:
+        if message.author.id == 201448484430282752:
             await message.delete()
