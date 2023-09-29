@@ -2,7 +2,7 @@ import discord
 from redbot.core import commands
 from .pcx_lib import type_message
 
-pank = 201448484430282752
+pank = 69420
 
 class bully(commands.Cog):
     #This Cog takes the previous message and turns it into CaMeL cAsInG
