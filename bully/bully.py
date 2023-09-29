@@ -2,7 +2,7 @@ import discord
 from redbot.core import commands
 from .pcx_lib import type_message
 
-pank = 295400354160443403
+pank = 201448484430282752
 
 class bully(commands.Cog):
     #This Cog takes the previous message and turns it into CaMeL cAsInG
@@ -10,7 +10,8 @@ class bully(commands.Cog):
     @commands.command(aliases=["b"])
     async def sarcasm(self, ctx: commands.Context):
         #Define the command for RedBot
-        messageObject = (await ctx.channel.history(limit=2).flatten())[1]
+        messages = [msg async for msg in ctx.channel.history(limit=2)]
+        messageObject = messages[1]
         message = messageObject.content
         
         if not message:
@@ -18,7 +19,7 @@ class bully(commands.Cog):
         if messageObject.author.id == pank:
             await type_message(
                 ctx.channel,
-                self.sarcog_string("Joey is a fucking idiot"),
+                self.sarcog_string("Austin is a fucking idiot"),
                 allowed_mentions=discord.AllowedMentions(
                     everyone=False, users=False, roles=False),
             )
