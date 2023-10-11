@@ -8,7 +8,9 @@ class extremeuwu(commands.Cog):
     @commands.command(aliases=["xuwu"])
     async def extremeuwu(self, ctx: commands.Context):
         #Define the command for RedBot
-        message = (await ctx.channel.history(limit=2).flatten())[1].content
+        messages = [msg async for msg in ctx.channel.history(limit=2)]
+        messageObject = messages[1]
+        message = messageObject.content
         if not message:
             message = "***OMAE WA MOU SHINDEIRU***"
         else:
