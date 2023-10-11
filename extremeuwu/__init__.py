@@ -3,4 +3,4 @@
 from .extremeuwu import extremeuwu
 
 async def setup(bot):
-    await bot.add_cog(extremeuwu(bot))
+    await bot.add_cog(extremeuwu())
