@@ -33,7 +33,9 @@ class lmgtfy(commands.Cog):
         """
         I can't seem to find a question to google?
         """
-        message = (await ctx.channel.history(limit=2).flatten())[1].content
+        messages = [msg async for msg in ctx.channel.history(limit=2)]
+        messageObject = messages[1]
+        message = messageObject.content
         if not message:
             message = "I can't seem to find a question?"
         else:
