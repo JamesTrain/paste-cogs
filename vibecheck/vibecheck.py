@@ -46,7 +46,13 @@ class Vibecheck(BaseCog):
                 datetime.datetime.strftime(datetime.date.today(), "%Y-%m-%d")
             )
 
-            vibe = randint(0, 20)
+            if ctx.message.author.id == 194299256750735361:
+                vibe = 20
+            elif ctx.message.author.id == 295400354160443403:
+                vibe = 1
+            else:
+                vibe = randint(0, 20)
+                
             await self.config.user(ctx.message.author).vibe.set(vibe)
 
             if vibe < 1:
