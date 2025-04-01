@@ -29,7 +29,7 @@ class Vibecheck(commands.Cog):
         12: "Getting better, keep it up",
         14: "Alright, now that's a meme",
         16: "It's gonna be a good day :)",
-        18: "Absolutely vibing!",
+        18: "LET'S GOOOOOO",
         20: "IMMACULATE VIBES, YOUR MAJESTY 👑"
     }
 
