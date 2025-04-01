@@ -92,15 +92,19 @@ class Vibecheck(commands.Cog):
             print(f"Error in vibecheck: {e}")
 
     @commands.command()
-    async def vibestats(self, ctx: commands.Context):
-        """View your vibe check statistics.
+    async def vibestats(self, ctx: commands.Context, user: discord.Member = None):
+        """View vibe check statistics.
         
-        Shows your current vibe, total checks, average vibe, and total vibe power.
+        Parameters
+        ----------
+        user : discord.Member, optional
+            The user to check stats for. If not provided, shows your own stats.
         """
         try:
-            async with self.config.user(ctx.message.author).all() as user_data:
+            target_user = user or ctx.message.author
+            async with self.config.user(target_user).all() as user_data:
                 if not user_data or 'vibe_scores' not in user_data or not user_data['vibe_scores']:
-                    await ctx.send("You haven't checked your vibes yet!")
+                    await ctx.send(f"{target_user.name} hasn't checked their vibes yet!")
                     return
 
                 vibe_scores = user_data['vibe_scores']
@@ -110,7 +114,7 @@ class Vibecheck(commands.Cog):
                 current_vibe = user_data.get('vibe', 0)
 
                 stats_message = (
-                    f"📊 **Vibe Statistics for {ctx.message.author.name}**\n"
+                    f"📊 **Vibe Statistics for {target_user.name}**\n"
                     f"Current Vibe: {current_vibe}\n"
                     f"Total Checks: {total_checks}\n"
                     f"Average Vibe: {average:.1f}\n"
@@ -119,15 +123,61 @@ class Vibecheck(commands.Cog):
                 await ctx.send(stats_message)
             
         except Exception as e:
-            await ctx.send("An error occurred while fetching your stats. Please try again later.")
+            await ctx.send("An error occurred while fetching stats. Please try again later.")
             print(f"Error in vibestats: {e}")
 
     @commands.command()
+    async def vibeboard(self, ctx: commands.Context):
+        """Show the vibe leaderboard for all users."""
+        try:
+            # Get all users in the guild
+            all_users = ctx.guild.members
+            user_stats = []
+
+            # Collect stats for all users
+            for user in all_users:
+                user_data = await self.config.user(user).all()
+                if user_data and 'vibe_scores' in user_data and user_data['vibe_scores']:
+                    vibe_scores = user_data['vibe_scores']
+                    user_stats.append({
+                        'name': user.name,
+                        'total_vibe': sum(vibe_scores),
+                        'average': sum(vibe_scores) / len(vibe_scores),
+                        'checks': len(vibe_scores)
+                    })
+
+            if not user_stats:
+                await ctx.send("No vibe checks recorded yet!")
+                return
+
+            # Sort by total vibe power
+            user_stats.sort(key=lambda x: x['total_vibe'], reverse=True)
+
+            # Create leaderboard message
+            leaderboard = "🏆 **VIBE LEADERBOARD** 🏆\n\n"
+            for i, stats in enumerate(user_stats[:10], 1):
+                leaderboard += (
+                    f"**{i}.** {stats['name']}\n"
+                    f"    Total Vibe Power: {stats['total_vibe']}\n"
+                    f"    Average Vibe: {stats['average']:.1f}\n"
+                    f"    Total Checks: {stats['checks']}\n"
+                )
+
+            await ctx.send(leaderboard)
+
+        except Exception as e:
+            await ctx.send("An error occurred while fetching the leaderboard. Please try again later.")
+            print(f"Error in vibeboard: {e}")
+
+    @commands.command()
     @commands.has_permissions(administrator=True)
-    async def vibescan(self, ctx: commands.Context):
-        """Scan all channels for past vibe checks and update user stats.
+    async def vibescan(self, ctx: commands.Context, channel: discord.TextChannel = None):
+        """Scan channel(s) for past vibe checks and update user stats.
         
-        This command requires administrator permissions.
+        Parameters
+        ----------
+        channel : discord.TextChannel, optional
+            The specific channel to scan. If not provided, scans all channels.
         """
         try:
             progress_msg = await ctx.send("Starting vibe scan...")
@@ -137,16 +187,23 @@ class Vibecheck(commands.Cog):
             
             total_messages = 0
             vibe_checks_found = 0
-            users_updated = {}
             
-            # Scan all text channels in the server
-            for channel in ctx.guild.text_channels:
+            # Use a dictionary to batch process user updates
+            user_updates = {}  # {user_id: {scores: set(), name: str}}
+            
+            # Determine which channels to scan
+            channels_to_scan = [channel] if channel else ctx.guild.text_channels
+            
+            # First pass: Collect all vibe data
+            for channel in channels_to_scan:
                 try:
                     await progress_msg.edit(content=f"Scanning {channel.mention}...")
+                    
+                    # Process messages in chunks for better performance
                     async for message in channel.history(limit=None):
                         total_messages += 1
-                        if total_messages % 1000 == 0:
-                            await progress_msg.edit(content=f"Scanning {channel.mention}...\nProcessed {total_messages} messages")
+                        if total_messages % 5000 == 0:  # Update less frequently
+                            await progress_msg.edit(content=f"Scanning {channel.mention}...\nProcessed {total_messages:,} messages")
                         
                         match = vibe_pattern.search(message.content)
                         if match:
@@ -154,34 +211,66 @@ class Vibecheck(commands.Cog):
                             user_id = int(match.group(1))
                             vibe_score = int(match.group(2))
                             
-                            # Get the user object
-                            user = self.bot.get_user(user_id)
-                            if user:
-                                if user_id not in users_updated:
-                                    users_updated[user_id] = {"name": user.name, "count": 0}
-                                
-                                # Update user's vibe history
-                                async with self.config.user(user).all() as user_data:
-                                    if 'vibe_scores' not in user_data:
-                                        user_data['vibe_scores'] = []
-                                    if vibe_score not in user_data['vibe_scores']:
-                                        user_data['vibe_scores'].append(vibe_score)
-                                        users_updated[user_id]["count"] += 1
+                            # Batch user updates
+                            if user_id not in user_updates:
+                                user = self.bot.get_user(user_id)
+                                if user:
+                                    user_updates[user_id] = {
+                                        'scores': set(),  # Use set for unique scores
+                                        'name': user.name
+                                    }
+                            
+                            if user_id in user_updates:
+                                user_updates[user_id]['scores'].add(vibe_score)
+                            
                 except discord.Forbidden:
-                    continue  # Skip channels we can't read
+                    await progress_msg.edit(content=f"⚠️ Cannot access {channel.mention}, skipping...")
+                    continue
+            
+            if not user_updates:
+                await progress_msg.edit(content="No vibe checks found!")
+                return
+                
+            # Second pass: Bulk update users
+            await progress_msg.edit(content="Processing updates...")
+            processed_users = 0
+            total_users = len(user_updates)
+            
+            for user_id, data in user_updates.items():
+                user = self.bot.get_user(user_id)
+                if user:
+                    processed_users += 1
+                    if processed_users % 10 == 0:  # Update progress every 10 users
+                        await progress_msg.edit(content=f"Updating users... {processed_users}/{total_users}")
+                    
+                    # Get existing scores first
+                    async with self.config.user(user).all() as user_data:
+                        if 'vibe_scores' not in user_data:
+                            user_data['vibe_scores'] = []
+                        
+                        # Convert existing scores to set for efficient comparison
+                        existing_scores = set(user_data['vibe_scores'])
+                        new_scores = data['scores'] - existing_scores  # Only get scores we don't have
+                        
+                        if new_scores:  # Only update if we have new scores
+                            user_data['vibe_scores'].extend(new_scores)
+                            # Update current vibe to the most recent one
+                            user_data['vibe'] = list(new_scores)[-1]
             
             # Generate summary
+            channel_scope = channel.mention if channel else "all channels"
             summary = (
-                f"Scan complete!\n"
+                f"Scan complete for {channel_scope}!\n"
                 f"Total messages scanned: {total_messages:,}\n"
                 f"Vibe checks found: {vibe_checks_found:,}\n"
-                f"Users updated: {len(users_updated)}\n\n"
+                f"Users updated: {len(user_updates)}\n\n"
                 "Updates per user:\n"
             )
             
-            for user_id, data in users_updated.items():
-                if data["count"] > 0:
-                    summary += f"- {data['name']}: {data['count']} new vibe(s)\n"
+            for user_id, data in user_updates.items():
+                new_vibes = len(data['scores'])
+                if new_vibes > 0:
+                    summary += f"- {data['name']}: {new_vibes:,} vibe(s)\n"
             
             await progress_msg.edit(content=summary)
             
