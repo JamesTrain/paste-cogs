@@ -189,7 +189,7 @@ class Vibecheck(commands.Cog):
             vibe_checks_found = 0
             
             # Use a dictionary to batch process user updates
-            user_updates = {}  # {user_id: {scores: set(), name: str}}
+            user_updates = {}  # {user_id: {scores: list(), name: str}}
             
             # Determine which channels to scan
             channels_to_scan = [channel] if channel else ctx.guild.text_channels
@@ -200,7 +200,7 @@ class Vibecheck(commands.Cog):
                     await progress_msg.edit(content=f"Scanning {channel.mention}...")
                     
                     # Process messages in chunks for better performance
-                    async for message in channel.history(limit=None):
+                    async for message in channel.history(limit=None, oldest_first=True):  # Process in chronological order
                         total_messages += 1
                         if total_messages % 5000 == 0:  # Update less frequently
                             await progress_msg.edit(content=f"Scanning {channel.mention}...\nProcessed {total_messages:,} messages")
@@ -216,12 +216,12 @@ class Vibecheck(commands.Cog):
                                 user = self.bot.get_user(user_id)
                                 if user:
                                     user_updates[user_id] = {
-                                        'scores': set(),  # Use set for unique scores
+                                        'scores': [],  # Use list to keep all scores
                                         'name': user.name
                                     }
                             
                             if user_id in user_updates:
-                                user_updates[user_id]['scores'].add(vibe_score)
+                                user_updates[user_id]['scores'].append(vibe_score)
                             
                 except discord.Forbidden:
                     await progress_msg.edit(content=f"⚠️ Cannot access {channel.mention}, skipping...")
@@ -248,14 +248,11 @@ class Vibecheck(commands.Cog):
                         if 'vibe_scores' not in user_data:
                             user_data['vibe_scores'] = []
                         
-                        # Convert existing scores to set for efficient comparison
-                        existing_scores = set(user_data['vibe_scores'])
-                        new_scores = data['scores'] - existing_scores  # Only get scores we don't have
-                        
-                        if new_scores:  # Only update if we have new scores
-                            user_data['vibe_scores'].extend(new_scores)
-                            # Update current vibe to the most recent one
-                            user_data['vibe'] = list(new_scores)[-1]
+                        # Add all scores in chronological order
+                        user_data['vibe_scores'].extend(data['scores'])
+                        # Update current vibe to the most recent one
+                        if data['scores']:  # Only update if we found scores
+                            user_data['vibe'] = data['scores'][-1]
             
             # Generate summary
             channel_scope = channel.mention if channel else "all channels"
