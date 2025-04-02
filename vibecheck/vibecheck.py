@@ -172,30 +172,23 @@ class Vibecheck(commands.Cog):
                 color=discord.Color.gold()
             )
 
-            # Create the header
-            description = "```\n"
-            description += f"{title}\n"
-            description += "Rank  Name                 Total    Checks  Avg\n"
-            description += "──────────────────────────────────────────────\n"
+            # Create the leaderboard with fixed-width columns
+            description = f"```\n{title}\n"
+            description += f"{'Rank':<6} {'Name':<20} {'Total':>7} {'Checks':>7} {'Avg':>6}\n"
+            description += "═" * 50 + "\n"  # Separator line
 
             # Format each entry
             medals = ["🥇", "🥈", "🥉"]
             
             for i, stats in enumerate(user_stats[:10], 1):
                 rank = medals[i-1] if i <= 3 else f"#{i}"
-                name = stats['name'][:17]  # Truncate name if too long
+                name = stats['name'][:19]  # Truncate name if too long
                 total = f"{stats['total_vibe']:,}"
                 checks = str(stats['checks'])
                 avg = f"{stats['average']:.1f}"
 
-                # Format each field with proper spacing
-                rank = f"{rank:<4}"
-                name = f"{name:<17}"
-                total = f"{total:>8}"
-                checks = f"{checks:>8}"
-                avg = f"{avg:>6}"
-
-                description += f"{rank}  {name} {total} {checks} {avg}\n"
+                # Format each field with fixed width
+                description += f"{rank:<6} {name:<20} {total:>7} {checks:>7} {avg:>6}\n"
 
             description += "```"
             embed.description = description
