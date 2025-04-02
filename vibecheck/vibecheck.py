@@ -161,52 +161,51 @@ class Vibecheck(commands.Cog):
             sort_by = sort_by.lower()
             if sort_by == "avg":
                 user_stats.sort(key=lambda x: x['average'], reverse=True)
-                title = "🏆 Average Vibe Leaderboard 🏆"
-                description = "Top 10 Users by Average Vibe Score"
+                title = "🏆 Average Vibe Leaderboard"
+                primary_stat = "Avg"
             else:
                 user_stats.sort(key=lambda x: x['total_vibe'], reverse=True)
-                title = "🏆 Total Vibe Leaderboard 🏆"
-                description = "Top 10 Users by Total Vibe Power"
+                title = "🏆 Total Vibe Leaderboard"
+                primary_stat = "Total"
 
             # Create embed
             embed = discord.Embed(
                 title=title,
-                description=description,
                 color=discord.Color.gold()
             )
 
             # Add medal emojis for top 3
             medals = ["🥇", "🥈", "🥉"]
 
-            # Add fields for top 10 users
+            # Create table header
+            table = "```\nRank  Name                 " + primary_stat.ljust(8) + " Checks  Avg\n"
+            table += "─" * 50 + "\n"
+
+            # Add top 10 users to table
             for i, stats in enumerate(user_stats[:10], 1):
-                medal = medals[i-1] if i <= 3 else f"{i}."
+                rank = medals[i-1] if i <= 3 else f"#{i} "
+                name = stats['name'][:18].ljust(18)  # Limit name length
                 
                 if sort_by == "avg":
-                    value = (
-                        f"Average Vibe: **{stats['average']:.1f}**\n"
-                        f"Total Checks: {stats['checks']:,}\n"
-                        f"Total Power: {stats['total_vibe']:,}"
-                    )
+                    main_stat = f"{stats['average']:.1f}".ljust(8)
+                    avg = f"{stats['total_vibe']:,}"
                 else:
-                    value = (
-                        f"Total Power: **{stats['total_vibe']:,}**\n"
-                        f"Average Vibe: {stats['average']:.1f}\n"
-                        f"Total Checks: {stats['checks']:,}"
-                    )
+                    main_stat = f"{stats['total_vibe']:,}".ljust(8)
+                    avg = f"{stats['average']:.1f}"
+                
+                checks = f"{stats['checks']:,}".ljust(6)
+                
+                table += f"{rank}  {name}  {main_stat}  {checks}  {avg}\n"
 
-                embed.add_field(
-                    name=f"{medal} {stats['name']}",
-                    value=value,
-                    inline=False
-                )
+            table += "```"
+            embed.description = table
 
             # Set thumbnail to the top user's avatar
             if user_stats:
                 embed.set_thumbnail(url=user_stats[0]['avatar_url'])
 
             # Add footer with command hint
-            embed.set_footer(text="Try !vibeboard avg to sort by average score")
+            embed.set_footer(text=f"Try !vibeboard {'total' if sort_by == 'avg' else 'avg'} to sort by {'total vibe power' if sort_by == 'avg' else 'average score'}")
 
             await ctx.send(embed=embed)
 
