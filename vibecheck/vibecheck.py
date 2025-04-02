@@ -179,20 +179,15 @@ class Vibecheck(commands.Cog):
             description += "────────────────────────────────────────────\n"
 
             # Format each entry
-            medals = ["🥇", "🥈", "🥉"]
-            
             for i, stats in enumerate(user_stats[:10], 1):
-                rank = medals[i-1] if i <= 3 else f"#{i}"
+                rank = f"#{i}"
                 name = stats['name'][:15]  # Truncate name if too long
                 total = f"{stats['total_vibe']:,}"
                 checks = str(stats['checks'])
                 avg = f"{stats['average']:.1f}"
 
                 # Format each field with proper spacing
-                if i <= 3:
-                    rank = f"{rank:<2}"
-                else:
-                    rank = f"{rank:<3}"  # Add extra space for non-emoji ranks
+                rank = f"{rank:<3}"
                 name = f"{name:<15}"
                 total = f"{total:>6}"
                 checks = f"{checks:>6}"
