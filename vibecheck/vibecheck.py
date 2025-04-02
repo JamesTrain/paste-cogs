@@ -199,7 +199,7 @@ class Vibecheck(commands.Cog):
             embed.description = description
 
             # Add footer with command hint
-            embed.set_footer(text=f"Try !vibeboard {'total' if sort_by == 'avg' else 'avg'} to sort by {'total vibe power' if sort_by == 'avg' else 'average score'}")
+            embed.set_footer(text=f"Try [p]vibeboard {'total' if sort_by == 'avg' else 'avg'} to sort by {'total vibe power' if sort_by == 'avg' else 'average score'}")
 
             await ctx.send(embed=embed)
 
