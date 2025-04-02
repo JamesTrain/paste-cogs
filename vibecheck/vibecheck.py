@@ -190,9 +190,9 @@ class Vibecheck(commands.Cog):
 
                 # Format each field with proper spacing
                 if i <= 3:
-                    rank = f"{rank:<4}"
+                    rank = f"{rank:<2}"
                 else:
-                    rank = f"{rank:<6}"  # Add extra space for non-emoji ranks
+                    rank = f"{rank:<3}"  # Add extra space for non-emoji ranks
                 name = f"{name:<15}"
                 total = f"{total:>6}"
                 checks = f"{checks:>6}"
