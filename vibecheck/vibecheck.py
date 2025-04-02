@@ -173,28 +173,31 @@ class Vibecheck(commands.Cog):
             )
 
             # Create the header
-            header = "Rank    Name           Total    Checks\nAvg\n"
-            header += "─" * 40 + "\n"
+            description = "```\n"
+            description += f"{title}\n"
+            description += "Rank  Name                 Total    Checks  Avg\n"
+            description += "──────────────────────────────────────────────\n"
 
             # Format each entry
-            entries = []
             medals = ["🥇", "🥈", "🥉"]
             
             for i, stats in enumerate(user_stats[:10], 1):
                 rank = medals[i-1] if i <= 3 else f"#{i}"
-                name = stats['name'][:12]  # Limit name length
+                name = stats['name'][:17]  # Truncate name if too long
                 total = f"{stats['total_vibe']:,}"
                 checks = str(stats['checks'])
                 avg = f"{stats['average']:.1f}"
 
-                # First line: rank, name, total, checks
-                entry = f"{rank:<4}    {name:<12} {total:>7} {checks:>7}\n"
-                # Second line: average
-                entry += f"{avg:<4}\n"
-                entries.append(entry)
+                # Format each field with proper spacing
+                rank = f"{rank:<4}"
+                name = f"{name:<17}"
+                total = f"{total:>8}"
+                checks = f"{checks:>8}"
+                avg = f"{avg:>6}"
 
-            # Combine everything into the description
-            description = "```\n" + header + "\n".join(entries) + "```"
+                description += f"{rank}  {name} {total} {checks} {avg}\n"
+
+            description += "```"
             embed.description = description
 
             # Set thumbnail to the top user's avatar
