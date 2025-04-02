@@ -189,7 +189,10 @@ class Vibecheck(commands.Cog):
                 avg = f"{stats['average']:.1f}"
 
                 # Format each field with proper spacing
-                rank = f"{rank:<4}"
+                if i <= 3:
+                    rank = f"{rank:<4}"
+                else:
+                    rank = f"{rank:<6}"  # Add extra space for non-emoji ranks
                 name = f"{name:<15}"
                 total = f"{total:>6}"
                 checks = f"{checks:>6}"
@@ -199,10 +202,6 @@ class Vibecheck(commands.Cog):
 
             description += "```"
             embed.description = description
-
-            # Set thumbnail to the top user's avatar
-            if user_stats:
-                embed.set_thumbnail(url=user_stats[0]['avatar_url'])
 
             # Add footer with command hint
             embed.set_footer(text=f"Try !vibeboard {'total' if sort_by == 'avg' else 'avg'} to sort by {'total vibe power' if sort_by == 'avg' else 'average score'}")
