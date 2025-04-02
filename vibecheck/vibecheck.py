@@ -162,11 +162,9 @@ class Vibecheck(commands.Cog):
             if sort_by == "avg":
                 user_stats.sort(key=lambda x: x['average'], reverse=True)
                 title = "🏆 Average Vibe Leaderboard"
-                primary_stat = "Avg"
             else:
                 user_stats.sort(key=lambda x: x['total_vibe'], reverse=True)
                 title = "🏆 Total Vibe Leaderboard"
-                primary_stat = "Total"
 
             # Create embed
             embed = discord.Embed(
@@ -174,31 +172,30 @@ class Vibecheck(commands.Cog):
                 color=discord.Color.gold()
             )
 
-            # Add medal emojis for top 3
+            # Create the header
+            header = "Rank    Name           Total    Checks\nAvg\n"
+            header += "─" * 40 + "\n"
+
+            # Format each entry
+            entries = []
             medals = ["🥇", "🥈", "🥉"]
-
-            # Create table header
-            table = "```\nRank  Name                 " + primary_stat.ljust(8) + " Checks  Avg\n"
-            table += "─" * 50 + "\n"
-
-            # Add top 10 users to table
+            
             for i, stats in enumerate(user_stats[:10], 1):
-                rank = medals[i-1] if i <= 3 else f"#{i} "
-                name = stats['name'][:18].ljust(18)  # Limit name length
-                
-                if sort_by == "avg":
-                    main_stat = f"{stats['average']:.1f}".ljust(8)
-                    avg = f"{stats['total_vibe']:,}"
-                else:
-                    main_stat = f"{stats['total_vibe']:,}".ljust(8)
-                    avg = f"{stats['average']:.1f}"
-                
-                checks = f"{stats['checks']:,}".ljust(6)
-                
-                table += f"{rank}  {name}  {main_stat}  {checks}  {avg}\n"
+                rank = medals[i-1] if i <= 3 else f"#{i}"
+                name = stats['name'][:12]  # Limit name length
+                total = f"{stats['total_vibe']:,}"
+                checks = str(stats['checks'])
+                avg = f"{stats['average']:.1f}"
 
-            table += "```"
-            embed.description = table
+                # First line: rank, name, total, checks
+                entry = f"{rank:<4}    {name:<12} {total:>7} {checks:>7}\n"
+                # Second line: average
+                entry += f"{avg:<4}\n"
+                entries.append(entry)
+
+            # Combine everything into the description
+            description = "```\n" + header + "\n".join(entries) + "```"
+            embed.description = description
 
             # Set thumbnail to the top user's avatar
             if user_stats:
