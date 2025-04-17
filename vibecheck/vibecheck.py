@@ -161,7 +161,7 @@ class Vibecheck(commands.Cog):
             sort_by = sort_by.lower()
             if sort_by == "avg":
                 # Filter users with fewer than 100 checks for average leaderboard
-                user_stats = [stats for stats in user_stats if stats['checks'] >= 100]
+                user_stats = [stats for stats in user_stats if stats['checks'] >= 150]
                 
                 if not user_stats: # Check if any users remain after filtering
                     await ctx.send("No users with at least 100 vibe checks found for the average leaderboard.")
