@@ -1,0 +1,11 @@
+{
+    "author": ["YourName"],
+    "name": "Massmove",
+    "short": "Move or swap members between voice channels",
+    "description": "Commands to move multiple users between voice channels at once. Includes massmove (one-way transfer) and massxfer (two-way swap) between channels.",
+    "tags": ["utility", "moderation", "voice", "admin"],
+    "install_msg": "Thanks for installing the Massmove cog! Use `[p]massmove` to move all members from one voice channel to another, or `[p]massxfer` to swap members between two voice channels.",
+    "requirements": [],
+    "min_bot_version": "3.5.0",
+    "end_user_data_statement": "This cog does not persistently store any data or metadata about users."
+} 
