@@ -38,14 +38,17 @@ class Vibecheck(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=974374574)
-        default_guild = {}
+        default_guild = {
+            "vibe_king_role_id": 1362271069666410689  # Store the VIBE KING role ID
+        }
         self.config.register_guild(**default_guild)
         
         # Store both current vibe and vibe history
         self.config.register_user(
             vibe=0,
             vibe_scores=[],  # List to store all vibe scores
-            lastran=datetime.datetime.strftime(datetime.date.today() - datetime.timedelta(days=1), "%Y-%m-%d")
+            lastran=datetime.datetime.strftime(datetime.date.today() - datetime.timedelta(days=1), "%Y-%m-%d"),
+            is_vibe_king=False  # Track if user currently has VIBE KING role
         )
 
     def _get_vibe_comment(self, vibe: int) -> str:
@@ -61,10 +64,24 @@ class Vibecheck(commands.Cog):
         
         Users can only check their vibes once per day.
         Returns a random score between 0 and 20 with a corresponding comment.
+        If you roll a 20, you get the VIBE KING role for the day!
         """
         try:
             lastranstr = await self.config.user(ctx.message.author).lastran()
             lastran = datetime.datetime.strptime(lastranstr, "%Y-%m-%d").date()
+            
+            # Check if user currently has VIBE KING role and it's a new day
+            if await self.config.user(ctx.message.author).is_vibe_king() and datetime.date.today() > lastran:
+                # Remove VIBE KING role
+                vibe_king_role_id = await self.config.guild(ctx.guild).vibe_king_role_id()
+                if vibe_king_role_id:
+                    vibe_king_role = ctx.guild.get_role(vibe_king_role_id)
+                    if vibe_king_role and vibe_king_role in ctx.author.roles:
+                        try:
+                            await ctx.author.remove_roles(vibe_king_role, reason="VIBE KING day has ended")
+                            await self.config.user(ctx.message.author).is_vibe_king.set(False)
+                        except discord.Forbidden:
+                            pass  # Bot doesn't have permission, silently continue
 
             if datetime.date.today() == lastran:
                 vibe = await self.config.user(ctx.message.author).vibe()
@@ -84,9 +101,42 @@ class Vibecheck(commands.Cog):
                     user_data['vibe_scores'].append(vibe)
 
                 comment = self._get_vibe_comment(vibe)
-                await ctx.send(":game_die: {} checked their vibe and got **{}**\n{}".format(
+                message = ":game_die: {} checked their vibe and got **{}**\n{}".format(
                     ctx.message.author.mention, vibe, comment
-                ))
+                )
+                
+                # Add VIBE KING role if user rolled a 20
+                if vibe == 20:
+                    vibe_king_role_id = await self.config.guild(ctx.guild).vibe_king_role_id()
+                    # Get or create the VIBE KING role
+                    if vibe_king_role_id:
+                        vibe_king_role = ctx.guild.get_role(vibe_king_role_id)
+                    else:
+                        # Try to find a role named "VIBE KING"
+                        vibe_king_role = discord.utils.get(ctx.guild.roles, name="VIBE KING")
+                        
+                        # If the role doesn't exist and bot has manage_roles permission, create it
+                        if not vibe_king_role and ctx.guild.me.guild_permissions.manage_roles:
+                            try:
+                                vibe_king_role = await ctx.guild.create_role(
+                                    name="VIBE KING",
+                                    color=discord.Color.gold(),
+                                    reason="Created for vibecheck cog"
+                                )
+                                await self.config.guild(ctx.guild).vibe_king_role_id.set(vibe_king_role.id)
+                            except discord.Forbidden:
+                                vibe_king_role = None
+                    
+                    # Assign the role if it exists
+                    if vibe_king_role:
+                        try:
+                            await ctx.author.add_roles(vibe_king_role, reason="Rolled a 20 in vibecheck")
+                            await self.config.user(ctx.message.author).is_vibe_king.set(True)
+                            message += "\n👑 You've been granted the VIBE KING role for the day! 👑"
+                        except discord.Forbidden:
+                            pass  # Bot doesn't have permission, silently continue
+                
+                await ctx.send(message)
         except Exception as e:
             await ctx.send("An error occurred while checking your vibes. Please try again later.")
             print(f"Error in vibecheck: {e}")
