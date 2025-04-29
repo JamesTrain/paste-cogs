@@ -85,7 +85,10 @@ class Vibecheck(commands.Cog):
 
             if datetime.date.today() == lastran:
                 vibe = await self.config.user(ctx.message.author).vibe()
-                await ctx.send("You already rolled today. Scroll up idiot :skull:")
+                if await self.config.user(ctx.message.author).is_vibe_king():
+                    await ctx.send("You already rolled today. Scroll up King :crown:")
+                else:
+                    await ctx.send("You already rolled today. Scroll up idiot :skull:")
             else:
                 await self.config.user(ctx.message.author).lastran.set(
                     datetime.datetime.strftime(datetime.date.today(), "%Y-%m-%d")
