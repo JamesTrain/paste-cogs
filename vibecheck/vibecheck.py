@@ -2,11 +2,13 @@ import datetime
 import time
 import os
 import re
+import asyncio
 from typing import Dict, Optional, List
 
 import discord
 from redbot.core import Config, commands
 from redbot.core.bot import Red
+from redbot.core.utils import AsyncIter
 
 # Set timezone
 os.environ['TZ'] = 'EST'
@@ -50,6 +52,64 @@ class Vibecheck(commands.Cog):
             lastran=datetime.datetime.strftime(datetime.date.today() - datetime.timedelta(days=1), "%Y-%m-%d"),
             is_vibe_king=False  # Track if user currently has VIBE KING role
         )
+        
+        # Start the background task to check for midnight
+        self.midnight_task = asyncio.create_task(self._schedule_midnight_reset())
+
+    async def _schedule_midnight_reset(self):
+        """Schedule the role reset to occur at midnight."""
+        await self.bot.wait_until_ready()
+        while self == self.bot.get_cog("Vibecheck"):
+            now = datetime.datetime.now()
+            # Calculate time until next midnight
+            tomorrow = (now + datetime.timedelta(days=1)).replace(
+                hour=0, minute=0, second=0, microsecond=0
+            )
+            seconds_until_midnight = (tomorrow - now).total_seconds()
+            
+            # Sleep until midnight
+            await asyncio.sleep(seconds_until_midnight)
+            
+            # Reset vibe king roles at midnight
+            await self._reset_vibe_king_roles()
+            
+            # Sleep a bit to avoid double execution
+            await asyncio.sleep(60)
+            
+    async def _reset_vibe_king_roles(self):
+        """Reset all VIBE KING roles at midnight."""
+        try:
+            # Process all guilds the bot is in
+            async for guild in AsyncIter(self.bot.guilds):
+                vibe_king_role_id = await self.config.guild(guild).vibe_king_role_id()
+                if not vibe_king_role_id:
+                    continue
+                    
+                vibe_king_role = guild.get_role(vibe_king_role_id)
+                if not vibe_king_role:
+                    continue
+                
+                # Get all users with the VIBE KING role
+                for member in guild.members:
+                    if not member.bot and vibe_king_role in member.roles:
+                        try:
+                            # Remove the role
+                            await member.remove_roles(vibe_king_role, reason="VIBE KING day has ended (midnight reset)")
+                            # Update the user's config
+                            await self.config.user(member).is_vibe_king.set(False)
+                        except discord.Forbidden:
+                            pass  # Bot doesn't have permission
+                        except Exception as e:
+                            print(f"Error removing VIBE KING role from {member.name}: {e}")
+                            
+            print(f"[Vibecheck] Reset VIBE KING roles at {datetime.datetime.now()}")
+        except Exception as e:
+            print(f"[Vibecheck] Error in reset_vibe_king_roles: {e}")
+
+    def cog_unload(self):
+        """Clean up when cog is unloaded."""
+        if hasattr(self, 'midnight_task') and self.midnight_task:
+            self.midnight_task.cancel()
 
     def _get_vibe_comment(self, vibe: int) -> str:
         """Get the appropriate comment for a given vibe score."""
@@ -70,19 +130,8 @@ class Vibecheck(commands.Cog):
             lastranstr = await self.config.user(ctx.message.author).lastran()
             lastran = datetime.datetime.strptime(lastranstr, "%Y-%m-%d").date()
             
-            # Check if user currently has VIBE KING role and it's a new day
-            if await self.config.user(ctx.message.author).is_vibe_king() and datetime.date.today() > lastran:
-                # Remove VIBE KING role
-                vibe_king_role_id = await self.config.guild(ctx.guild).vibe_king_role_id()
-                if vibe_king_role_id:
-                    vibe_king_role = ctx.guild.get_role(vibe_king_role_id)
-                    if vibe_king_role and vibe_king_role in ctx.author.roles:
-                        try:
-                            await ctx.author.remove_roles(vibe_king_role, reason="VIBE KING day has ended")
-                            await self.config.user(ctx.message.author).is_vibe_king.set(False)
-                        except discord.Forbidden:
-                            pass  # Bot doesn't have permission, silently continue
-
+            # We no longer remove VIBE KING role here, as it's handled by the midnight task
+            
             if datetime.date.today() == lastran:
                 vibe = await self.config.user(ctx.message.author).vibe()
                 if await self.config.user(ctx.message.author).is_vibe_king():
