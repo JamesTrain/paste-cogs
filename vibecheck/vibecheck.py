@@ -318,6 +318,7 @@ class Vibecheck(commands.Cog):
             if is_daily and daily_vibes_count > 0:
                 daily_avg = daily_vibes_total / daily_vibes_count
                 description += f"Today's Average Vibe: {daily_avg:.1f}\n"
+                description += f"Today's Total Checks: {daily_vibes_count}\n"
             
             # Use different headers based on the board type
             if is_daily:
