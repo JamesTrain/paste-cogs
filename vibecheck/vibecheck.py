@@ -235,28 +235,56 @@ class Vibecheck(commands.Cog):
         Parameters
         ----------
         sort_by : str, optional
-            How to sort the leaderboard. Can be 'total' or 'avg' (default: total)
+            How to sort the leaderboard. Can be 'total', 'avg', or 'daily' (default: total)
+            Use 'daily' to see only today's vibes
         """
         try:
             # Get all users in the guild
             all_users = ctx.guild.members
             user_stats = []
-
+            today_str = datetime.datetime.strftime(datetime.date.today(), "%Y-%m-%d")
+            
+            # Check if we're showing daily stats
+            is_daily = sort_by.lower() == "daily"
+            
             # Collect stats for all users
+            daily_vibes_count = 0
+            daily_vibes_total = 0
+            
             for user in all_users:
                 user_data = await self.config.user(user).all()
                 if user_data and 'vibe_scores' in user_data and user_data['vibe_scores']:
                     vibe_scores = user_data['vibe_scores']
-                    user_stats.append({
-                        'name': user.name,
-                        'total_vibe': sum(vibe_scores),
-                        'average': sum(vibe_scores) / len(vibe_scores),
-                        'checks': len(vibe_scores),
-                        'avatar_url': user.display_avatar.url
-                    })
+                    
+                    # For daily board, check if user has rolled today
+                    if is_daily:
+                        lastran = user_data.get('lastran', '')
+                        if lastran == today_str:
+                            current_vibe = user_data.get('vibe', 0)
+                            user_stats.append({
+                                'name': user.name,
+                                'total_vibe': current_vibe,  # Just today's vibe
+                                'average': current_vibe,     # Same as total for daily
+                                'checks': 1,                 # Always 1 for daily
+                                'avatar_url': user.display_avatar.url
+                            })
+                            daily_vibes_count += 1
+                            daily_vibes_total += current_vibe
+                    else:
+                        # Regular board logic
+                        user_stats.append({
+                            'name': user.name,
+                            'total_vibe': sum(vibe_scores),
+                            'average': sum(vibe_scores) / len(vibe_scores),
+                            'checks': len(vibe_scores),
+                            'avatar_url': user.display_avatar.url
+                        })
 
             if not user_stats:
-                await ctx.send("No vibe checks recorded yet!")
+                if is_daily:
+                    await ctx.send("No vibe checks recorded for today!")
+                else:
+                    await ctx.send("No vibe checks recorded yet!")
                 return
 
             # Sort based on user preference
@@ -271,6 +299,9 @@ class Vibecheck(commands.Cog):
 
                 user_stats.sort(key=lambda x: x['average'], reverse=True)
                 title = "🏆 Average Vibe Leaderboard"
+            elif sort_by == "daily":
+                user_stats.sort(key=lambda x: x['total_vibe'], reverse=True)
+                title = f"🏆 Today's Vibe Leaderboard ({today_str})"
             else:
                 user_stats.sort(key=lambda x: x['total_vibe'], reverse=True)
                 title = "🏆 Total Vibe Leaderboard"
@@ -284,6 +315,9 @@ class Vibecheck(commands.Cog):
             # Create the header
             description = "```\n"
             description += f"{title}\n"
+            if is_daily and daily_vibes_count > 0:
+                daily_avg = daily_vibes_total / daily_vibes_count
+                description += f"Today's Average Vibe: {daily_avg:.1f}\n"
             description += "Rank  Name               Total  Checks  Avg\n"
             description += "────────────────────────────────────────────\n"
 
@@ -308,7 +342,15 @@ class Vibecheck(commands.Cog):
             embed.description = description
 
             # Add footer with command hint
-            embed.set_footer(text=f"Try [p]vibeboard {'total' if sort_by == 'avg' else 'avg'} to sort by {'total vibe power' if sort_by == 'avg' else 'average score'}")
+            if is_daily:
+                embed.set_footer(text=f"Try [p]vibeboard total or [p]vibeboard avg to see all-time stats")
+            else:
+                sort_options = {
+                    "total": "avg",
+                    "avg": "daily"
+                }
+                next_sort = sort_options.get(sort_by, "total")
+                embed.set_footer(text=f"Try [p]vibeboard {next_sort} to sort by {{'average score' if next_sort == 'avg' else 'today\\'s vibes' if next_sort == 'daily' else 'total vibe power'}}")
 
             await ctx.send(embed=embed)
 
