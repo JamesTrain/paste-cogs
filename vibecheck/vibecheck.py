@@ -318,25 +318,44 @@ class Vibecheck(commands.Cog):
             if is_daily and daily_vibes_count > 0:
                 daily_avg = daily_vibes_total / daily_vibes_count
                 description += f"Today's Average Vibe: {daily_avg:.1f}\n"
-            description += "Rank  Name               Total  Checks  Avg\n"
-            description += "────────────────────────────────────────────\n"
+            
+            # Use different headers based on the board type
+            if is_daily:
+                description += "Rank  Name                  Vibe\n"
+                description += "───────────────────────────────\n"
+            else:
+                description += "Rank  Name               Total  Checks  Avg\n"
+                description += "────────────────────────────────────────────\n"
 
             # Format each entry
             for i, stats in enumerate(user_stats[:10], 1):
                 rank = f"#{i}"
-                name = stats['name'][:15]  # Truncate name if too long
-                total = f"{stats['total_vibe']:,}"
-                checks = str(stats['checks'])
-                avg = f"{stats['average']:.1f}"
-
-                # Format each field with proper spacing
-                rank = f"{rank:<3}"
-                name = f"{name:<15}"
-                total = f"{total:>6}"
-                checks = f"{checks:>6}"
-                avg = f"{avg:>5}"
-
-                description += f"{rank}  {name} {total} {checks} {avg}\n"
+                name = stats['name'][:15] if not is_daily else stats['name'][:20]  # Allow longer names for daily board
+                
+                if is_daily:
+                    # Simpler format for daily board
+                    vibe = str(stats['total_vibe'])
+                    
+                    # Format each field with proper spacing
+                    rank = f"{rank:<3}"
+                    name = f"{name:<20}"
+                    vibe = f"{vibe:>5}"
+                    
+                    description += f"{rank}  {name} {vibe}\n"
+                else:
+                    # Full format for regular boards
+                    total = f"{stats['total_vibe']:,}"
+                    checks = str(stats['checks'])
+                    avg = f"{stats['average']:.1f}"
+                    
+                    # Format each field with proper spacing
+                    rank = f"{rank:<3}"
+                    name = f"{name:<15}"
+                    total = f"{total:>6}"
+                    checks = f"{checks:>6}"
+                    avg = f"{avg:>5}"
+                    
+                    description += f"{rank}  {name} {total} {checks} {avg}\n"
 
             description += "```"
             embed.description = description
