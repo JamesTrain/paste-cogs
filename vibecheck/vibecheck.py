@@ -378,108 +378,108 @@ class Vibecheck(commands.Cog):
             await ctx.send("An error occurred while fetching the leaderboard. Please try again later.")
             print(f"Error in vibeboard: {e}")
 
-    # @commands.command()
-    # @commands.has_permissions(administrator=True)
-    # async def vibescan(self, ctx: commands.Context, channel: discord.TextChannel = None):
-    #     """Scan channel(s) for past vibe checks and update user stats.
+    @commands.command()
+    @commands.has_permissions(administrator=True)
+    async def vibescan(self, ctx: commands.Context, channel: discord.TextChannel = None):
+        """Scan channel(s) for past vibe checks and update user stats.
         
-    #     Parameters
-    #     ----------
-    #     channel : discord.TextChannel, optional
-    #         The specific channel to scan. If not provided, scans all channels.
-    #     """
-    #     try:
-    #         progress_msg = await ctx.send("Starting vibe scan...")
+        Parameters
+        ----------
+        channel : discord.TextChannel, optional
+            The specific channel to scan. If not provided, scans all channels.
+        """
+        try:
+            progress_msg = await ctx.send("Starting vibe scan...")
             
-    #         # Regular expression to match vibe check messages
-    #         vibe_pattern = re.compile(r"<@!?(\d+)> checked their vibe and got \*\*(\d+)\*\*")
+            # Regular expression to match vibe check messages
+            vibe_pattern = re.compile(r"<@!?(\d+)> checked their vibe and got \*\*(\d+)\*\*")
             
-    #         total_messages = 0
-    #         vibe_checks_found = 0
+            total_messages = 0
+            vibe_checks_found = 0
             
-    #         # Use a dictionary to batch process user updates
-    #         user_updates = {}  # {user_id: {scores: list(), name: str}}
+            # Use a dictionary to batch process user updates
+            user_updates = {}  # {user_id: {scores: list(), name: str}}
             
-    #         # Determine which channels to scan
-    #         channels_to_scan = [channel] if channel else ctx.guild.text_channels
+            # Determine which channels to scan
+            channels_to_scan = [channel] if channel else ctx.guild.text_channels
             
-    #         # First pass: Collect all vibe data
-    #         for channel in channels_to_scan:
-    #             try:
-    #                 await progress_msg.edit(content=f"Scanning {channel.mention}...")
+            # First pass: Collect all vibe data
+            for channel in channels_to_scan:
+                try:
+                    await progress_msg.edit(content=f"Scanning {channel.mention}...")
                     
-    #                 # Process messages in chunks for better performance
-    #                 async for message in channel.history(limit=None, oldest_first=True):  # Process in chronological order
-    #                     total_messages += 1
-    #                     if total_messages % 5000 == 0:  # Update less frequently
-    #                         await progress_msg.edit(content=f"Scanning {channel.mention}...\nProcessed {total_messages:,} messages")
+                    # Process messages in chunks for better performance
+                    async for message in channel.history(limit=None, oldest_first=True):  # Process in chronological order
+                        total_messages += 1
+                        if total_messages % 5000 == 0:  # Update less frequently
+                            await progress_msg.edit(content=f"Scanning {channel.mention}...\nProcessed {total_messages:,} messages")
                         
-    #                     match = vibe_pattern.search(message.content)
-    #                     if match:
-    #                         vibe_checks_found += 1
-    #                         user_id = int(match.group(1))
-    #                         vibe_score = int(match.group(2))
+                        match = vibe_pattern.search(message.content)
+                        if match:
+                            vibe_checks_found += 1
+                            user_id = int(match.group(1))
+                            vibe_score = int(match.group(2))
                             
-    #                         # Batch user updates
-    #                         if user_id not in user_updates:
-    #                             user = self.bot.get_user(user_id)
-    #                             if user:
-    #                                 user_updates[user_id] = {
-    #                                     'scores': [],  # Use list to keep all scores
-    #                                     'name': user.name
-    #                                 }
+                            # Batch user updates
+                            if user_id not in user_updates:
+                                user = self.bot.get_user(user_id)
+                                if user:
+                                    user_updates[user_id] = {
+                                        'scores': [],  # Use list to keep all scores
+                                        'name': user.name
+                                    }
                             
-    #                         if user_id in user_updates:
-    #                             user_updates[user_id]['scores'].append(vibe_score)
+                            if user_id in user_updates:
+                                user_updates[user_id]['scores'].append(vibe_score)
                             
-    #             except discord.Forbidden:
-    #                 await progress_msg.edit(content=f"⚠️ Cannot access {channel.mention}, skipping...")
-    #                 continue
+                except discord.Forbidden:
+                    await progress_msg.edit(content=f"⚠️ Cannot access {channel.mention}, skipping...")
+                    continue
             
-    #         if not user_updates:
-    #             await progress_msg.edit(content="No vibe checks found!")
-    #             return
+            if not user_updates:
+                await progress_msg.edit(content="No vibe checks found!")
+                return
                 
-    #         # Second pass: Bulk update users
-    #         await progress_msg.edit(content="Processing updates...")
-    #         processed_users = 0
-    #         total_users = len(user_updates)
+            # Second pass: Bulk update users
+            await progress_msg.edit(content="Processing updates...")
+            processed_users = 0
+            total_users = len(user_updates)
             
-    #         for user_id, data in user_updates.items():
-    #             user = self.bot.get_user(user_id)
-    #             if user:
-    #                 processed_users += 1
-    #                 if processed_users % 10 == 0:  # Update progress every 10 users
-    #                     await progress_msg.edit(content=f"Updating users... {processed_users}/{total_users}")
+            for user_id, data in user_updates.items():
+                user = self.bot.get_user(user_id)
+                if user:
+                    processed_users += 1
+                    if processed_users % 10 == 0:  # Update progress every 10 users
+                        await progress_msg.edit(content=f"Updating users... {processed_users}/{total_users}")
                     
-    #                 # Get existing scores first
-    #                 async with self.config.user(user).all() as user_data:
-    #                     if 'vibe_scores' not in user_data:
-    #                         user_data['vibe_scores'] = []
+                    # Get existing scores first
+                    async with self.config.user(user).all() as user_data:
+                        if 'vibe_scores' not in user_data:
+                            user_data['vibe_scores'] = []
                         
-    #                     # Add all scores in chronological order
-    #                     user_data['vibe_scores'].extend(data['scores'])
-    #                     # Update current vibe to the most recent one
-    #                     if data['scores']:  # Only update if we found scores
-    #                         user_data['vibe'] = data['scores'][-1]
+                        # Add all scores in chronological order
+                        user_data['vibe_scores'].extend(data['scores'])
+                        # Update current vibe to the most recent one
+                        if data['scores']:  # Only update if we found scores
+                            user_data['vibe'] = data['scores'][-1]
             
-    #         # Generate summary
-    #         channel_scope = channel.mention if channel else "all channels"
-    #         summary = (
-    #             f"Scan complete for {channel_scope}!\n"
-    #             f"Total messages scanned: {total_messages:,}\n"
-    #             f"Vibe checks found: {vibe_checks_found:,}\n"
-    #             f"Users updated: {len(user_updates)}\n\n"
-    #             "Updates per user:\n"
-    #         )
+            # Generate summary
+            channel_scope = channel.mention if channel else "all channels"
+            summary = (
+                f"Scan complete for {channel_scope}!\n"
+                f"Total messages scanned: {total_messages:,}\n"
+                f"Vibe checks found: {vibe_checks_found:,}\n"
+                f"Users updated: {len(user_updates)}\n\n"
+                "Updates per user:\n"
+            )
             
-    #         for user_id, data in user_updates.items():
-    #             new_vibes = len(data['scores'])
-    #             if new_vibes > 0:
-    #                 summary += f"- {data['name']}: {new_vibes:,} vibe(s)\n"
+            for user_id, data in user_updates.items():
+                new_vibes = len(data['scores'])
+                if new_vibes > 0:
+                    summary += f"- {data['name']}: {new_vibes:,} vibe(s)\n"
             
-    #         await progress_msg.edit(content=summary)
+            await progress_msg.edit(content=summary)
             
-    #     except Exception as e:
-    #         await ctx.send(f"An error occurred while scanning for vibe checks: {e}")
-    #         print(f"Error in vibescan: {e}")
+        except Exception as e:
+            await ctx.send(f"An error occurred while scanning for vibe checks: {e}")
+            print(f"Error in vibescan: {e}")
