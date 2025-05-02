@@ -379,7 +379,6 @@ class Vibecheck(commands.Cog):
             print(f"Error in vibeboard: {e}")
 
     @commands.command()
-    @commands.has_permissions(administrator=True)
     async def vibescan(self, ctx: commands.Context, channel: discord.TextChannel = None):
         """Scan channel(s) for past vibe checks and update user stats.
         
