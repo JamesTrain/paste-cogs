@@ -3,7 +3,7 @@ import time
 import os
 import re
 import asyncio
-from typing import Dict, Optional, List
+from typing import Dict, Optional, List, Union
 
 import discord
 from redbot.core import Config, commands
@@ -194,33 +194,71 @@ class Vibecheck(commands.Cog):
             print(f"Error in vibecheck: {e}")
 
     @commands.command()
-    async def vibestats(self, ctx: commands.Context, user: discord.Member = None):
+    async def vibestats(self, ctx: commands.Context, user_or_limit: Optional[Union[discord.Member, int]] = None, limit_if_user_provided: Optional[int] = None):
         """View vibe check statistics.
         
         Parameters
         ----------
-        user : discord.Member, optional
-            The user to check stats for. If not provided, shows your own stats.
+        user_or_limit : discord.Member or int, optional
+            The user to check stats for, or the number of recent checks if no user is specified.
+            If not provided, shows your own stats for all checks.
+        limit_if_user_provided : int, optional
+            The number of recent checks to show if a user was specified.
         """
         try:
-            target_user = user or ctx.message.author
+            target_user: discord.Member
+            num_checks: Optional[int] = None
+
+            if user_or_limit is None and limit_if_user_provided is None:
+                # [p]vibestats
+                target_user = ctx.author
+                num_checks = None
+            elif isinstance(user_or_limit, discord.Member):
+                # [p]vibestats @user
+                # [p]vibestats @user 10
+                target_user = user_or_limit
+                num_checks = limit_if_user_provided
+            elif isinstance(user_or_limit, int):
+                # [p]vibestats 10
+                target_user = ctx.author
+                num_checks = user_or_limit
+                if limit_if_user_provided is not None:
+                    await ctx.send_help(ctx.command) 
+                    return
+            else: # Should not happen due to Union and Optional typing
+                await ctx.send_help(ctx.command)
+                return
+
             async with self.config.user(target_user).all() as user_data:
                 if not user_data or 'vibe_scores' not in user_data or not user_data['vibe_scores']:
                     await ctx.send(f"{target_user.name} hasn't checked their vibes yet!")
                     return
 
                 vibe_scores = user_data['vibe_scores']
-                total_checks = len(vibe_scores)
-                total_vibe = sum(vibe_scores)
-                average = total_vibe / total_checks
-                current_vibe = user_data.get('vibe', 0)
+                original_score_count = len(vibe_scores)
 
+                if num_checks is not None and num_checks > 0:
+                    if original_score_count < num_checks:
+                        await ctx.send(f"{target_user.name} has only {original_score_count} vibe check(s), not {num_checks}.")
+                        return
+                    vibe_scores = vibe_scores[-num_checks:]
+                
+                if not vibe_scores: # Should only happen if num_checks was > 0 but original_score_count was 0 (caught above) or num_checks made it empty (also caught)
+                    await ctx.send(f"{target_user.name} has no vibe checks for the specified criteria.")
+                    return
+
+                total_checks_considered = len(vibe_scores)
+                total_vibe_considered = sum(vibe_scores)
+                average_considered = total_vibe_considered / total_checks_considered if total_checks_considered > 0 else 0
+                current_vibe = user_data.get('vibe', 0) # This is the last rolled vibe, independent of num_checks
+
+                title_suffix = f" (Last {num_checks} Checks)" if num_checks else ""
                 stats_message = (
-                    f"📊 **Vibe Statistics for {target_user.name}**\n"
-                    f"Current Vibe: {current_vibe}\n"
-                    f"Total Checks: {total_checks}\n"
-                    f"Average Vibe: {average:.1f}\n"
-                    f"Total Vibe Power: {total_vibe}\n"
+                    f"📊 **Vibe Statistics for {target_user.name}{title_suffix}**\n"
+                    f"Current Vibe (Last Roll): {current_vibe}\n"
+                    f"Checks Considered: {total_checks_considered}\n"
+                    f"Average Vibe (Considered): {average_considered:.1f}\n"
+                    f"Total Vibe Power (Considered): {total_vibe_considered}\n"
                 )
                 await ctx.send(stats_message)
             
@@ -229,153 +267,214 @@ class Vibecheck(commands.Cog):
             print(f"Error in vibestats: {e}")
 
     @commands.command()
-    async def vibeboard(self, ctx: commands.Context, sort_by: str = "total"):
+    async def vibeboard(self, ctx: commands.Context, sort_by: str = "total", num_checks: Optional[int] = None):
         """Show the vibe leaderboard for all users.
         
         Parameters
         ----------
         sort_by : str, optional
-            How to sort the leaderboard. Can be 'total', 'avg', or 'daily' (default: total)
-            Use 'daily' to see only today's vibes
+            How to sort the leaderboard. Can be 'total', 'avg', or 'daily' (default: total).
+        num_checks : int, optional
+            Number of recent checks to consider if sorting by 'avg'. E.g., 'vibeboard avg 10'.
         """
         try:
-            # Get all users in the guild
             all_users = ctx.guild.members
-            user_stats = []
+            raw_user_data_list = []
             today_str = datetime.datetime.strftime(datetime.date.today(), "%Y-%m-%d")
             
-            # Check if we're showing daily stats
-            is_daily = sort_by.lower() == "daily"
+            sort_by_lower = sort_by.lower()
+            is_daily_board = sort_by_lower == "daily"
             
-            # Collect stats for all users
-            daily_vibes_count = 0
-            daily_vibes_total = 0
-            
-            for user in all_users:
-                user_data = await self.config.user(user).all()
-                if user_data and 'vibe_scores' in user_data and user_data['vibe_scores']:
-                    vibe_scores = user_data['vibe_scores']
-                    
-                    # For daily board, check if user has rolled today
-                    if is_daily:
-                        lastran = user_data.get('lastran', '')
-                        if lastran == today_str:
-                            current_vibe = user_data.get('vibe', 0)
-                            user_stats.append({
-                                'name': user.name,
-                                'total_vibe': current_vibe,  # Just today's vibe
-                                'average': current_vibe,     # Same as total for daily
-                                'checks': 1,                 # Always 1 for daily
-                                'avatar_url': user.display_avatar.url
-                            })
-                            daily_vibes_count += 1
-                            daily_vibes_total += current_vibe
-                    else:
-                        # Regular board logic
-                        user_stats.append({
-                            'name': user.name,
-                            'total_vibe': sum(vibe_scores),
-                            'average': sum(vibe_scores) / len(vibe_scores),
-                            'checks': len(vibe_scores),
-                            'avatar_url': user.display_avatar.url
-                        })
+            daily_vibes_count = 0 # For daily board summary
+            daily_vibes_total = 0 # For daily board summary
 
-            if not user_stats:
-                if is_daily:
-                    await ctx.send("No vibe checks recorded for today!")
-                else:
-                    await ctx.send("No vibe checks recorded yet!")
+            for user_member in all_users:
+                if user_member.bot:
+                    continue
+                user_config_data = await self.config.user(user_member).all()
+                if user_config_data and 'vibe_scores' in user_config_data and user_config_data['vibe_scores']:
+                    vibe_scores_list = user_config_data['vibe_scores']
+                    
+                    entry = {
+                        'user_obj': user_member,
+                        'all_scores': vibe_scores_list,
+                        'current_vibe_today': None, # Populated if is_daily_board and rolled today
+                        'rolled_today': False       # Populated if is_daily_board
+                    }
+
+                    if is_daily_board:
+                        lastran = user_config_data.get('lastran', '')
+                        if lastran == today_str:
+                            entry['rolled_today'] = True
+                            current_vibe_for_today = user_config_data.get('vibe', 0)
+                            entry['current_vibe_today'] = current_vibe_for_today
+                            # These are used for summary, not for sorting list directly here
+                            daily_vibes_count += 1 
+                            daily_vibes_total += current_vibe_for_today
+                    
+                    raw_user_data_list.append(entry)
+
+            if not raw_user_data_list:
+                await ctx.send("No vibe checks recorded yet in this server!")
                 return
 
-            # Sort based on user preference
-            sort_by = sort_by.lower()
-            if sort_by == "avg":
-                # Filter users with fewer than 150 checks for average leaderboard
-                user_stats = [stats for stats in user_stats if stats['checks'] >= 150]
-                
-                if not user_stats: # Check if any users remain after filtering
-                    await ctx.send("No users with at least 150 vibe checks found for the average leaderboard.")
-                    return
+            user_stats_for_embed = []
+            title = "🏆 Vibe Leaderboard" # Default title
+            title_suffix = ""
 
-                user_stats.sort(key=lambda x: x['average'], reverse=True)
-                title = "🏆 Average Vibe Leaderboard"
-            elif sort_by == "daily":
-                user_stats.sort(key=lambda x: x['total_vibe'], reverse=True)
+            if is_daily_board:
                 title = f"🏆 Today's Vibe Leaderboard ({today_str})"
-            else:
-                user_stats.sort(key=lambda x: x['total_vibe'], reverse=True)
-                title = "🏆 Total Vibe Leaderboard"
+                for raw_user in raw_user_data_list:
+                    if raw_user['rolled_today']:
+                        user_stats_for_embed.append({
+                            'name': raw_user['user_obj'].name,
+                            'total_vibe': raw_user['current_vibe_today'], # This is 'Vibe' for daily
+                            'average': raw_user['current_vibe_today'],   # For data structure consistency
+                            'checks': 1,                                 # For data structure consistency
+                            'avatar_url': raw_user['user_obj'].display_avatar.url
+                        })
+                if not user_stats_for_embed:
+                    await ctx.send(f"No vibe checks recorded for today ({today_str})!")
+                    return
+                user_stats_for_embed.sort(key=lambda x: x['total_vibe'], reverse=True)
 
+            elif sort_by_lower == "avg":
+                min_checks_for_default_avg = 150 # Existing behavior for "avg" without num_checks
+                
+                for raw_user in raw_user_data_list:
+                    all_user_scores = raw_user['all_scores']
+                    scores_to_consider = list(all_user_scores) # Make a copy
+                    
+                    num_actual_checks_for_avg = 0
+
+                    if num_checks is not None and num_checks > 0: # User specified "avg N"
+                        if len(scores_to_consider) < num_checks:
+                            continue # Not enough checks for the specified limit
+                        scores_to_consider = scores_to_consider[-num_checks:]
+                        num_actual_checks_for_avg = len(scores_to_consider)
+                        title_suffix = f" (Last {num_checks} Checks)"
+                    else: # Default "avg" behavior (min 150 total checks, use all of them for avg)
+                        if len(scores_to_consider) < min_checks_for_default_avg:
+                            continue
+                        # scores_to_consider remains all_user_scores
+                        num_actual_checks_for_avg = len(scores_to_consider)
+                        title_suffix = f" (Min {min_checks_for_default_avg} Total Checks)"
+                    
+                    if not scores_to_consider or num_actual_checks_for_avg == 0: 
+                        continue
+
+                    avg_vibe = sum(scores_to_consider) / num_actual_checks_for_avg
+                    user_stats_for_embed.append({
+                        'name': raw_user['user_obj'].name,
+                        'total_vibe': sum(scores_to_consider), # Sum of the N scores considered
+                        'average': avg_vibe,
+                        'checks': num_actual_checks_for_avg, # Number of checks *considered*
+                        'avatar_url': raw_user['user_obj'].display_avatar.url
+                    })
+                
+                if not user_stats_for_embed:
+                    msg_not_found = ""
+                    if num_checks is not None and num_checks > 0:
+                        msg_not_found = f"No users found with at least {num_checks} vibe checks for the average leaderboard."
+                    else:
+                        msg_not_found = f"No users with at least {min_checks_for_default_avg} total vibe checks found for the average leaderboard."
+                    await ctx.send(msg_not_found)
+                    return
+                user_stats_for_embed.sort(key=lambda x: x['average'], reverse=True)
+                title = f"🏆 Average Vibe Leaderboard{title_suffix}"
+
+            else: # Default is "total" (sort_by_lower == "total" or invalid sort_by)
+                  # num_checks parameter is ignored for "total" sort for now.
+                title = "🏆 Total Vibe Leaderboard"
+                for raw_user in raw_user_data_list:
+                    all_scores = raw_user['all_scores'] 
+                    if not all_scores: continue # Should have been caught by initial raw_user_data_list check
+                    user_stats_for_embed.append({
+                        'name': raw_user['user_obj'].name,
+                        'total_vibe': sum(all_scores),
+                        'average': sum(all_scores) / len(all_scores) if all_scores else 0,
+                        'checks': len(all_scores),
+                        'avatar_url': raw_user['user_obj'].display_avatar.url
+                    })
+                if not user_stats_for_embed: # Should be caught by raw_user_data_list check, but as safeguard
+                    await ctx.send("No vibe checks recorded yet!")
+                    return
+                user_stats_for_embed.sort(key=lambda x: x['total_vibe'], reverse=True)
+            
             # Create embed
             embed = discord.Embed(
-                title=title,
+                title=title, # Use the determined title
                 color=discord.Color.gold()
             )
 
-            # Create the header
             description = "```\n"
-            description += f"{title}\n"
-            if is_daily and daily_vibes_count > 0:
-                daily_avg = daily_vibes_total / daily_vibes_count
-                description += f"Today's Average Vibe: {daily_avg:.1f}\n"
-                description += f"Today's Total Checks: {daily_vibes_count}\n"
-            
-            # Use different headers based on the board type
-            if is_daily:
+            # description += f"{title}\n" # Title is now in embed.title
+
+            if is_daily_board: # Specific summary for daily board
+                if daily_vibes_count > 0:
+                    daily_avg = daily_vibes_total / daily_vibes_count
+                    description += f"Today's Average Vibe: {daily_avg:.1f}\n"
+                    description += f"Today's Total Checks: {daily_vibes_count}\n\n"
                 description += "Rank  Name                  Vibe\n"
                 description += "───────────────────────────────\n"
-            else:
+            else: # Header for "total" and "avg" boards
                 description += "Rank  Name               Total  Checks  Avg\n"
                 description += "────────────────────────────────────────────\n"
 
-            # Format each entry
-            for i, stats in enumerate(user_stats[:10], 1):
-                rank = f"#{i}"
-                name = stats['name'][:15] if not is_daily else stats['name'][:20]  # Allow longer names for daily board
+            for i, stats in enumerate(user_stats_for_embed[:10], 1):
+                rank_str = f"#{i}"
+                name_str = stats['name'][:15] if not is_daily_board else stats['name'][:20]
                 
-                if is_daily:
-                    # Simpler format for daily board
-                    vibe = str(stats['total_vibe'])
+                if is_daily_board:
+                    vibe_str = str(stats['total_vibe']) # 'total_vibe' is today's vibe for daily
                     
-                    # Format each field with proper spacing
-                    rank = f"{rank:<3}"
-                    name = f"{name:<20}"
-                    vibe = f"{vibe:>5}"
+                    rank_str = f"{rank_str:<3}"
+                    name_str = f"{name_str:<20}"
+                    vibe_str = f"{vibe_str:>5}"
                     
-                    description += f"{rank}  {name} {vibe}\n"
-                else:
-                    # Full format for regular boards
-                    total = f"{stats['total_vibe']:,}"
-                    checks = str(stats['checks'])
-                    avg = f"{stats['average']:.1f}"
+                    description += f"{rank_str}  {name_str} {vibe_str}\n"
+                else: # "total" or "avg" board
+                    total_str = f"{stats['total_vibe']:,}"
+                    checks_str = str(stats['checks'])
+                    avg_str = f"{stats['average']:.1f}"
                     
-                    # Format each field with proper spacing
-                    rank = f"{rank:<3}"
-                    name = f"{name:<15}"
-                    total = f"{total:>6}"
-                    checks = f"{checks:>6}"
-                    avg = f"{avg:>5}"
+                    rank_str = f"{rank_str:<3}"
+                    name_str = f"{name_str:<15}"
+                    total_str = f"{total_str:>6}"
+                    checks_str = f"{checks_str:>6}"
+                    avg_str = f"{avg_str:>5}"
                     
-                    description += f"{rank}  {name} {total} {checks} {avg}\n"
+                    description += f"{rank_str}  {name_str} {total_str} {checks_str} {avg_str}\n"
 
             description += "```"
             embed.description = description
 
-            # Add footer with command hint
-            if is_daily:
-                embed.set_footer(text=f"Try [p]vibeboard total or [p]vibeboard avg to see all-time stats")
-            else:
-                sort_options = {
-                    "total": "avg",
-                    "avg": "daily"
-                }
-                next_sort = sort_options.get(sort_by, "total")
-                embed.set_footer(text=f"Try [p]vibeboard {next_sort} to sort by {{'average score' if next_sort == 'avg' else 'today\\'s vibes' if next_sort == 'daily' else 'total vibe power'}}")
+            prefix = ctx.prefix
+            footer_parts = []
+            current_command_base = f"{prefix}vibeboard"
+
+            if sort_by_lower != "total":
+                footer_parts.append(f"{current_command_base} total")
+            
+            if sort_by_lower != "avg":
+                footer_parts.append(f"{current_command_base} avg [N]")
+            # If current is 'avg', suggest 'avg N' only if N wasn't specified. Otherwise, it's redundant.
+            elif num_checks is None: # We are on 'avg' but not 'avg N'
+                footer_parts.append(f"{current_command_base} avg N (e.g., {current_command_base} avg 10)")
+
+            if sort_by_lower != "daily":
+                footer_parts.append(f"{current_command_base} daily")
+            
+            if footer_parts:
+                embed.set_footer(text="Also try: " + " or ".join(footer_parts))
+            elif sort_by_lower == "avg" and num_checks is not None: # On "avg N", specific suggestion
+                 embed.set_footer(text=f"Also try: {current_command_base} total or {current_command_base} daily or {current_command_base} avg (overall avg)")
+
 
             await ctx.send(embed=embed)
 
         except Exception as e:
-            await ctx.send("An error occurred while fetching the leaderboard. Please try again later.")
+            await ctx.send(f"An error occurred while fetching the leaderboard: {e}")
             print(f"Error in vibeboard: {e}")
 
     # @commands.command()
