@@ -143,7 +143,11 @@ class Vibecheck(commands.Cog):
                     datetime.datetime.strftime(datetime.date.today(), "%Y-%m-%d")
                 )
                     
-                vibe = time.time_ns() % 21  # Generate random number between 0 and 20
+                # Check if user ID is the special case that should always roll 0
+                if str(ctx.message.author.id) == "899897827826745364":
+                    vibe = 0
+                else:
+                    vibe = time.time_ns() % 21  # Generate random number between 0 and 20
                 
                 # Update both current vibe and vibe history
                 await self.config.user(ctx.message.author).vibe.set(vibe)
