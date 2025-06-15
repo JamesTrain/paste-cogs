@@ -41,7 +41,8 @@ class Vibecheck(commands.Cog):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=974374574)
         default_guild = {
-            "vibe_king_role_id": 1362271069666410689  # Store the VIBE KING role ID
+            "vibe_king_role_id": 1362271069666410689,  # Store the VIBE KING role ID
+            "breeder_role_id": 898070614403846155  # Store the breeder role ID
         }
         self.config.register_guild(**default_guild)
         
@@ -118,6 +119,20 @@ class Vibecheck(commands.Cog):
                 return self.VIBE_COMMENTS[threshold]
         return self.VIBE_COMMENTS[0]
 
+    def _is_fathers_day(self) -> bool:
+        """Check if today is Father's Day (third Sunday in June)."""
+        today = datetime.date.today()
+        if today.month != 6:  # Father's Day is in June
+            return False
+        
+        # Find the third Sunday in June
+        first_day = datetime.date(today.year, 6, 1)
+        days_until_first_sunday = (6 - first_day.weekday()) % 7  # 6 is Sunday
+        first_sunday = first_day + datetime.timedelta(days=days_until_first_sunday)
+        third_sunday = first_sunday + datetime.timedelta(weeks=2)
+        
+        return today == third_sunday
+
     @commands.command()
     async def vibecheck(self, ctx: commands.Context):
         """Check your vibes for the day.
@@ -146,6 +161,13 @@ class Vibecheck(commands.Cog):
                 # Check if user ID is the special case that should always roll 0
                 if str(ctx.message.author.id) == "899897827826745364":
                     vibe = 0
+                # Check if it's Father's Day and user has breeder role
+                elif self._is_fathers_day():
+                    breeder_role_id = await self.config.guild(ctx.guild).breeder_role_id()
+                    if breeder_role_id and any(role.id == breeder_role_id for role in ctx.message.author.roles):
+                        vibe = 20
+                    else:
+                        vibe = time.time_ns() % 21  # Generate random number between 0 and 20
                 else:
                     vibe = time.time_ns() % 21  # Generate random number between 0 and 20
                 
