@@ -53,6 +53,9 @@ class Vibecheck(commands.Cog):
             lastran=datetime.datetime.strftime(datetime.date.today() - datetime.timedelta(days=1), "%Y-%m-%d"),
             is_vibe_king=False  # Track if user currently has VIBE KING role
         )
+
+        # Birthday message for special occasions
+        self.BIRTHDAY_MESSAGE = "🎂 HAPPY BIRTHDAY! 🎉 On your special day, your vibes are IMMACULATE! 🎈"
         
         # Start the background task to check for midnight
         self.midnight_task = asyncio.create_task(self._schedule_midnight_reset())
@@ -133,6 +136,24 @@ class Vibecheck(commands.Cog):
         
         return today == third_sunday
 
+    async def _is_users_birthday(self, member: discord.Member) -> bool:
+        """Check if today is the user's birthday using the Birthday cog."""
+        try:
+            birthday_cog = self.bot.get_cog("birthday")
+            if not birthday_cog:
+                return False
+
+            # Get the member's birthday data from the Birthday cog's config
+            birthday_data = await birthday_cog.config.member(member).birthday()
+            if not birthday_data:
+                return False
+
+            today = datetime.date.today()
+            return today.month == birthday_data["month"] and today.day == birthday_data["day"]
+        except Exception as e:
+            print(f"Error checking birthday: {e}")
+            return False
+
     @commands.command()
     async def vibecheck(self, ctx: commands.Context):
         """Check your vibes for the day.
@@ -140,13 +161,16 @@ class Vibecheck(commands.Cog):
         Users can only check their vibes once per day.
         Returns a random score between 0 and 20 with a corresponding comment.
         If you roll a 20, you get the VIBE KING role for the day!
+        
+        Special cases:
+        - It's your birthday? Automatic 20!
+        - Father's Day + breeder role? Automatic 20!
+        - Certain users might have... other effects 💀
         """
         try:
             lastranstr = await self.config.user(ctx.message.author).lastran()
             lastran = datetime.datetime.strptime(lastranstr, "%Y-%m-%d").date()
-            
-            # We no longer remove VIBE KING role here, as it's handled by the midnight task
-            
+
             if datetime.date.today() == lastran:
                 vibe = await self.config.user(ctx.message.author).vibe()
                 if await self.config.user(ctx.message.author).is_vibe_king():
@@ -161,6 +185,10 @@ class Vibecheck(commands.Cog):
                 # Check if user ID is the special case that should always roll 0
                 if str(ctx.message.author.id) == "899897827826745364":
                     vibe = 0
+                # Check if it's the user's birthday
+                elif await self._is_users_birthday(ctx.message.author):
+                    vibe = 20
+                    comment = self.BIRTHDAY_MESSAGE
                 # Check if it's Father's Day and user has breeder role
                 elif self._is_fathers_day():
                     breeder_role_id = await self.config.guild(ctx.guild).breeder_role_id()
@@ -178,7 +206,10 @@ class Vibecheck(commands.Cog):
                         user_data['vibe_scores'] = []
                     user_data['vibe_scores'].append(vibe)
 
-                comment = self._get_vibe_comment(vibe)
+                # Get comment if not birthday (birthday comment is set above)
+                if not await self._is_users_birthday(ctx.message.author):
+                    comment = self._get_vibe_comment(vibe)
+                
                 message = ":game_die: {} checked their vibe and got **{}**\n{}".format(
                     ctx.message.author.mention, vibe, comment
                 )
@@ -186,14 +217,11 @@ class Vibecheck(commands.Cog):
                 # Add VIBE KING role if user rolled a 20
                 if vibe == 20:
                     vibe_king_role_id = await self.config.guild(ctx.guild).vibe_king_role_id()
-                    # Get or create the VIBE KING role
                     if vibe_king_role_id:
                         vibe_king_role = ctx.guild.get_role(vibe_king_role_id)
                     else:
-                        # Try to find a role named "VIBE KING"
                         vibe_king_role = discord.utils.get(ctx.guild.roles, name="VIBE KING")
                         
-                        # If the role doesn't exist and bot has manage_roles permission, create it
                         if not vibe_king_role and ctx.guild.me.guild_permissions.manage_roles:
                             try:
                                 vibe_king_role = await ctx.guild.create_role(
@@ -205,7 +233,6 @@ class Vibecheck(commands.Cog):
                             except discord.Forbidden:
                                 vibe_king_role = None
                     
-                    # Assign the role if it exists
                     if vibe_king_role:
                         try:
                             await ctx.author.add_roles(vibe_king_role, reason="Rolled a 20 in vibecheck")
