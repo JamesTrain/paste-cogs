@@ -173,7 +173,7 @@ class Vibecheck(commands.Cog):
             message = []
             
             # Get birthday cog
-            birthday_cog = self.bot.get_cog("birthday")
+            birthday_cog = self.bot.get_cog("Birthday")
             message.append(f"Birthday Cog Found: {birthday_cog is not None}")
             
             if birthday_cog:
