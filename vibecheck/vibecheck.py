@@ -161,11 +161,6 @@ class Vibecheck(commands.Cog):
         Users can only check their vibes once per day.
         Returns a random score between 0 and 20 with a corresponding comment.
         If you roll a 20, you get the VIBE KING role for the day!
-        
-        Special cases:
-        - It's your birthday? Automatic 20!
-        - Father's Day + breeder role? Automatic 20!
-        - Certain users might have... other effects 💀
         """
         try:
             lastranstr = await self.config.user(ctx.message.author).lastran()
@@ -529,6 +524,49 @@ class Vibecheck(commands.Cog):
         except Exception as e:
             await ctx.send(f"An error occurred while fetching the leaderboard: {e}")
             print(f"Error in vibeboard: {e}")
+
+    @commands.command()
+    @commands.admin()
+    async def vibereset(self, ctx: commands.Context, member: discord.Member = None):
+        """Reset a user's daily vibe check.
+        
+        If no user is specified, resets your own vibe check.
+        Only bot admins can use this command.
+        
+        Parameters
+        ----------
+        member : discord.Member, optional
+            The member whose vibe check to reset. If not provided, resets your own.
+        """
+        try:
+            target = member or ctx.author
+            yesterday = datetime.datetime.strftime(
+                datetime.date.today() - datetime.timedelta(days=1), 
+                "%Y-%m-%d"
+            )
+            
+            # Reset their lastran date to yesterday
+            await self.config.user(target).lastran.set(yesterday)
+            
+            # If they had VIBE KING role, remove it
+            if await self.config.user(target).is_vibe_king():
+                vibe_king_role_id = await self.config.guild(ctx.guild).vibe_king_role_id()
+                if vibe_king_role_id:
+                    vibe_king_role = ctx.guild.get_role(vibe_king_role_id)
+                    if vibe_king_role and vibe_king_role in target.roles:
+                        try:
+                            await target.remove_roles(vibe_king_role, reason="Vibe check reset by admin")
+                        except discord.Forbidden:
+                            pass  # Bot doesn't have permission
+                await self.config.user(target).is_vibe_king.set(False)
+            
+            if target == ctx.author:
+                await ctx.send("Your vibe check has been reset. You can now check your vibes again today!")
+            else:
+                await ctx.send(f"{target.mention}'s vibe check has been reset. They can now check their vibes again today!")
+        except Exception as e:
+            await ctx.send(f"An error occurred while resetting vibe check: {e}")
+            print(f"Error in vibereset: {e}")
 
     # @commands.command()
     # async def vibescan(self, ctx: commands.Context, channel: discord.TextChannel = None):
