@@ -138,22 +138,33 @@ class Vibecheck(commands.Cog):
 
     async def _is_users_birthday(self, member: discord.Member) -> bool:
         """Check if today is the user's birthday using the Birthday cog."""
-        # try:
-        #     birthday_cog = self.bot.get_cog("birthday")
-        #     if not birthday_cog:
-        #         return False
+        try:
+            birthday_cog = self.bot.get_cog("Birthday")
+            if not birthday_cog:
+                return False
 
-        #     # Get the member's birthday data from the Birthday cog's config
-        #     birthday_data = await birthday_cog.config.member(member).birthday()
-        #     if not birthday_data:
-        #         return False
+            # Get the member's birthday data from the Birthday cog's config
+            birthday_data = await birthday_cog.config.member(member).birthday()
+            if not birthday_data:
+                return False
 
-        #     today = datetime.date.today()
-        #     return today.month == birthday_data["month"] and today.day == birthday_data["day"]
-        # except Exception as e:
-        #     print(f"Error checking birthday: {e}")
-        #     return False
-        return False  # Temporarily disabled
+            # Check if guild is setup for birthdays
+            if not await birthday_cog.check_if_setup(member.guild):
+                return False
+
+            # Get month and day from birthday data
+            # Note: year can be None, we only care about month/day
+            month = birthday_data.get('month')
+            day = birthday_data.get('day')
+            
+            if not month or not day:  # If either is missing or None
+                return False
+
+            today = datetime.date.today()
+            return today.month == month and today.day == day
+        except Exception as e:
+            print(f"Error checking birthday: {e}")
+            return False
 
     @commands.command()
     @commands.admin()
