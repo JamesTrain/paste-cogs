@@ -138,21 +138,72 @@ class Vibecheck(commands.Cog):
 
     async def _is_users_birthday(self, member: discord.Member) -> bool:
         """Check if today is the user's birthday using the Birthday cog."""
+        # try:
+        #     birthday_cog = self.bot.get_cog("birthday")
+        #     if not birthday_cog:
+        #         return False
+
+        #     # Get the member's birthday data from the Birthday cog's config
+        #     birthday_data = await birthday_cog.config.member(member).birthday()
+        #     if not birthday_data:
+        #         return False
+
+        #     today = datetime.date.today()
+        #     return today.month == birthday_data["month"] and today.day == birthday_data["day"]
+        # except Exception as e:
+        #     print(f"Error checking birthday: {e}")
+        #     return False
+        return False  # Temporarily disabled
+
+    @commands.command()
+    @commands.admin()
+    async def vibetest(self, ctx: commands.Context, member: discord.Member = None):
+        """Test command to inspect birthday cog data.
+        
+        This command helps debug the birthday cog integration by displaying
+        available data about the birthday cog and user birthday settings.
+        
+        Parameters
+        ----------
+        member : discord.Member, optional
+            The member whose birthday data to check. If not provided, checks your own.
+        """
         try:
+            target = member or ctx.author
+            message = []
+            
+            # Get birthday cog
             birthday_cog = self.bot.get_cog("birthday")
-            if not birthday_cog:
-                return False
-
-            # Get the member's birthday data from the Birthday cog's config
-            birthday_data = await birthday_cog.config.member(member).birthday()
-            if not birthday_data:
-                return False
-
-            today = datetime.date.today()
-            return today.month == birthday_data["month"] and today.day == birthday_data["day"]
+            message.append(f"Birthday Cog Found: {birthday_cog is not None}")
+            
+            if birthday_cog:
+                message.append(f"Birthday Cog Name: {birthday_cog.qualified_name}")
+                message.append(f"Birthday Cog Version: {birthday_cog.__version__}")
+                
+                # Try to get birthday data
+                try:
+                    birthday_data = await birthday_cog.config.member(target).birthday()
+                    message.append(f"\nBirthday Data for {target.name}:")
+                    message.append(f"Raw Data: {birthday_data}")
+                    if birthday_data:
+                        message.append(f"Year: {birthday_data.get('year')}")
+                        message.append(f"Month: {birthday_data.get('month')}")
+                        message.append(f"Day: {birthday_data.get('day')}")
+                except Exception as e:
+                    message.append(f"\nError getting birthday data: {e}")
+                
+                # Check if guild is setup
+                try:
+                    is_setup = await birthday_cog.check_if_setup(ctx.guild)
+                    message.append(f"\nGuild Setup Status: {is_setup}")
+                except Exception as e:
+                    message.append(f"\nError checking guild setup: {e}")
+            
+            await ctx.send("```\n" + "\n".join(message) + "\n```")
+            
         except Exception as e:
-            print(f"Error checking birthday: {e}")
-            return False
+            await ctx.send(f"An error occurred while testing birthday integration: {e}")
+            print(f"Error in vibetest: {e}")
 
     @commands.command()
     async def vibecheck(self, ctx: commands.Context):
