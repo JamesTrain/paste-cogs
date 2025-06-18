@@ -12,8 +12,8 @@ class bully(commands.Cog):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=974374575)
         default_guild = {
-            "class_clown_role_id": None,  # Role ID for Class Clown
-            "stinky_loser_role_id": None  # Role ID for Stinky Loser
+            "class_clown_role_id": 1384978602780524554,  # Role ID for Class Clown
+            "stinky_loser_role_id": 1384978809287082116  # Role ID for Stinky Loser
         }
         default_user = {
             "bully_count": 0,  # Number of times bullied today
