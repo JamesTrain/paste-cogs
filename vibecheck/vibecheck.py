@@ -240,7 +240,7 @@ class Vibecheck(commands.Cog):
                 )
                     
                 # Check if user ID is the special case that should always roll 0
-                if str(ctx.message.author.id) == "899897827826745364":
+                if str(ctx.message.author.id) == "69420":
                     vibe = 0
                 # Check if it's the user's birthday
                 elif await self._is_users_birthday(ctx.message.author):
