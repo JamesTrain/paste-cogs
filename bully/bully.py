@@ -2,11 +2,8 @@ import discord
 import datetime
 import random
 from zoneinfo import ZoneInfo
-from discord.ext import tasks, commands
+from discord.ext import tasks
 from redbot.core import commands, Config
-from .pcx_lib import type_message
-
-pank = 69420
 
 class Bully(commands.Cog):
     """A cog that bullies users by mocking their messages and assigns roles based on bully count."""
@@ -27,7 +24,7 @@ class Bully(commands.Cog):
         }
         
         self.config.register_guild(**default_guild)
-        self.config.user(**default_user)
+        self.config.register_user(**default_user)
         
         # Funny messages for role assignments
         self.class_clown_messages = [
@@ -186,72 +183,6 @@ class Bully(commands.Cog):
         # Send the mocked message
         await ctx.send(camel_case)
 
-    @commands.command(aliases=["s"])
-    async def sarcasm(self, ctx: commands.Context):
-        #Define the command for RedBot
-        messages = [msg async for msg in ctx.channel.history(limit=2)]
-        messageObject = messages[1]
-        message = messageObject.content
-        target_user = messageObject.author
-        
-        if not message:
-            message = "I can't translate that!"
-        if messageObject.author.id == pank:
-            await type_message(
-                ctx.channel,
-                self.sarcog_string("Austin is a fucking idiot"),
-                allowed_mentions=discord.AllowedMentions(
-                    everyone=False, users=False, roles=False),
-            )
-            return
-        
-        # Get user's current data
-        user_data = await self.config.user(target_user).all()
-        bully_count = user_data.get("bully_count", 0)
-        has_class_clown = user_data.get("has_class_clown", False)
-        has_stinky_loser = user_data.get("has_stinky_loser", False)
-        
-        # Increment bully count
-        bully_count += 1
-        await self.config.user(target_user).bully_count.set(bully_count)
-        
-        # Check role thresholds and assign roles
-        if bully_count >= 3 and not has_class_clown:
-            class_clown_role_id = await self.config.guild(ctx.guild).class_clown_role_id()
-            if class_clown_role_id:
-                role = ctx.guild.get_role(class_clown_role_id)
-                if role and role not in target_user.roles:
-                    await target_user.add_roles(role, reason="Bullied 3 times today")
-                    await self.config.user(target_user).has_class_clown.set(True)
-                    # Send a sassy message about Class Clown role
-                    sassy_message = random.choice(self.class_clown_messages).format(user=target_user.mention)
-                    await ctx.send(sassy_message)
-        
-        if bully_count >= 5 and not has_stinky_loser:
-            stinky_loser_role_id = await self.config.guild(ctx.guild).stinky_loser_role_id()
-            if stinky_loser_role_id:
-                role = ctx.guild.get_role(stinky_loser_role_id)
-                if role and role not in target_user.roles:
-                    await target_user.add_roles(role, reason="Bullied 5 times today")
-                    await self.config.user(target_user).has_stinky_loser.set(True)
-                    # Send a sassy message about Stinky Loser role
-                    sassy_message = random.choice(self.stinky_loser_messages).format(user=target_user.mention)
-                    await ctx.send(sassy_message)
-        
-        await type_message(
-            ctx.channel,
-            self.sarcog_string(message),
-            allowed_mentions=discord.AllowedMentions(
-                everyone=False, users=False, roles=False),
-        )
-        
-    @staticmethod
-    def sarcog_string(x):
-        #Sarcasm and return string
-        output = []
-        for let in range(len(x)):
-            if let%2==0:
-                output.append(x[let].lower())
-            else:
-                output.append(x[let].upper())
-        return "".join(output)
+async def setup(bot):
+    """Load the Bully cog."""
+    await bot.add_cog(Bully(bot))
