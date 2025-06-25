@@ -1,31 +1,35 @@
 import discord
 import datetime
-import asyncio
 import random
+from zoneinfo import ZoneInfo
 from discord.ext import tasks, commands
-from redbot.core import Config
+from redbot.core import commands, Config
 from .pcx_lib import type_message
 
 pank = 69420
 
-class bully(commands.Cog):
+class Bully(commands.Cog):
+    """A cog that bullies users by mocking their messages and assigns roles based on bully count."""
+    
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=974374575)
+        
+        # Default configurations
         default_guild = {
-            "class_clown_role_id": 1384978602780524554,  # Role ID for Class Clown
-            "stinky_loser_role_id": 1384978809287082116  # Role ID for Stinky Loser
+            "class_clown_role_id": None,  # Role ID for Class Clown
+            "stinky_loser_role_id": None  # Role ID for Stinky Loser
         }
         default_user = {
             "bully_count": 0,  # Number of times bullied today
-            "last_reset": None,  # Last time the count was reset
             "has_class_clown": False,  # Whether user currently has Class Clown role
             "has_stinky_loser": False  # Whether user currently has Stinky Loser role
         }
-        self.config.register_guild(**default_guild)
-        self.config.register_user(**default_user)
         
-        # Sassy messages for role assignments
+        self.config.register_guild(**default_guild)
+        self.config.user(**default_user)
+        
+        # Funny messages for role assignments
         self.class_clown_messages = [
             "🤡 Congratulations {user}! You've been bullied so much, you're now officially our Class Clown! Maybe try being less of a target?",
             "🎪 Step right up, folks! {user} has been crowned our newest Class Clown! Three bullies in one day - that's talent!",
@@ -42,19 +46,19 @@ class bully(commands.Cog):
             "🗑️ Look everyone! {user} has been bullied so much they're now a certified Stinky Loser! At least you're good at something!"
         ]
         
-        # Start the background task to check for midnight reset
+        # Start the midnight reset task
         self.midnight_reset.start()
 
     def cog_unload(self):
         """Clean up when cog is unloaded."""
         self.midnight_reset.cancel()
 
-    @tasks.loop(time=datetime.time(hour=0, minute=0, tzinfo=datetime.timezone.utc))
+    @tasks.loop(time=datetime.time(hour=0, minute=0, tzinfo=ZoneInfo("America/Chicago")))
     async def midnight_reset(self):
-        """Reset all users at midnight."""
+        """Reset all roles at midnight Central Time."""
         try:
             await self._reset_all_users()
-            print(f"[Bully] Reset all roles and counts at {datetime.datetime.now(datetime.timezone.utc)}")
+            print(f"[Bully] Reset all roles and counts at {datetime.datetime.now(ZoneInfo('America/Chicago'))}")
         except Exception as e:
             print(f"Error in midnight reset task: {e}")
 
@@ -100,7 +104,6 @@ class bully(commands.Cog):
                     await self.config.user(member).bully_count.set(0)
                     await self.config.user(member).has_class_clown.set(False)
                     await self.config.user(member).has_stinky_loser.set(False)
-                    await self.config.user(member).last_reset.set(datetime.datetime.now(datetime.timezone.utc).isoformat())
                     
         except Exception as e:
             print(f"Error in _reset_all_users: {e}")
@@ -124,6 +127,66 @@ class bully(commands.Cog):
         await ctx.send(f"Stinky Loser role set to {role.name}")
 
     @commands.command(aliases=["b"])
+    async def bully(self, ctx: commands.Context):
+        """Mock the previous message in camelCase."""
+        # Get the previous message
+        messages = [msg async for msg in ctx.channel.history(limit=2)]
+        if len(messages) < 2:
+            await ctx.send("No message to mock!")
+            return
+            
+        target_message = messages[1]  # messages[0] is the command itself
+        target_user = target_message.author
+        
+        if target_user.bot:
+            await ctx.send("I don't bully bots!")
+            return
+            
+        # Convert the message to camelCase
+        words = target_message.content.lower().split()
+        if not words:
+            await ctx.send("Nothing to mock!")
+            return
+            
+        camel_case = words[0].lower() + ''.join(word.capitalize() for word in words[1:])
+        
+        # Increment bully count and check role thresholds
+        user_data = await self.config.user(target_user).all()
+        bully_count = user_data.get("bully_count", 0) + 1
+        has_class_clown = user_data.get("has_class_clown", False)
+        has_stinky_loser = user_data.get("has_stinky_loser", False)
+        
+        await self.config.user(target_user).bully_count.set(bully_count)
+        
+        # Check for role assignments
+        if bully_count >= 5 and not has_stinky_loser:
+            stinky_loser_role_id = await self.config.guild(ctx.guild).stinky_loser_role_id()
+            if stinky_loser_role_id:
+                role = ctx.guild.get_role(stinky_loser_role_id)
+                if role:
+                    try:
+                        await target_user.add_roles(role, reason="Bullied 5 times today")
+                        await self.config.user(target_user).has_stinky_loser.set(True)
+                        await ctx.send(random.choice(self.stinky_loser_messages).format(user=target_user.mention))
+                    except discord.Forbidden:
+                        print(f"Failed to add Stinky Loser role to {target_user.name}: Missing permissions")
+                        
+        elif bully_count >= 3 and not has_class_clown:
+            class_clown_role_id = await self.config.guild(ctx.guild).class_clown_role_id()
+            if class_clown_role_id:
+                role = ctx.guild.get_role(class_clown_role_id)
+                if role:
+                    try:
+                        await target_user.add_roles(role, reason="Bullied 3 times today")
+                        await self.config.user(target_user).has_class_clown.set(True)
+                        await ctx.send(random.choice(self.class_clown_messages).format(user=target_user.mention))
+                    except discord.Forbidden:
+                        print(f"Failed to add Class Clown role to {target_user.name}: Missing permissions")
+        
+        # Send the mocked message
+        await ctx.send(camel_case)
+
+    @commands.command(aliases=["s"])
     async def sarcasm(self, ctx: commands.Context):
         #Define the command for RedBot
         messages = [msg async for msg in ctx.channel.history(limit=2)]
