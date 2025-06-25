@@ -125,7 +125,7 @@ class Bully(commands.Cog):
 
     @commands.command(aliases=["b"])
     async def bully(self, ctx: commands.Context):
-        """Mock the previous message in camelCase."""
+        """Mock the previous message in sPoNgEbObCaSe."""
         # Get the previous message
         messages = [msg async for msg in ctx.channel.history(limit=2)]
         if len(messages) < 2:
@@ -139,13 +139,12 @@ class Bully(commands.Cog):
             await ctx.send("I don't bully bots!")
             return
             
-        # Convert the message to camelCase
-        words = target_message.content.lower().split()
-        if not words:
+        # Convert the message to sPoNgEbObCaSe
+        if not target_message.content.strip():
             await ctx.send("Nothing to mock!")
             return
             
-        camel_case = words[0].lower() + ''.join(word.capitalize() for word in words[1:])
+        mocked_message = "".join(random.choice([c.lower(), c.upper()]) for c in target_message.content)
         
         # Increment bully count and check role thresholds
         user_data = await self.config.user(target_user).all()
@@ -181,7 +180,7 @@ class Bully(commands.Cog):
                         print(f"Failed to add Class Clown role to {target_user.name}: Missing permissions")
         
         # Send the mocked message
-        await ctx.send(camel_case)
+        await ctx.send(mocked_message)
 
 async def setup(bot):
     """Load the Bully cog."""
