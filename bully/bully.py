@@ -2,7 +2,8 @@ import discord
 import datetime
 import asyncio
 import random
-from redbot.core import commands, Config
+from discord.ext import tasks, commands
+from redbot.core import Config
 from .pcx_lib import type_message
 
 pank = 69420
@@ -17,7 +18,9 @@ class bully(commands.Cog):
         }
         default_user = {
             "bully_count": 0,  # Number of times bullied today
-            "last_reset": None  # Last time the count was reset
+            "last_reset": None,  # Last time the count was reset
+            "has_class_clown": False,  # Whether user currently has Class Clown role
+            "has_stinky_loser": False  # Whether user currently has Stinky Loser role
         }
         self.config.register_guild(**default_guild)
         self.config.register_user(**default_user)
@@ -40,59 +43,67 @@ class bully(commands.Cog):
         ]
         
         # Start the background task to check for midnight reset
-        self.midnight_task = self.bot.loop.create_task(self._schedule_midnight_reset())
+        self.midnight_reset.start()
 
     def cog_unload(self):
-        # Cleanup when cog is unloaded
-        if self.midnight_task:
-            self.midnight_task.cancel()
+        """Clean up when cog is unloaded."""
+        self.midnight_reset.cancel()
 
-    async def _schedule_midnight_reset(self):
-        """Schedule the role reset to occur at midnight Central Time."""
-        await self.bot.wait_until_ready()
-        while self == self.bot.get_cog("bully"):
-            now = datetime.datetime.now(datetime.timezone.utc)
-            # Convert to Central Time
-            central = now.astimezone(datetime.timezone(datetime.timedelta(hours=-6)))
-            # Calculate time until next midnight CT
-            tomorrow = (central + datetime.timedelta(days=1)).replace(
-                hour=0, minute=0, second=0, microsecond=0
-            )
-            seconds_until_midnight = (tomorrow - central).total_seconds()
-            
-            # Sleep until midnight
-            await asyncio.sleep(seconds_until_midnight)
-            
-            # Reset all users
+    @tasks.loop(time=datetime.time(hour=0, minute=0, tzinfo=datetime.timezone.utc))
+    async def midnight_reset(self):
+        """Reset all users at midnight."""
+        try:
             await self._reset_all_users()
-            
-            # Sleep a bit to avoid double execution
-            await asyncio.sleep(60)
+            print(f"[Bully] Reset all roles and counts at {datetime.datetime.now(datetime.timezone.utc)}")
+        except Exception as e:
+            print(f"Error in midnight reset task: {e}")
+
+    @midnight_reset.before_loop
+    async def before_midnight_reset(self):
+        """Wait until the bot is ready before starting the task."""
+        await self.bot.wait_until_ready()
 
     async def _reset_all_users(self):
         """Reset bully count and remove roles from all users at midnight."""
-        for guild in self.bot.guilds:
-            class_clown_role_id = await self.config.guild(guild).class_clown_role_id()
-            stinky_loser_role_id = await self.config.guild(guild).stinky_loser_role_id()
-            
-            if class_clown_role_id:
-                class_clown_role = guild.get_role(class_clown_role_id)
-                if class_clown_role:
-                    for member in class_clown_role.members:
-                        await member.remove_roles(class_clown_role, reason="Daily reset")
-            
-            if stinky_loser_role_id:
-                stinky_loser_role = guild.get_role(stinky_loser_role_id)
-                if stinky_loser_role:
-                    for member in stinky_loser_role.members:
-                        await member.remove_roles(stinky_loser_role, reason="Daily reset")
-            
-            # Reset all user counts in this guild
-            async for user_id in self.config.all_users():
-                member = guild.get_member(user_id)
-                if member:
+        try:
+            for guild in self.bot.guilds:
+                class_clown_role_id = await self.config.guild(guild).class_clown_role_id()
+                stinky_loser_role_id = await self.config.guild(guild).stinky_loser_role_id()
+                
+                class_clown_role = guild.get_role(class_clown_role_id) if class_clown_role_id else None
+                stinky_loser_role = guild.get_role(stinky_loser_role_id) if stinky_loser_role_id else None
+                
+                # Reset all users in this guild
+                for member in guild.members:
+                    if member.bot:  # Skip bots
+                        continue
+                        
+                    user_data = await self.config.user(member).all()
+                    if user_data.get("has_class_clown", False) and class_clown_role and class_clown_role in member.roles:
+                        try:
+                            await member.remove_roles(class_clown_role, reason="Daily reset")
+                        except discord.Forbidden:
+                            print(f"Failed to remove Class Clown role from {member.name}: Missing permissions")
+                        except Exception as e:
+                            print(f"Error removing Class Clown role from {member.name}: {e}")
+                            
+                    if user_data.get("has_stinky_loser", False) and stinky_loser_role and stinky_loser_role in member.roles:
+                        try:
+                            await member.remove_roles(stinky_loser_role, reason="Daily reset")
+                        except discord.Forbidden:
+                            print(f"Failed to remove Stinky Loser role from {member.name}: Missing permissions")
+                        except Exception as e:
+                            print(f"Error removing Stinky Loser role from {member.name}: {e}")
+                    
+                    # Reset user's data
+                    await self.config.user(member).clear()
                     await self.config.user(member).bully_count.set(0)
-                    await self.config.user(member).last_reset.set(datetime.datetime.now().isoformat())
+                    await self.config.user(member).has_class_clown.set(False)
+                    await self.config.user(member).has_stinky_loser.set(False)
+                    await self.config.user(member).last_reset.set(datetime.datetime.now(datetime.timezone.utc).isoformat())
+                    
+        except Exception as e:
+            print(f"Error in _reset_all_users: {e}")
 
     @commands.group()
     @commands.admin_or_permissions(administrator=True)
@@ -131,28 +142,35 @@ class bully(commands.Cog):
             )
             return
         
-        # Increment bully count for the target user
-        bully_count = await self.config.user(target_user).bully_count()
+        # Get user's current data
+        user_data = await self.config.user(target_user).all()
+        bully_count = user_data.get("bully_count", 0)
+        has_class_clown = user_data.get("has_class_clown", False)
+        has_stinky_loser = user_data.get("has_stinky_loser", False)
+        
+        # Increment bully count
         bully_count += 1
         await self.config.user(target_user).bully_count.set(bully_count)
         
         # Check role thresholds and assign roles
-        if bully_count >= 3:
+        if bully_count >= 3 and not has_class_clown:
             class_clown_role_id = await self.config.guild(ctx.guild).class_clown_role_id()
             if class_clown_role_id:
                 role = ctx.guild.get_role(class_clown_role_id)
                 if role and role not in target_user.roles:
                     await target_user.add_roles(role, reason="Bullied 3 times today")
+                    await self.config.user(target_user).has_class_clown.set(True)
                     # Send a sassy message about Class Clown role
                     sassy_message = random.choice(self.class_clown_messages).format(user=target_user.mention)
                     await ctx.send(sassy_message)
         
-        if bully_count >= 5:
+        if bully_count >= 5 and not has_stinky_loser:
             stinky_loser_role_id = await self.config.guild(ctx.guild).stinky_loser_role_id()
             if stinky_loser_role_id:
                 role = ctx.guild.get_role(stinky_loser_role_id)
                 if role and role not in target_user.roles:
                     await target_user.add_roles(role, reason="Bullied 5 times today")
+                    await self.config.user(target_user).has_stinky_loser.set(True)
                     # Send a sassy message about Stinky Loser role
                     sassy_message = random.choice(self.stinky_loser_messages).format(user=target_user.mention)
                     await ctx.send(sassy_message)
