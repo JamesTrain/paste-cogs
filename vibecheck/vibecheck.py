@@ -588,18 +588,21 @@ class Vibecheck(commands.Cog):
             print(f"Error in vibeboard: {e}")
 
     @commands.command()
-    @commands.admin()
     async def vibereset(self, ctx: commands.Context, member: discord.Member = None):
         """Reset a user's daily vibe check.
         
         If no user is specified, resets your own vibe check.
-        Only bot admins can use this command.
+        Only specific users can use this command.
         
         Parameters
         ----------
         member : discord.Member, optional
             The member whose vibe check to reset. If not provided, resets your own.
         """
+        allowed_ids = [115290743354032128, 194299256750735361]
+        if ctx.author.id not in allowed_ids:
+            return
+            
         try:
             target = member or ctx.author
             yesterday = datetime.datetime.strftime(
