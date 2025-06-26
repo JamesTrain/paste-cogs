@@ -46,6 +46,17 @@ class Bully(commands.Cog):
         # Start the midnight reset task
         self.midnight_reset.start()
 
+    @staticmethod
+    def sarcog_string(x):
+        """Sarcasm and return string"""
+        output = []
+        for let in range(len(x)):
+            if let%2==0:
+                output.append(x[let].lower())
+            else:
+                output.append(x[let].upper())
+        return "".join(output)
+
     def cog_unload(self):
         """Clean up when cog is unloaded."""
         self.midnight_reset.cancel()
@@ -125,7 +136,7 @@ class Bully(commands.Cog):
 
     @commands.command(aliases=["b"])
     async def bully(self, ctx: commands.Context):
-        """Mock the previous message in sPoNgEbObCaSe."""
+        """Mock the previous message in alternating case."""
         # Get the previous message
         messages = [msg async for msg in ctx.channel.history(limit=2)]
         if len(messages) < 2:
@@ -139,12 +150,12 @@ class Bully(commands.Cog):
             await ctx.send("I don't bully bots!")
             return
             
-        # Convert the message to sPoNgEbObCaSe
-        if not target_message.content.strip():
+        # Convert the message to alternating case
+        if not target_message.content:
             await ctx.send("Nothing to mock!")
             return
             
-        mocked_message = "".join(random.choice([c.lower(), c.upper()]) for c in target_message.content)
+        mocked_message = self.sarcog_string(target_message.content)
         
         # Increment bully count and check role thresholds
         user_data = await self.config.user(target_user).all()
