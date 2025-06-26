@@ -27,7 +27,7 @@ class Vibecheck(commands.Cog):
         1: "Uh oh stinky!",
         2: "Your vibes are catastrophically bad",
         4: "That's gonna be an oof from me dog",
-        6: "Not looking good fam",
+        6: "There's a spider in your ear",
         8: "You might want to go back to bed",
         10: "That's almost a vibe",
         12: "Getting better, keep it up",
