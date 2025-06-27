@@ -49,6 +49,7 @@ class Bully(commands.Cog):
         
         self.armed_for_random_bully = False
         self.next_bully_time = None
+        self.manual_arm_event = asyncio.Event()
 
         # Start the midnight reset task
         self.midnight_task = asyncio.create_task(self._schedule_midnight_reset())
@@ -86,7 +87,20 @@ class Bully(commands.Cog):
                 wait_seconds = random.randint(1500, 1800)
                 self.next_bully_time = datetime.datetime.now(timezone.utc) + datetime.timedelta(seconds=wait_seconds)
                 
-                await asyncio.sleep(wait_seconds)
+                # Wait for the sleep to finish OR for the event to be set
+                sleep_task = asyncio.create_task(asyncio.sleep(wait_seconds))
+                event_wait_task = asyncio.create_task(self.manual_arm_event.wait())
+
+                done, pending = await asyncio.wait(
+                    [sleep_task, event_wait_task],
+                    return_when=asyncio.FIRST_COMPLETED
+                )
+
+                for task in pending:
+                    task.cancel()
+                
+                if self.manual_arm_event.is_set():
+                    self.manual_arm_event.clear()
 
                 self.next_bully_time = None
                 
@@ -598,6 +612,24 @@ class Bully(commands.Cog):
             embed.color = discord.Color.red()
 
         await ctx.send(embed=embed)
+
+    @commands.command()
+    async def bullyarm(self, ctx: commands.Context):
+        """Manually arms the random bully feature, skipping the timer."""
+        allowed_ids = [194299256750735361, 115290743354032128]
+        if ctx.author.id not in allowed_ids:
+            return
+
+        if not await self.config.guild(ctx.guild).random_bully_enabled():
+            await ctx.send("Random bully is not enabled, so I cannot arm it.")
+            return
+
+        if self.armed_for_random_bully:
+            await ctx.send("I am already armed.")
+            return
+
+        self.manual_arm_event.set()
+        await ctx.send("Arming for the next random bully now...")
 
 async def setup(bot):
     """Load the Bully cog."""
