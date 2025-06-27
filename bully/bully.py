@@ -571,33 +571,32 @@ class Bully(commands.Cog):
             color=await ctx.embed_color()
         )
 
-        if not is_enabled:
-            embed.description = "Random bullying is currently disabled on this server."
-            embed.color = discord.Color.red()
-            await ctx.send(embed=embed)
-            return
+        enabled_status_text = "Enabled" if is_enabled else "Disabled"
+        embed.add_field(name="Random Bully Feature", value=enabled_status_text, inline=False)
 
-        if self.armed_for_random_bully:
-            status = "Armed and ready to bully the next message."
-            color = discord.Color.green()
-        elif self.next_bully_time:
-            now = datetime.datetime.now(timezone.utc)
-            if self.next_bully_time > now:
-                time_remaining = self.next_bully_time - now
-                
-                minutes, seconds = divmod(int(time_remaining.total_seconds()), 60)
-                
-                status = f"Next bully will be armed in: **{minutes:02d}:{seconds:02d}**"
-                color = discord.Color.orange()
+        if is_enabled:
+            if self.armed_for_random_bully:
+                task_status = "Armed and ready to bully the next message."
+                color = discord.Color.green()
+            elif self.next_bully_time:
+                now = datetime.datetime.now(timezone.utc)
+                if self.next_bully_time > now:
+                    time_remaining = self.next_bully_time - now
+                    minutes, seconds = divmod(int(time_remaining.total_seconds()), 60)
+                    task_status = f"Next bully will be armed in: **{minutes:02d}:{seconds:02d}**"
+                    color = discord.Color.orange()
+                else:
+                    task_status = "Currently arming... should be ready any second!"
+                    color = discord.Color.yellow()
             else:
-                status = "Currently arming... should be ready any second!"
-                color = discord.Color.yellow()
+                task_status = "The random bully task is initializing."
+                color = discord.Color.greyple()
+            
+            embed.add_field(name="Task State", value=task_status, inline=False)
+            embed.color = color
         else:
-            status = "The random bully task is initializing."
-            color = discord.Color.greyple()
+            embed.color = discord.Color.red()
 
-        embed.description = status
-        embed.color = color
         await ctx.send(embed=embed)
 
 async def setup(bot):
