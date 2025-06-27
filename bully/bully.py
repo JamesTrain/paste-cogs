@@ -19,6 +19,8 @@ class Bully(commands.Cog):
         }
         default_user = {
             "bully_count": 0,  # Number of times bullied today
+            "times_bullied_total": 0,
+            "times_bullied_others": 0,
             "has_class_clown": False,  # Whether user currently has Class Clown role
             "has_stinky_loser": False  # Whether user currently has Stinky Loser role
         }
@@ -121,7 +123,6 @@ class Bully(commands.Cog):
                             print(f"Error removing Stinky Loser role from {member.name}: {e}")
                     
                     # Reset user's data
-                    await self.config.user(member).clear()
                     await self.config.user(member).bully_count.set(0)
                     await self.config.user(member).has_class_clown.set(False)
                     await self.config.user(member).has_stinky_loser.set(False)
@@ -170,6 +171,13 @@ class Bully(commands.Cog):
             
         mocked_message = self.sarcog_string(target_message.content)
         
+        # Increment bully counts for leaderboard
+        author_times_bullied_others = await self.config.user(ctx.author).times_bullied_others()
+        await self.config.user(ctx.author).times_bullied_others.set(author_times_bullied_others + 1)
+        
+        target_times_bullied_total = await self.config.user(target_user).times_bullied_total()
+        await self.config.user(target_user).times_bullied_total.set(target_times_bullied_total + 1)
+
         # Increment bully count and check role thresholds
         user_data = await self.config.user(target_user).all()
         bully_count = user_data.get("bully_count", 0) + 1
@@ -205,6 +213,164 @@ class Bully(commands.Cog):
         
         # Send the mocked message
         await ctx.send(mocked_message)
+
+    @commands.command(aliases=["bb"])
+    async def bullyboard(self, ctx, leaderboard_type: str = "victims"):
+        """Show the bully leaderboards.
+        
+        Parameters
+        ----------
+        leaderboard_type : str, optional
+            The leaderboard to show. Can be 'victims' or 'bullies'. Defaults to 'victims'.
+        """
+        leaderboard_type = leaderboard_type.lower()
+        if leaderboard_type not in ["victims", "bullies"]:
+            await ctx.send_help(ctx.command)
+            return
+            
+        all_members = ctx.guild.members
+        user_stats = []
+
+        if leaderboard_type == "victims":
+            title = "🏆 Most Bullied Victims"
+            header = "Times Bullied"
+            sort_key = "times_bullied_total"
+        else: # bullies
+            title = "🏆 Top Bullies"
+            header = "Times Bullied Others"
+            sort_key = "times_bullied_others"
+
+        for member in all_members:
+            if member.bot:
+                continue
+            
+            count = await self.config.user(member).get_raw(sort_key, default=0)
+            if count > 0:
+                user_stats.append({"member": member, "count": count})
+
+        if not user_stats:
+            await ctx.send(f"The '{leaderboard_type}' leaderboard is empty.")
+            return
+            
+        sorted_stats = sorted(user_stats, key=lambda x: x['count'], reverse=True)
+
+        embed = discord.Embed(
+            title=title,
+            color=await ctx.embed_color()
+        )
+        
+        description = "```\n"
+        description += f"Rank  Name                 {header.rjust(15)}\n"
+        description += "──────────────────────────────────────────\n"
+        
+        for i, stats in enumerate(sorted_stats[:15], 1):
+            member = stats['member']
+            name_str = member.name[:20]
+            count_str = f"{stats['count']:,}"
+            rank_str = f"#{i}"
+            
+            description += f"{rank_str:<3}  {name_str:<20} {count_str:>15}\n"
+        
+        description += "```"
+        embed.description = description
+        
+        other_type = "bullies" if leaderboard_type == "victims" else "victims"
+        footer_text = f"Also try: {ctx.prefix}bullyboard {other_type}"
+        embed.set_footer(text=footer_text)
+        
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    @commands.admin_or_permissions(administrator=True)
+    async def bullyscan(self, ctx: commands.Context):
+        """Scans server history to compile bully statistics."""
+        await ctx.send(
+            "This will reset all bully leaderboard stats and rescan the server history. "
+            "This can take a long time. Are you sure you want to proceed? (yes/no)"
+        )
+
+        try:
+            check = (
+                lambda m: m.author == ctx.author
+                and m.channel == ctx.channel
+                and m.content.lower() in ["yes", "no"]
+            )
+            reply = await self.bot.wait_for("message", timeout=30.0, check=check)
+        except asyncio.TimeoutError:
+            await ctx.send("No response. Scan cancelled.")
+            return
+
+        if reply.content.lower() == "no":
+            await ctx.send("Scan cancelled.")
+            return
+
+        progress_msg = await ctx.send("Starting bully scan...")
+
+        # Reset existing stats
+        for member in ctx.guild.members:
+            if not member.bot:
+                await self.config.user(member).times_bullied_total.set(0)
+                await self.config.user(member).times_bullied_others.set(0)
+
+        user_updates = {}
+        total_messages_scanned = 0
+        bully_commands_found = 0
+
+        for channel in ctx.guild.text_channels:
+            try:
+                await progress_msg.edit(content=f"Scanning {channel.mention}...")
+                previous_message = None
+                async for message in channel.history(limit=None, oldest_first=True):
+                    total_messages_scanned += 1
+                    if total_messages_scanned % 5000 == 0:
+                        await progress_msg.edit(content=f"Scanning {channel.mention}... Processed {total_messages_scanned:,} messages")
+
+                    prefixes = await self.bot.get_prefix(message)
+                    if isinstance(prefixes, str):
+                        prefixes = [prefixes]
+                    
+                    is_bully_command = any(message.content.startswith(f"{p}bully") or message.content.startswith(f"{p}b ") or message.content == f"{p}b" for p in prefixes)
+
+                    if is_bully_command and previous_message:
+                        bully_commands_found += 1
+                        bully = message.author
+                        victim = previous_message.author
+
+                        if bully.bot or victim.bot:
+                            previous_message = message
+                            continue
+                        
+                        # Update bully stats
+                        if bully.id not in user_updates:
+                            user_updates[bully.id] = {"bullied_others": 0, "bullied_total": 0, "name": bully.name}
+                        user_updates[bully.id]["bullied_others"] += 1
+
+                        # Update victim stats
+                        if victim.id not in user_updates:
+                            user_updates[victim.id] = {"bullied_others": 0, "bullied_total": 0, "name": victim.name}
+                        user_updates[victim.id]["bullied_total"] += 1
+                    
+                    previous_message = message
+            except discord.Forbidden:
+                continue
+            except Exception as e:
+                print(f"Error scanning {channel.name}: {e}")
+                continue
+        
+        await progress_msg.edit(content="Applying updates...")
+        for user_id, data in user_updates.items():
+            user = ctx.guild.get_member(user_id)
+            if user:
+                await self.config.user(user).times_bullied_others.set(data["bullied_others"])
+                await self.config.user(user).times_bullied_total.set(data["bullied_total"])
+
+        summary = (
+            f"Bully scan complete!\n"
+            f"Messages scanned: {total_messages_scanned:,}\n"
+            f"Bully commands found: {bully_commands_found:,}\n"
+            f"Users updated: {len(user_updates)}"
+        )
+        await progress_msg.edit(content=summary)
 
 async def setup(bot):
     """Load the Bully cog."""
