@@ -1,8 +1,8 @@
 import discord
 import datetime
 import random
+import asyncio
 from zoneinfo import ZoneInfo
-from discord.ext import tasks
 from redbot.core import commands, Config
 
 class Bully(commands.Cog):
@@ -44,7 +44,7 @@ class Bully(commands.Cog):
         ]
         
         # Start the midnight reset task
-        self.midnight_reset.start()
+        self.midnight_task = asyncio.create_task(self._schedule_midnight_reset())
 
     @staticmethod
     def sarcog_string(x):
@@ -59,21 +59,34 @@ class Bully(commands.Cog):
 
     def cog_unload(self):
         """Clean up when cog is unloaded."""
-        self.midnight_reset.cancel()
+        if hasattr(self, 'midnight_task') and self.midnight_task:
+            self.midnight_task.cancel()
 
-    @tasks.loop(time=datetime.time(hour=0, minute=0, tzinfo=ZoneInfo("America/Chicago")))
-    async def midnight_reset(self):
-        """Reset all roles at midnight Central Time."""
-        try:
-            await self._reset_all_users()
-            print(f"[Bully] Reset all roles and counts at {datetime.datetime.now(ZoneInfo('America/Chicago'))}")
-        except Exception as e:
-            print(f"Error in midnight reset task: {e}")
-
-    @midnight_reset.before_loop
-    async def before_midnight_reset(self):
-        """Wait until the bot is ready before starting the task."""
+    async def _schedule_midnight_reset(self):
+        """Schedule the role reset to occur at midnight Central Time."""
         await self.bot.wait_until_ready()
+        while self == self.bot.get_cog("Bully"):
+            try:
+                tz = ZoneInfo("America/Chicago")
+                now = datetime.datetime.now(tz)
+                
+                # Calculate time until next midnight
+                tomorrow = (now + datetime.timedelta(days=1)).replace(
+                    hour=0, minute=0, second=0, microsecond=0
+                )
+                seconds_until_midnight = (tomorrow - now).total_seconds()
+                
+                # Sleep until midnight
+                await asyncio.sleep(seconds_until_midnight)
+                
+                # Reset all users
+                await self._reset_all_users()
+                print(f"[Bully] Reset all roles and counts at {datetime.datetime.now(ZoneInfo('America/Chicago'))}")
+                
+                # Sleep a bit to avoid double execution
+                await asyncio.sleep(60)
+            except Exception as e:
+                print(f"Error in midnight reset task: {e}")
 
     async def _reset_all_users(self):
         """Reset bully count and remove roles from all users at midnight."""
