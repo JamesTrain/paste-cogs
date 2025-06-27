@@ -514,6 +514,32 @@ class Bully(commands.Cog):
             await ctx.send(f"An error occurred while resetting the bully count: {e}")
             print(f"Error in bullyreset: {e}")
 
+    @commands.command()
+    async def bullystats(self, ctx: commands.Context, member: discord.Member = None):
+        """Shows bully statistics for a user.
+
+        If no user is specified, it shows your own stats.
+
+        Parameters
+        ----------
+        member : discord.Member, optional
+            The member to get stats for. Defaults to the command author.
+        """
+        target_user = member or ctx.author
+
+        bullied_others_count = await self.config.user(target_user).times_bullied_others()
+        been_bullied_count = await self.config.user(target_user).times_bullied_total()
+
+        embed = discord.Embed(
+            title=f"Bully Stats for {target_user.name}",
+            color=await ctx.embed_color()
+        )
+        embed.set_thumbnail(url=target_user.display_avatar.url)
+        embed.add_field(name="Times Bullied Others", value=f"{bullied_others_count:,}", inline=False)
+        embed.add_field(name="Times Been Bullied", value=f"{been_bullied_count:,}", inline=False)
+
+        await ctx.send(embed=embed)
+
 async def setup(bot):
     """Load the Bully cog."""
     await bot.add_cog(Bully(bot))
