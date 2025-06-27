@@ -463,6 +463,54 @@ class Bully(commands.Cog):
         )
         await progress_msg.edit(content=summary)
 
+    @commands.command()
+    @commands.admin_or_permissions(administrator=True)
+    async def bullyreset(self, ctx: commands.Context, member: discord.Member = None):
+        """Resets the daily bully count for a user.
+
+        If no user is specified, it resets your own count.
+        This also removes any daily bully-related roles.
+
+        Parameters
+        ----------
+        member : discord.Member, optional
+            The member whose bully count to reset. Defaults to the command author.
+        """
+        target = member or ctx.author
+
+        try:
+            # Reset daily count
+            await self.config.user(target).bully_count.set(0)
+
+            # Get role IDs
+            class_clown_role_id = await self.config.guild(ctx.guild).class_clown_role_id()
+            stinky_loser_role_id = await self.config.guild(ctx.guild).stinky_loser_role_id()
+
+            # Remove Class Clown role if present
+            if await self.config.user(target).has_class_clown() and class_clown_role_id:
+                role = ctx.guild.get_role(class_clown_role_id)
+                if role and role in target.roles:
+                    await target.remove_roles(role, reason="Bully count reset by admin")
+                await self.config.user(target).has_class_clown.set(False)
+
+            # Remove Stinky Loser role if present
+            if await self.config.user(target).has_stinky_loser() and stinky_loser_role_id:
+                role = ctx.guild.get_role(stinky_loser_role_id)
+                if role and role in target.roles:
+                    await target.remove_roles(role, reason="Bully count reset by admin")
+                await self.config.user(target).has_stinky_loser.set(False)
+
+            if target == ctx.author:
+                await ctx.send("Your daily bully count has been reset.")
+            else:
+                await ctx.send(f"{target.mention}'s daily bully count has been reset.")
+
+        except discord.Forbidden:
+            await ctx.send(f"I don't have permission to remove roles from {target.name}.")
+        except Exception as e:
+            await ctx.send(f"An error occurred while resetting the bully count: {e}")
+            print(f"Error in bullyreset: {e}")
+
 async def setup(bot):
     """Load the Bully cog."""
     await bot.add_cog(Bully(bot))
