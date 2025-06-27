@@ -15,7 +15,8 @@ class Bully(commands.Cog):
         # Default configurations
         default_guild = {
             "class_clown_role_id": None,  # Role ID for Class Clown
-            "stinky_loser_role_id": None  # Role ID for Stinky Loser
+            "stinky_loser_role_id": None,  # Role ID for Stinky Loser
+            "random_bully_enabled": False, # Whether random bullying is enabled
         }
         default_user = {
             "bully_count": 0,  # Number of times bullied today
@@ -45,8 +46,11 @@ class Bully(commands.Cog):
             "🗑️ Look everyone! {user} has been bullied so much they're now a certified Stinky Loser! At least you're good at something!"
         ]
         
+        self.armed_for_random_bully = False
+
         # Start the midnight reset task
         self.midnight_task = asyncio.create_task(self._schedule_midnight_reset())
+        self.random_bully_task = asyncio.create_task(self._random_bully_task())
 
     @staticmethod
     def sarcog_string(x):
@@ -63,6 +67,30 @@ class Bully(commands.Cog):
         """Clean up when cog is unloaded."""
         if hasattr(self, 'midnight_task') and self.midnight_task:
             self.midnight_task.cancel()
+        if hasattr(self, 'random_bully_task') and self.random_bully_task:
+            self.random_bully_task.cancel()
+
+    async def _random_bully_task(self):
+        """A background task that randomly bullies a user."""
+        await self.bot.wait_until_ready()
+        while self == self.bot.get_cog("Bully"):
+            try:
+                # Wait for a random interval between 25 and 30 minutes
+                await asyncio.sleep(random.randint(1500, 1800))
+                
+                # Arm the cog to bully the next valid message
+                self.armed_for_random_bully = True
+                
+                # Wait until a message has been bullied, checking every second
+                while self.armed_for_random_bully:
+                    await asyncio.sleep(1)
+
+            except asyncio.CancelledError:
+                break
+            except Exception as e:
+                print(f"Error in random bully task: {e}")
+                # Wait a bit before restarting the loop to avoid spamming errors
+                await asyncio.sleep(60)
 
     async def _schedule_midnight_reset(self):
         """Schedule the role reset to occur at midnight Central Time."""
@@ -130,6 +158,79 @@ class Bully(commands.Cog):
         except Exception as e:
             print(f"Error in _reset_all_users: {e}")
 
+    async def _handle_bully_consequences(self, channel: discord.TextChannel, target_user: discord.Member):
+        """Checks bully counts and assigns roles if thresholds are met."""
+        user_data = await self.config.user(target_user).all()
+        bully_count = user_data.get("bully_count", 0)
+        has_class_clown = user_data.get("has_class_clown", False)
+        has_stinky_loser = user_data.get("has_stinky_loser", False)
+        
+        guild = channel.guild
+
+        # Check for Stinky Loser role
+        if bully_count >= 5 and not has_stinky_loser:
+            stinky_loser_role_id = await self.config.guild(guild).stinky_loser_role_id()
+            if stinky_loser_role_id:
+                role = guild.get_role(stinky_loser_role_id)
+                if role:
+                    try:
+                        await target_user.add_roles(role, reason="Bullied 5 times today")
+                        await self.config.user(target_user).has_stinky_loser.set(True)
+                        await channel.send(random.choice(self.stinky_loser_messages).format(user=target_user.mention))
+                    except discord.Forbidden:
+                        print(f"Failed to add Stinky Loser role to {target_user.name}: Missing permissions")
+
+        # Check for Class Clown role
+        elif bully_count >= 3 and not has_class_clown:
+            class_clown_role_id = await self.config.guild(guild).class_clown_role_id()
+            if class_clown_role_id:
+                role = guild.get_role(class_clown_role_id)
+                if role:
+                    try:
+                        await target_user.add_roles(role, reason="Bullied 3 times today")
+                        await self.config.user(target_user).has_class_clown.set(True)
+                        await channel.send(random.choice(self.class_clown_messages).format(user=target_user.mention))
+                    except discord.Forbidden:
+                        print(f"Failed to add Class Clown role to {target_user.name}: Missing permissions")
+
+    @commands.Cog.listener()
+    async def on_message(self, message: discord.Message):
+        """Listen for messages to perform random bullying."""
+        if not self.armed_for_random_bully:
+            return
+        if not message.guild:
+            return
+        if not await self.config.guild(message.guild).random_bully_enabled():
+            return
+        if message.author.bot:
+            return
+        if not message.content:
+            return
+        if (await self.bot.get_context(message)).valid:
+            return
+
+        # Disarm to bully only one message
+        self.armed_for_random_bully = False
+
+        target_user = message.author
+        
+        # Mock the message and send
+        mocked_message = self.sarcog_string(message.content)
+        try:
+            await message.channel.send(mocked_message)
+        except discord.Forbidden:
+            return # Can't send message, abort
+            
+        # Increment daily and total bully counts for the victim
+        daily_bully_count = await self.config.user(target_user).bully_count() + 1
+        await self.config.user(target_user).bully_count.set(daily_bully_count)
+        
+        total_bullied_count = await self.config.user(target_user).times_bullied_total() + 1
+        await self.config.user(target_user).times_bullied_total.set(total_bullied_count)
+        
+        # Check for role assignments
+        await self._handle_bully_consequences(message.channel, target_user)
+
     @commands.group()
     @commands.admin_or_permissions(administrator=True)
     async def bullyset(self, ctx):
@@ -147,6 +248,13 @@ class Bully(commands.Cog):
         """Set the Stinky Loser role."""
         await self.config.guild(ctx.guild).stinky_loser_role_id.set(role.id)
         await ctx.send(f"Stinky Loser role set to {role.name}")
+
+    @bullyset.command(name="random")
+    async def bullyset_random(self, ctx, on_off: bool):
+        """Enable or disable random bullying in this server."""
+        await self.config.guild(ctx.guild).random_bully_enabled.set(on_off)
+        status = "enabled" if on_off else "disabled"
+        await ctx.send(f"Random bullying has been {status}.")
 
     @commands.command(aliases=["b"])
     async def bully(self, ctx: commands.Context):
@@ -179,37 +287,10 @@ class Bully(commands.Cog):
         await self.config.user(target_user).times_bullied_total.set(target_times_bullied_total + 1)
 
         # Increment bully count and check role thresholds
-        user_data = await self.config.user(target_user).all()
-        bully_count = user_data.get("bully_count", 0) + 1
-        has_class_clown = user_data.get("has_class_clown", False)
-        has_stinky_loser = user_data.get("has_stinky_loser", False)
-        
+        bully_count = await self.config.user(target_user).bully_count() + 1
         await self.config.user(target_user).bully_count.set(bully_count)
         
-        # Check for role assignments
-        if bully_count >= 5 and not has_stinky_loser:
-            stinky_loser_role_id = await self.config.guild(ctx.guild).stinky_loser_role_id()
-            if stinky_loser_role_id:
-                role = ctx.guild.get_role(stinky_loser_role_id)
-                if role:
-                    try:
-                        await target_user.add_roles(role, reason="Bullied 5 times today")
-                        await self.config.user(target_user).has_stinky_loser.set(True)
-                        await ctx.send(random.choice(self.stinky_loser_messages).format(user=target_user.mention))
-                    except discord.Forbidden:
-                        print(f"Failed to add Stinky Loser role to {target_user.name}: Missing permissions")
-                        
-        elif bully_count >= 3 and not has_class_clown:
-            class_clown_role_id = await self.config.guild(ctx.guild).class_clown_role_id()
-            if class_clown_role_id:
-                role = ctx.guild.get_role(class_clown_role_id)
-                if role:
-                    try:
-                        await target_user.add_roles(role, reason="Bullied 3 times today")
-                        await self.config.user(target_user).has_class_clown.set(True)
-                        await ctx.send(random.choice(self.class_clown_messages).format(user=target_user.mention))
-                    except discord.Forbidden:
-                        print(f"Failed to add Class Clown role to {target_user.name}: Missing permissions")
+        await self._handle_bully_consequences(ctx.channel, target_user)
         
         # Send the mocked message
         await ctx.send(mocked_message)
