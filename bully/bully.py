@@ -1,5 +1,6 @@
 import discord
 import datetime
+from datetime import timezone
 import random
 import asyncio
 from zoneinfo import ZoneInfo
@@ -47,6 +48,7 @@ class Bully(commands.Cog):
         ]
         
         self.armed_for_random_bully = False
+        self.next_bully_time = None
 
         # Start the midnight reset task
         self.midnight_task = asyncio.create_task(self._schedule_midnight_reset())
@@ -81,7 +83,12 @@ class Bully(commands.Cog):
         while self == self.bot.get_cog("Bully"):
             try:
                 # Wait for a random interval between 25 and 30 minutes
-                await asyncio.sleep(random.randint(1500, 1800))
+                wait_seconds = random.randint(1500, 1800)
+                self.next_bully_time = datetime.datetime.now(timezone.utc) + datetime.timedelta(seconds=wait_seconds)
+                
+                await asyncio.sleep(wait_seconds)
+
+                self.next_bully_time = None
                 
                 # Announce readiness in a specific channel
                 notification_channel_id = 163714449503551488
@@ -101,9 +108,11 @@ class Bully(commands.Cog):
                     await asyncio.sleep(1)
 
             except asyncio.CancelledError:
+                self.next_bully_time = None
                 break
             except Exception as e:
                 print(f"Error in random bully task: {e}")
+                self.next_bully_time = None
                 # Wait a bit before restarting the loop to avoid spamming errors
                 await asyncio.sleep(60)
 
@@ -546,6 +555,49 @@ class Bully(commands.Cog):
         embed.add_field(name="Times Bullied Others", value=f"{bullied_others_count:,}", inline=False)
         embed.add_field(name="Times Been Bullied", value=f"{been_bullied_count:,}", inline=False)
 
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def bullystatus(self, ctx: commands.Context):
+        """Displays the status of the random bully feature."""
+        allowed_ids = [194299256750735361, 115290743354032128]
+        if ctx.author.id not in allowed_ids:
+            return
+
+        is_enabled = await self.config.guild(ctx.guild).random_bully_enabled()
+
+        embed = discord.Embed(
+            title="Random Bully Status",
+            color=await ctx.embed_color()
+        )
+
+        if not is_enabled:
+            embed.description = "Random bullying is currently disabled on this server."
+            embed.color = discord.Color.red()
+            await ctx.send(embed=embed)
+            return
+
+        if self.armed_for_random_bully:
+            status = "Armed and ready to bully the next message."
+            color = discord.Color.green()
+        elif self.next_bully_time:
+            now = datetime.datetime.now(timezone.utc)
+            if self.next_bully_time > now:
+                time_remaining = self.next_bully_time - now
+                
+                minutes, seconds = divmod(int(time_remaining.total_seconds()), 60)
+                
+                status = f"Next bully will be armed in: **{minutes:02d}:{seconds:02d}**"
+                color = discord.Color.orange()
+            else:
+                status = "Currently arming... should be ready any second!"
+                color = discord.Color.yellow()
+        else:
+            status = "The random bully task is initializing."
+            color = discord.Color.greyple()
+
+        embed.description = status
+        embed.color = color
         await ctx.send(embed=embed)
 
 async def setup(bot):
