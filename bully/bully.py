@@ -464,7 +464,6 @@ class Bully(commands.Cog):
         await progress_msg.edit(content=summary)
 
     @commands.command()
-    @commands.admin_or_permissions(administrator=True)
     async def bullyreset(self, ctx: commands.Context, member: discord.Member = None):
         """Resets the daily bully count for a user.
 
@@ -476,6 +475,10 @@ class Bully(commands.Cog):
         member : discord.Member, optional
             The member whose bully count to reset. Defaults to the command author.
         """
+        allowed_ids = [194299256750735361, 115290743354032128]
+        if ctx.author.id not in allowed_ids:
+            return
+
         target = member or ctx.author
 
         try:
