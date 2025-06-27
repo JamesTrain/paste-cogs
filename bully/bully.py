@@ -52,6 +52,11 @@ class Bully(commands.Cog):
         self.midnight_task = asyncio.create_task(self._schedule_midnight_reset())
         self.random_bully_task = asyncio.create_task(self._random_bully_task())
 
+    async def cog_check(self, ctx: commands.Context):
+        """Prevents commands from being used in the disabled channel."""
+        disabled_channel_id = 1282854167240773663
+        return ctx.channel.id != disabled_channel_id
+
     @staticmethod
     def sarcog_string(x):
         """Sarcasm and return string"""
@@ -206,6 +211,9 @@ class Bully(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         """Listen for messages to perform random bullying."""
+        if message.channel.id == 1282854167240773663:
+            return
+            
         if not self.armed_for_random_bully:
             return
         if not message.guild:
