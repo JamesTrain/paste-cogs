@@ -83,8 +83,8 @@ class Bully(commands.Cog):
         await self.bot.wait_until_ready()
         while self == self.bot.get_cog("Bully"):
             try:
-                # Wait for a random interval between 25 and 30 minutes
-                wait_seconds = random.randint(1500, 1800)
+                # Wait for a random interval between 1 and 2 hours
+                wait_seconds = random.randint(3600, 7200)
                 self.next_bully_time = datetime.datetime.now(timezone.utc) + datetime.timedelta(seconds=wait_seconds)
                 
                 # Wait for the sleep to finish OR for the event to be set
