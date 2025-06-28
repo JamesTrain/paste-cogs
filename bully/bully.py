@@ -250,17 +250,23 @@ class Bully(commands.Cog):
         if (await self.bot.get_context(message)).valid:
             return
 
-        # Disarm to bully only one message
-        self.armed_for_random_bully = False
+        # Roll to see if the bully actually happens
+        roll = random.randint(1, 20)
 
+        if roll < 18:
+            return  # Abort the bully and stay armed for the next message
+
+        # A valid message has been found AND the roll was successful.
+        # Consume the "armed" state.
+        self.armed_for_random_bully = False
         target_user = message.author
-        
+
         # Mock the message and send
         mocked_message = self.sarcog_string(message.content)
         try:
             await message.channel.send(mocked_message)
         except discord.Forbidden:
-            return # Can't send message, abort
+            return  # Can't send message, but the bully attempt is still consumed
             
         # Increment daily and total bully counts for the victim
         daily_bully_count = await self.config.user(target_user).bully_count() + 1
