@@ -250,6 +250,16 @@ class Bully(commands.Cog):
         if (await self.bot.get_context(message)).valid:
             return
 
+        # Ignore messages with embeds, links, or specific prefixes
+        if len(message.embeds) > 0:
+            return
+        content = message.content.strip()
+        if (content.startswith('.') or
+            content.startswith('@') or
+            "http://" in content or
+            "https://" in content):
+            return
+
         # Roll to see if the bully actually happens
         roll = random.randint(1, 20)
 
