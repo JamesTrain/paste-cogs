@@ -253,7 +253,7 @@ class Bully(commands.Cog):
         # Roll to see if the bully actually happens
         roll = random.randint(1, 20)
 
-        if roll < 18:
+        if roll < 20:
             return  # Abort the bully and stay armed for the next message
 
         # A valid message has been found AND the roll was successful.
