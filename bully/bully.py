@@ -333,8 +333,19 @@ class Bully(commands.Cog):
         if not target_message.content:
             await ctx.send("Nothing to mock!")
             return
-            
-        mocked_message = self.sarcog_string(target_message.content)
+        
+        # Check if the message contains a tenor.com link
+        if "tenor.com" in target_message.content:
+            tenor_responses = [
+                "https://tenor.com/view/shut-up-mom-youre-stinky-balls-yfm-your-favorite-martian-gif-26022327",
+                "https://tenor.com/view/palpatine-star-wars-droid-tales-poopy-pants-stinky-binky-gif-16837762",
+                "https://tenor.com/view/boo2-madea-halloween-boo2-film-boo2-gifs-tyler-gif-9556058",
+                "https://tenor.com/view/spongebob-spongebob-meme-spongebob-squarepants-ugly-spongebob-ugly-gif-9518779627150631971",
+                "https://tenor.com/view/ace-ventura-ugly-gif-10442831"
+            ]
+            response_message = random.choice(tenor_responses)
+        else:
+            response_message = self.sarcog_string(target_message.content)
         
         # Increment bully counts for leaderboard
         author_times_bullied_others = await self.config.user(ctx.author).times_bullied_others()
@@ -349,8 +360,8 @@ class Bully(commands.Cog):
         
         await self._handle_bully_consequences(ctx.channel, target_user)
         
-        # Send the mocked message
-        await ctx.send(mocked_message)
+        # Send the response message
+        await ctx.send(response_message)
 
     @commands.command(aliases=["bb"])
     async def bullyboard(self, ctx, leaderboard_type: str = "victims"):
