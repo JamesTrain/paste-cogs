@@ -22,259 +22,19 @@ class Vibecheck(commands.Cog):
     between 0 and 20 with corresponding comments.
     """
 
-    VIBE_COMMENTS: Dict[int, List[str]] = {
-        0: [
-            "Literally die idiot 💀",
-            "Just delete your account",
-            "Your vibes are a crime against humanity",
-            "Congratulations, you've achieved negative vibes",
-            "Even a rock has better vibes than you",
-            "Your vibes are in the shadow realm",
-            "You should be legally banned from vibing",
-            "Your vibes make people cry",
-            "Error 404: Vibes not found",
-            "You've got the vibes of a wet sock"
-        ],
-        1: [
-            "Uh oh stinky!",
-            "Your vibes need life support",
-            "Did you even try to vibe today?",
-            "Your vibes are on vacation... in hell",
-            "Certified vibe failure",
-            "Your vibes are running on Windows Vista",
-            "Even AI can vibe better than this",
-            "Your vibes need Jesus",
-            "Vibing isn't for everyone, maybe try knitting",
-            "Your vibes are stuck in 2020"
-        ],
-        2: [
-            "Your vibes are catastrophically bad",
-            "Your vibes failed the background check",
-            "Did you get your vibes from the dollar store?",
-            "Your vibes are experiencing technical difficulties",
-            "Your vibes need a software update",
-            "Vibing.exe has stopped working",
-            "Your vibes are in airplane mode",
-            "Your vibes got left on read",
-            "Your vibes are pending approval",
-            "Error: Vibe.dll not found"
-        ],
-        3: [
-            "There's a spider in your ear",
-            "Your vibes are on thin ice",
-            "Your vibes need a timeout",
-            "Your vibes are in low power mode",
-            "Your vibes got ratio'd",
-            "Your vibes are mid at best",
-            "Your vibes need some milk",
-            "Your vibes are using Internet Explorer",
-            "Your vibes are using light mode",
-            "Your vibes got ghosted"
-        ],
-        4: [
-            "That's gonna be an oof from me dog",
-            "Your vibes are barely passing",
-            "Your vibes need a nap",
-            "Your vibes are running on fumes",
-            "Your vibes are on autopilot",
-            "Your vibes need coffee",
-            "Your vibes are using Comic Sans",
-            "Your vibes are in the friend zone",
-            "Your vibes need a hug",
-            "Your vibes are using Windows XP"
-        ],
-        5: [
-            "Your vibes are questionable at best",
-            "Your vibes are on probation",
-            "Your vibes need some work",
-            "Your vibes are loading... still loading...",
-            "Your vibes are buffering",
-            "Your vibes are in beta testing",
-            "Your vibes need a reboot",
-            "Your vibes are using free trial",
-            "Your vibes are pending review",
-            "Your vibes are in safe mode"
-        ],
-        6: [
-            "Your vibes are almost acceptable",
-            "Your vibes are showing potential",
-            "Your vibes are warming up",
-            "Your vibes are getting there",
-            "Your vibes passed the vibe check... barely",
-            "Your vibes are on the right track",
-            "Your vibes are in training",
-            "Your vibes show promise",
-            "Your vibes are improving",
-            "Your vibes are under construction"
-        ],
-        7: [
-            "Your vibes are decent-ish",
-            "Your vibes are above average... barely",
-            "Your vibes are acceptable",
-            "Your vibes are not bad",
-            "Your vibes are getting better",
-            "Your vibes are making progress",
-            "Your vibes are showing up",
-            "Your vibes are doing okay",
-            "Your vibes are passing",
-            "Your vibes are satisfactory"
-        ],
-        8: [
-            "You might want to go back to bed",
-            "Your vibes are pretty good",
-            "Your vibes are solid",
-            "Your vibes are respectable",
-            "Your vibes are worth noting",
-            "Your vibes are getting spicy",
-            "Your vibes are certified fresh",
-            "Your vibes are looking good",
-            "Your vibes are on point",
-            "Your vibes are impressive"
-        ],
-        9: [
-            "Your vibes are getting there",
-            "Your vibes are quite nice",
-            "Your vibes are well-cultured",
-            "Your vibes are distinguished",
-            "Your vibes are remarkable",
-            "Your vibes are outstanding",
-            "Your vibes are excellent",
-            "Your vibes are top tier",
-            "Your vibes are premium quality",
-            "Your vibes are exceptional"
-        ],
-        10: [
-            "That's almost a vibe",
-            "Your vibes are getting somewhere",
-            "Your vibes are finding their groove",
-            "Your vibes are warming up nicely",
-            "Your vibes are showing promise",
-            "Your vibes have potential",
-            "Your vibes are decent",
-            "Your vibes are coming along",
-            "Your vibes are acceptable",
-            "Your vibes pass the check"
-        ],
-        11: [
-            "Your vibes are pretty good",
-            "Your vibes are above average",
-            "Your vibes are noteworthy",
-            "Your vibes caught my attention",
-            "Your vibes are respectable",
-            "Your vibes have style",
-            "Your vibes are looking fresh",
-            "Your vibes are solid",
-            "Your vibes are reliable",
-            "Your vibes are impressive"
-        ],
-        12: [
-            "Getting better, keep it up",
-            "Your vibes are really nice",
-            "Your vibes are well-crafted",
-            "Your vibes are refined",
-            "Your vibes have class",
-            "Your vibes are distinguished",
-            "Your vibes are sophisticated",
-            "Your vibes are cultured",
-            "Your vibes are elegant",
-            "Your vibes are excellent"
-        ],
-        13: [
-            "Your vibes are ascending",
-            "Your vibes are reaching higher",
-            "Your vibes are evolving",
-            "Your vibes are transforming",
-            "Your vibes are awakening",
-            "Your vibes are enlightened",
-            "Your vibes are transcending",
-            "Your vibes are elevating",
-            "Your vibes are ascending beyond",
-            "Your vibes break boundaries"
-        ],
-        14: [
-            "Alright, now that's a meme",
-            "Your vibes are extraordinary",
-            "Your vibes are remarkable",
-            "Your vibes are exceptional",
-            "Your vibes are outstanding",
-            "Your vibes are superior",
-            "Your vibes are magnificent",
-            "Your vibes are phenomenal",
-            "Your vibes are incredible",
-            "Your vibes are masterful"
-        ],
-        15: [
-            "Your vibes radiate power",
-            "Your vibes command respect",
-            "Your vibes are awe-inspiring",
-            "Your vibes are majestic",
-            "Your vibes are glorious",
-            "Your vibes are exalted",
-            "Your vibes are supreme",
-            "Your vibes are legendary",
-            "Your vibes are mythical",
-            "Your vibes are divine"
-        ],
-        16: [
-            "It's gonna be a good day :)",
-            "Your vibes bend reality",
-            "Your vibes alter spacetime",
-            "Your vibes defy physics",
-            "Your vibes break the matrix",
-            "Your vibes transcend dimensions",
-            "Your vibes create universes",
-            "Your vibes shape existence",
-            "Your vibes control destiny",
-            "Your vibes command reality"
-        ],
-        17: [
-            "Your vibes have ascended",
-            "Your vibes exist beyond time",
-            "Your vibes create galaxies",
-            "Your vibes birth stars",
-            "Your vibes shape cosmos",
-            "Your vibes forge worlds",
-            "Your vibes ignite suns",
-            "Your vibes move mountains",
-            "Your vibes split oceans",
-            "Your vibes rule realms"
-        ],
-        18: [
-            "LET'S GOOOOOO",
-            "COSMIC VIBE ENERGY",
-            "REALITY-BENDING VIBES",
-            "UNIVERSE-CREATING VIBES",
-            "DIMENSION-BREAKING VIBES",
-            "WORLD-SHAPING VIBES",
-            "GALAXY-FORMING VIBES",
-            "STAR-FORGING VIBES",
-            "REALITY-WARPING VIBES",
-            "EXISTENCE-DEFINING VIBES"
-        ],
-        19: [
-            "YOUR VIBES TRANSCEND ALL",
-            "YOUR VIBES CREATE GODS",
-            "YOUR VIBES BIRTH UNIVERSES",
-            "YOUR VIBES SHAPE INFINITY",
-            "YOUR VIBES DEFINE EXISTENCE",
-            "YOUR VIBES COMMAND ETERNITY",
-            "YOUR VIBES RULE DIMENSIONS",
-            "YOUR VIBES MASTER TIME",
-            "YOUR VIBES FORGE REALITY",
-            "YOUR VIBES ARE ABSOLUTE"
-        ],
-        20: [
-            "IMMACULATE VIBES, YOUR MAJESTY 👑",
-            "SUPREME OVERLORD OF VIBES 👑",
-            "IMMORTAL VIBE SOVEREIGN 👑",
-            "ETERNAL VIBE EMPEROR 👑",
-            "COSMIC VIBE DEITY 👑",
-            "OMNIPOTENT VIBE GOD 👑",
-            "INFINITE VIBE MASTER 👑",
-            "ULTIMATE VIBE RULER 👑",
-            "TRANSCENDENT VIBE KING 👑",
-            "ABSOLUTE VIBE MONARCH 👑"
-        ]
+    VIBE_COMMENTS: Dict[int, str] = {
+        0: "Literally die idiot 💀",
+        1: "Uh oh stinky!",
+        2: "Your vibes are catastrophically bad",
+        4: "That's gonna be an oof from me dog",
+        6: "There's a spider in your ear and it's *vibrating*",
+        8: "You might want to go back to bed",
+        10: "That's almost a vibe",
+        12: "Getting better, keep it up",
+        14: "Alright, now that's a meme",
+        16: "It's gonna be a good day :)",
+        18: "LET'S GOOOOOO",
+        20: "IMMACULATE VIBES, YOUR MAJESTY 👑"
     }
 
     def __init__(self, bot):
@@ -356,12 +116,11 @@ class Vibecheck(commands.Cog):
             self.midnight_task.cancel()
 
     def _get_vibe_comment(self, vibe: int) -> str:
-        """Get a random appropriate comment for a given vibe score."""
-        import random
+        """Get the appropriate comment for a given vibe score."""
         for threshold in sorted(self.VIBE_COMMENTS.keys(), reverse=True):
             if vibe >= threshold:
-                return random.choice(self.VIBE_COMMENTS[threshold])
-        return random.choice(self.VIBE_COMMENTS[0])
+                return self.VIBE_COMMENTS[threshold]
+        return self.VIBE_COMMENTS[0]
 
     def _is_fathers_day(self) -> bool:
         """Check if today is Father's Day (third Sunday in June)."""
