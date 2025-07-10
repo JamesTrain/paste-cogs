@@ -23,18 +23,18 @@ class Vibecheck(commands.Cog):
     """
 
     VIBE_COMMENTS: Dict[int, str] = {
-        0: "Literally die idiot 💀",
-        1: "Uh oh stinky!",
-        2: "Your vibes are catastrophically bad",
-        4: "That's gonna be an oof from me dog",
-        6: "There's a spider in your ear and it's *vibrating*",
-        8: "You might want to go back to bed",
-        10: "That's almost a vibe",
-        12: "Getting better, keep it up",
-        14: "Alright, now that's a meme",
-        16: "It's gonna be a good day :)",
-        18: "LET'S GOOOOOO",
-        20: "IMMACULATE VIBES, YOUR MAJESTY 👑"
+        0: "There's a spider in your ear, and you died? 💀",
+        1: "There's a spider in your ear",
+        2: "There's a spider in your ear",
+        4: "There's a spider in your ear",
+        6: "There's a spider in your ear",
+        8: "There's a spider in your ear",
+        10: "There's a spider in your ear",
+        12: "There's a spider in your ear",
+        14: "There's a spider in your ear",
+        16: "There's a spider in your ear",
+        18: "There's a spider in your ear",
+        20: "The spider is out of your ear"
     }
 
     def __init__(self, bot):
