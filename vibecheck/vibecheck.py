@@ -22,19 +22,28 @@ class Vibecheck(commands.Cog):
     between 0 and 20 with corresponding comments.
     """
 
-    VIBE_COMMENTS: Dict[int, str] = {
-        0: "There's a spider in your ear, and you died? 💀",
-        1: "There's a spider in your ear",
-        2: "There's a spider in your ear",
-        4: "There's a spider in your ear",
-        6: "There's a spider in your ear",
-        8: "There's a spider in your ear",
-        10: "There's a spider in your ear",
-        12: "There's a spider in your ear",
-        14: "There's a spider in your ear",
-        16: "There's a spider in your ear",
-        18: "There's a spider in your ear",
-        20: "The spider is out of your ear"
+    VIBE_COMMENTS: Dict[int, List[str]] = {
+        0: ["Eat shit and die"],
+        1: ["You should probably kill yourself"],
+        2: ["Log off, you're done"],
+        3: ["I went to the fat loser convention and everyone knew you"],
+        4: ["Everyone got really quiet all the sudden"],
+        5: ["This ain't it chief"],
+        6: ["Go back to bed"],
+        7: ["Go take a shower, you stink"],
+        8: ["Are you even trying?"],
+        9: ["You are like if a B- was a person"],
+        10: ["Mid as fuck dude"],
+        11: ["getting better"],
+        12: ["not to shabby"],
+        13: ["I think today will be ok"],
+        14: ["shit man I've seen worse"],
+        15: ["Hell yeah brother"],
+        16: ["Someone give this guy a high five"],
+        17: ["I went to the hot cool guy convention and everyone knew you"],
+        18: ["Based as fuck"],
+        19: ["You should buy a lottery ticket"],
+        20: ["PEAK VIBES 👑"]
     }
 
     def __init__(self, bot):
@@ -116,11 +125,12 @@ class Vibecheck(commands.Cog):
             self.midnight_task.cancel()
 
     def _get_vibe_comment(self, vibe: int) -> str:
-        """Get the appropriate comment for a given vibe score."""
+        """Get a random appropriate comment for a given vibe score."""
+        import random
         for threshold in sorted(self.VIBE_COMMENTS.keys(), reverse=True):
             if vibe >= threshold:
-                return self.VIBE_COMMENTS[threshold]
-        return self.VIBE_COMMENTS[0]
+                return random.choice(self.VIBE_COMMENTS[threshold])
+        return random.choice(self.VIBE_COMMENTS[0])
 
     def _is_fathers_day(self) -> bool:
         """Check if today is Father's Day (third Sunday in June)."""
