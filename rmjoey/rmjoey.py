@@ -7,8 +7,8 @@ class rmjoey(commands.Cog):
     """
     def __init__(self, bot):
         self.bot = bot
-    
+    # UPDATE THE COG PLEASE
     @commands.Cog.listener()
     async def on_message(self, message):
-        if message.author.id == 201448484430282752:
+        if message.author.id == 295400354160443403:
             await message.delete()
