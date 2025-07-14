@@ -1,0 +1,8 @@
+{
+    "author" : ["Gemini"],
+    "install_msg" : "Thanks for installing wordsub. Use .wordsub --help for more info.",
+    "name" : "WordSub",
+    "disabled" : false,
+    "short" : "Custom letter substitutions.",
+    "description" : "A cog for making custom letter substitutions. You can create named substitution profiles and apply them to messages."
+} 
