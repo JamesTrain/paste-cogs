@@ -35,7 +35,7 @@ class Vibecheck(commands.Cog):
         9: ["You are like if a B- was a person"],
         10: ["Mid as fuck dude"],
         11: ["getting better"],
-        12: ["not to shabby"],
+        12: ["not too shabby"],
         13: ["I think today will be ok"],
         14: ["shit man I've seen worse"],
         15: ["Hell yeah brother"],
