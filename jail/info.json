@@ -1,0 +1,13 @@
+{
+    "name": "Jail",
+    "short": "Jail users to prevent them from sending messages",
+    "description": "A cog that allows you to jail users, preventing them from sending messages in the server. Features include toggleable functionality and support for multiple jailed users.",
+    "end_user_data_statement": "This cog stores user IDs of jailed users per guild.",
+    "author": ["Daniel Bush, A.K.A. Daddy"],
+    "install_msg": "Thanks for installing Jail! Use `[p]jail <user>` to jail someone and `[p]release <user>` to release them.",
+    "tags": ["moderation", "jail", "mute"],
+    "requirements": [],
+    "hidden": false,
+    "disabled": false,
+    "type": "COG"
+} 
