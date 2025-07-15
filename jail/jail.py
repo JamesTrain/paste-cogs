@@ -102,6 +102,7 @@ class Jail(commands.Cog):
         await ctx.send(f"🔧 Jail system has been **{status}**.")
     
     @commands.command()
+    @commands.admin_or_permissions(manage_messages=True)
     async def release(self, ctx, user: discord.Member):
         """
         Release a user from jail.
@@ -109,12 +110,6 @@ class Jail(commands.Cog):
         **Arguments:**
         - `user`: The user to release
         """
-        # Check if user is authorized to use this command
-        authorized_users = [115290743354032128, 194299256750735361]
-        if ctx.author.id not in authorized_users:
-            await ctx.send("You are not authorized to use this command.")
-            return
-        
         if not ctx.guild:
             await ctx.send("This command can only be used in a server.")
             return
