@@ -104,16 +104,6 @@ class Bully(commands.Cog):
 
                 self.next_bully_time = None
                 
-                # Announce readiness in a specific channel
-                notification_channel_id = 163714449503551488
-                channel = self.bot.get_channel(notification_channel_id)
-                if channel and isinstance(channel, discord.TextChannel):
-                    if await self.config.guild(channel.guild).random_bully_enabled():
-                        try:
-                            await channel.send("I am armed and ready to bully.")
-                        except discord.Forbidden:
-                            pass # Can't send message, but continue anyway
-                
                 # Arm the cog to bully the next valid message
                 self.armed_for_random_bully = True
                 
