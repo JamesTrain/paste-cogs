@@ -8,7 +8,7 @@ class WordSub(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.config = Config.get_conf(self, identifier=random.randint(0, 999999999))
+        self.config = Config.get_conf(self, identifier=974374576)
         
         default_guild = {
             "substitutions": {}
