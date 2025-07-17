@@ -331,7 +331,12 @@ class Bully(commands.Cog):
                 "https://tenor.com/view/palpatine-star-wars-droid-tales-poopy-pants-stinky-binky-gif-16837762",
                 "https://tenor.com/view/boo2-madea-halloween-boo2-film-boo2-gifs-tyler-gif-9556058",
                 "https://tenor.com/view/spongebob-spongebob-meme-spongebob-squarepants-ugly-spongebob-ugly-gif-9518779627150631971",
-                "https://tenor.com/view/ace-ventura-ugly-gif-10442831"
+                "https://tenor.com/view/ace-ventura-ugly-gif-10442831",
+                "https://tenor.com/view/%E6%98%9F%E9%A3%9B%E9%9B%84%E9%A6%AC-hyuuma-hoshi-%E6%98%9F%E4%B8%80%E5%BE%B9-ittetsu-hoshi-%E5%B7%A8%E4%BA%BA%E3%81%AE%E6%98%9F-gif-27291444",
+                "https://tenor.com/view/mocking-cat-bullying-cat-cat-watching-hand-cat-being-bullied-by-hand-cat-gif-1752776374065854397",
+                "https://tenor.com/view/bully-maguire-cry-gonna-cry-spider-man-spiderman-meme-gif-144908065341776122",
+                "https://tenor.com/view/bully-soccer-gif-9249976",
+                "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExcHl4dnFvY3piY29yZjdqZXpmNTFoY2xkOHVxaHd6NjFucmRnd3d6NSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/cmvG11YwIVob8XlJDo/giphy.gif"
             ]
             response_message = random.choice(tenor_responses)
         else:
